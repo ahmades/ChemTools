@@ -578,7 +578,7 @@ TEST_CASE( "2-species diurnal kinetics advection-diffusion PDE "
   {
     std::ifstream bench_file;
     realtype val;
-    bench_file.open( "../tests/data/cvDiurnal_kry.out", std::ifstream::in );
+    bench_file.open( "../tests/data/cvDiurnal_kry.dat", std::ifstream::in );
     if( bench_file.is_open() ) {
       while ( bench_file >> val )  {
         expected_state.push_back( val );
