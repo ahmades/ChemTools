@@ -6,7 +6,7 @@
 #include <catch2/catch.hpp>
 
 #include "config.hpp"
-
+#include "test_config.hpp"
 #include "chemistry.hpp"
 
 struct Input {
@@ -161,52 +161,40 @@ static KinOutput TestKin( std::unique_ptr<Cantera::Kinetics> const& kinetics
   kinetics->getNetRatesOfProgress( output.rop.net.data() );
 
   if( verbose ) {
-    fmt::memory_buffer buffer;
-    fmt::format_to( buffer
-                    , "\nReactions and their forward, reverse and net rates of progress:\n");
+    Cantera::writelog("\nReactions and their forward, reverse and net rates of progress:\n");
     for( size_t i = 0; i < n_rxns; i++ ) {
-      fmt::format_to( buffer
-                      , "{:6s} {:35s} {:14.5g} {:14.5g} {:14.5g}  kmol/m3/s\n"
-                      , 'R' + std::to_string( i + 1 )
-                      , kinetics->reactionString( i )
-                      , output.rop.fwd[i]
-                      , output.rop.rev[i]
-                      , output.rop.net[i] );
+      Cantera::writelog( "{:6s} {:35s} {:14.5g} {:14.5g} {:14.5g}  kmol/m3/s\n"
+                         , 'R' + std::to_string( i + 1 )
+                         , kinetics->reactionString( i )
+                         , output.rop.fwd[i]
+                         , output.rop.rev[i]
+                         , output.rop.net[i] );
     }
-    Cantera::writelog( buffer.data() );
   }
 
   return output;
 }
 
-static double const tolerance = 100.0 * std::numeric_limits<float>::epsilon();
-
 static void TestThermoOutput( ThermoOutput const& output ) {
-  CHECK( Approx(  1.706732e+03 ).epsilon( tolerance ) == output.temperature );
-  CHECK( Approx(  2.026500e+05 ).epsilon( tolerance ) == output.pressure );
-  CHECK( Approx(  3.239982e-01 ).epsilon( tolerance ) == output.density );
-  CHECK( Approx( -5.626613e+06 ).epsilon( tolerance ) == output.molar_enthalpy );
-  CHECK( Approx(  2.433695e+05 ).epsilon( tolerance ) == output.molar_entropy );
-  CHECK( Approx(  3.734765e+04 ).epsilon( tolerance ) == output.molar_specific_heat );
+  CHECK( Approx(  1.706732e+03 ).epsilon( TestConfig::tolerance ) == output.temperature );
+  CHECK( Approx(  2.026500e+05 ).epsilon( TestConfig::tolerance ) == output.pressure );
+  CHECK( Approx(  3.239982e-01 ).epsilon( TestConfig::tolerance ) == output.density );
+  CHECK( Approx( -5.626613e+06 ).epsilon( TestConfig::tolerance ) == output.molar_enthalpy );
+  CHECK( Approx(  2.433695e+05 ).epsilon( TestConfig::tolerance ) == output.molar_entropy );
+  CHECK( Approx(  3.734765e+04 ).epsilon( TestConfig::tolerance ) == output.molar_specific_heat );
 }
 
 static void TestTransOutput( TransOutput const& output ) {
-  CHECK( Approx( 5.837424e-05 ).epsilon( tolerance ) == output.viscosity );
-  CHECK( Approx( 1.747307e-01 ).epsilon( tolerance ) == output.thermal_conductivity );
+  CHECK( Approx( 5.837424e-05 ).epsilon( TestConfig::tolerance ) == output.viscosity );
+  CHECK( Approx( 1.747307e-01 ).epsilon( TestConfig::tolerance ) == output.thermal_conductivity );
 }
 
 static void TestKinOutput( KinOutput const& output ) {
   RateOfProgress const& rop = output.rop;
   for( size_t i = 0; i < rop.net.size(); i++ ) {
-    CHECK_THAT( output.rop.net[i], Catch::Matchers::WithinAbs( 0.0, tolerance ) );
+    CHECK_THAT( output.rop.net[i], Catch::Matchers::WithinAbs( 0.0, TestConfig::tolerance ) );
   }
 }
-
-#ifdef TEST_VERBOSE
-static bool const verbosity = true;
-#else
-static bool const verbosity = false;
-#endif
 
 SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
  
@@ -244,7 +232,7 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
           // get thermo object
           std::unique_ptr<Cantera::ThermoPhase> const& thermo = chemistry->GetThermo();
           assert( thermo );
-          TestThermoOutput( TestThermo( thermo, verbosity ) );
+          TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) );
         }
       }
 
@@ -263,14 +251,14 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
             std::unique_ptr<Cantera::ThermoPhase> const& thermo = chemistry->GetThermo();
             //assert( thermo );
             REQUIRE_FALSE( thermo == nullptr );
-            TestThermoOutput( TestThermo( thermo, verbosity ) );
+            TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) );
           }
 
           {
             // get transport object
             std::unique_ptr<Cantera::Transport> const& trans = chemistry->GetTrans();
             REQUIRE_FALSE( trans == nullptr );
-            TestTransOutput( TestTrans( trans, verbosity ) );
+            TestTransOutput( TestTrans( trans, TestConfig::verbose ) );
           }
         }
       }
@@ -288,14 +276,14 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
             // get thermo object
             std::unique_ptr<Cantera::ThermoPhase> const& thermo = chemistry->GetThermo();
             REQUIRE_FALSE( thermo == nullptr );
-            TestThermoOutput( TestThermo( thermo, verbosity ) );
+            TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) );
           }
 
           {
             // get kinetics object
             std::unique_ptr<Cantera::Kinetics> const& kinetics = chemistry->GetKinetics();
             REQUIRE_FALSE( kinetics == nullptr );
-            TestKinOutput( TestKin( kinetics, verbosity ) );
+            TestKinOutput( TestKin( kinetics, TestConfig::verbose ) );
           }
         }
       
@@ -315,21 +303,21 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
             // get thermo object
             std::unique_ptr<Cantera::ThermoPhase> const& thermo = chemistry->GetThermo();
             REQUIRE_FALSE( thermo == nullptr );
-            TestThermoOutput( TestThermo( thermo, verbosity ) );
+            TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) );
           }
 
           {
             // get transport object
             std::unique_ptr<Cantera::Transport> const& trans = chemistry->GetTrans();
             REQUIRE_FALSE( trans == nullptr );
-            TestTransOutput( TestTrans( trans, verbosity ) );
+            TestTransOutput( TestTrans( trans, TestConfig::verbose ) );
           }
 
           {
             // get kinetics object
             std::unique_ptr<Cantera::Kinetics> const& kinetics = chemistry->GetKinetics();
             REQUIRE_FALSE( kinetics == nullptr );
-            TestKinOutput( TestKin( kinetics, verbosity ) );
+            TestKinOutput( TestKin( kinetics, TestConfig::verbose ) );
           }
         }
       

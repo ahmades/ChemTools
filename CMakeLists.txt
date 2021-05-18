@@ -85,3 +85,27 @@ else()
   message(FATAL_ERROR "Dependency: Threads not found")
 endif()
 
+# -- Dependency: Sundials - CVODE
+set(SUNDIALS_REQUIRED_COMPONENTS sundials_cvode sundials_nvecserial)
+foreach(SUNDIALS_COMPONENT ${SUNDIALS_REQUIRED_COMPONENTS})
+  find_library(
+    SUNDIALS_LIBRARY
+    NAMES "lib${SUNDIALS_COMPONENT}.so"
+    HINTS ${CMAKE_PREFIX_PATH}/sundials/lib
+    NO_DEFAULT_PATH
+    )
+  if(SUNDIALS_LIBRARY)
+    message(STATUS "Dependency: Sundials library component ${SUNDIALS_COMPONENT} found")
+    target_link_libraries(exe ${SUNDIALS_LIBRARY})
+  else()
+    message(FATAL_ERROR "Dependency: Sundials component library ${SUNDIALS_COMPONENT} not found")
+  endif()
+endforeach()
+
+set(SUNDIALS_INCLUDE_DIR ${CMAKE_PREFIX_PATH}/sundials/include)
+if(EXISTS ${SUNDIALS_INCLUDE_DIR})
+  message(STATUS "Dependency: Sundials includes found")
+  target_include_directories(exe PRIVATE  ${SUNDIALS_INCLUDE_DIR})
+else()
+  message(STATUS "Dependency: Sundials includes found")
+endif()
