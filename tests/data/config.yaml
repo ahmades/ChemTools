@@ -1,0 +1,64 @@
+- Reactor:        CONSTANT_PRESSURE
+  Mechanism:
+    Description:  Constant pressure reactor - mechanism 1
+    Path:         ../data/gri30.cti
+  Description:    case set 1
+  Cases:
+    Case:
+      Description: useful case 1.1
+      Pressure:
+        Unit:  Pa
+        Value: 101325.0
+      Temperature:
+        Unit:  Kelvin
+        Value: 1300.0
+      Composition:
+        Type:  mole fraction
+        Value: [[CH4, 0.1], [O2, 0.5], [N2, 0.4]]
+      Time:
+        Unit:  ms
+        Value: 1.0
+    Case:
+      Description: useful case 1.2
+      Pressure:
+        Unit:  atm
+        Value: 2.0
+      Temperature:
+        Unit:  degC
+        Value: 1025.0
+      Composition:
+        Type:  concentration
+        Unit:  mmol/L
+        Value: [[CH4, 0.1], [O2, 0.5], [N2, 0.35], [H2, 0.05] ]
+      Time:
+        Unit:  min
+        Value: 1.0
+    Case:
+      Description: useful case 1.3
+      Pressure:
+        Unit:  bar
+        Value: 1.5
+      Temperature:
+        Unit:  degF
+        Value: 2003.0
+      Composition:
+        Type:  concentration
+        Unit:  mol/m^3
+        Value: [[CH3, 0.03], [CH4, 0.07], [O2, 0.5], [N2, 0.4]]
+      Time:
+        Unit:  h
+        Value: 1.0
+    Case:
+      Description: useful case 1.4
+      Pressure:
+        Unit:  Pascal
+        Value: 201326.0
+      Temperature:
+        Unit:  K
+        Value: 1250.0
+      Composition:
+        Type:  mass fraction
+        Value: [[CH4, 0.15], [O2, 0.45], [N2, 0.4]]
+      Time:
+        Unit:  s
+        Value: 1.0

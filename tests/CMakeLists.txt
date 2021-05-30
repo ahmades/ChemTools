@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.20.2)
+# min cmake version
+cmake_minimum_required(VERSION 3.14.0)
 
 # project description
 project(
@@ -15,25 +16,41 @@ if(TEST_VERBOSE)
   add_definitions(-DTEST_VERBOSE)
 endif()
 
-# extra compiler options
-add_compile_options("-lstdc++ -s -pedantic -Wall -Wextra -Werror")
+# executable
+add_executable(test_exe)
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
+# sources
+target_sources(
+  test_exe
+  PRIVATE
+  src/tests.cpp
+  src/test_chemistry.cpp
+  src/test_sundials_cvode.cpp
+  src/test_input_parser.cpp
+  ../src/input_parser.cpp
+  )
 
-file(GLOB SOURCES "src/*.cpp")
-
-add_executable(test_exe ${SOURCES})
-
-include_directories(../include ./include)
+# includes
+target_include_directories(
+  test_exe
+  PRIVATE
+  include
+  ../include
+  )
 
 # c++ standard
-set_property(TARGET test_exe PROPERTY CXX_STANDARD 11)
+set_property(TARGET test_exe PROPERTY CXX_STANDARD 14)
+
+# extra compiler options
+target_compile_options(test_exe PRIVATE -s ) #-pedantic -Wall -Wextra -Werror)
 
 # path to dependencies
 if(NOT DEFINED LIB_PATH)
-  message(FATAL_ERROR "Path to dependencies must be specified. \
-All dependencies must be available in the same directory. \
-Use -DLIB_PATH=/pthat/to/dependenices to set the path.")
+  message(FATAL_ERROR
+    "Path to dependencies must be specified."
+    " All dependencies must be available in the same directory."
+    " Use -DLIB_PATH=/path/to/dependenices to set this path."
+    )
 else()
   set(CMAKE_PREFIX_PATH ${LIB_PATH})
 endif()
@@ -44,7 +61,6 @@ find_package(
   PATHS ${CMAKE_PREFIX_PATH}/catch2
   )
 if(Catch2_FOUND)
-  message(STATUS "Dependency: Catch2 found")
   target_link_libraries(test_exe Catch2::Catch2)
 else()
  message(FATAL_ERROR "Dependency Catch2 not found")
@@ -57,7 +73,6 @@ find_package(
   PATHS ${CMAKE_PREFIX_PATH}/fmt
   )
 if(fmt_FOUND)
-  message(STATUS "Dependency: fmt found")
   target_link_libraries(test_exe fmt::fmt)
 else()
  message(FATAL_ERROR "Dependency fmt not found")
@@ -71,7 +86,6 @@ find_library(
   NO_DEFAULT_PATH
   )
 if(CANTERA_LIBRARY)
-  message(STATUS "Dependency: Cantera library found")
   target_link_libraries(test_exe ${CANTERA_LIBRARY})
 else()
  message(FATAL_ERROR "Dependency: Cantera library not found")
@@ -84,7 +98,6 @@ find_path(
   PATH_SUFFIXES cantera
   )
 if(CANTERA_INCLUDE_DIR)
-  message(STATUS "Dependency: Cantera includes found")
   string( REPLACE "include/cantera" "include" CANTERA_INCLUDE_DIR ${CANTERA_INCLUDE_DIR} )
   target_include_directories(test_exe PRIVATE ${CANTERA_INCLUDE_DIR})
 else()
@@ -95,7 +108,6 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 if(Threads_FOUND)
-  message(STATUS "Dependency: Threads found")
   target_link_libraries(test_exe Threads::Threads)
 else()
   message(FATAL_ERROR "Dependency: Threads not found")
@@ -111,7 +123,6 @@ foreach(SUNDIALS_COMPONENT ${SUNDIALS_REQUIRED_COMPONENTS})
     NO_DEFAULT_PATH
     )
   if(SUNDIALS_LIBRARY)
-    message(STATUS "Dependency: Sundials library component ${SUNDIALS_COMPONENT} found")
     target_link_libraries(test_exe ${SUNDIALS_LIBRARY})
   else()
     message(FATAL_ERROR "Dependency: Sundials component library ${SUNDIALS_COMPONENT} not found")
@@ -120,9 +131,47 @@ endforeach()
 
 set(SUNDIALS_INCLUDE_DIR ${CMAKE_PREFIX_PATH}/sundials/include)
 if(EXISTS ${SUNDIALS_INCLUDE_DIR})
-  message(STATUS "Dependency: Sundials includes found")
   target_include_directories(test_exe PRIVATE  ${SUNDIALS_INCLUDE_DIR})
 else()
-  message(STATUS "Dependency: Sundials includes found")
+  message(FATAL_ERROR "Dependency: Sundials includes not found")
 endif()
 
+# -- Dependency: yaml-cpp
+find_package(
+  yaml-cpp REQUIRED
+  PATHS ${CMAKE_PREFIX_PATH}/yaml-cpp
+  )
+if(yaml-cpp_FOUND)
+  target_link_libraries(test_exe yaml-cpp)
+else()
+ message(FATAL_ERROR "Dependency yaml-cpp not found")
+endif()
+
+# -- Dependency: Boost components
+find_package(
+  Boost
+  COMPONENTS system filesystem
+  REQUIRED
+  )
+if(Boost_FOUND)
+  target_link_libraries(
+    test_exe
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_SYSTEM_LIBRARY}
+    )
+else()
+ message(FATAL_ERROR "Dependency Boost not found")
+endif()   
+
+# -- Dependency: units
+find_package(
+  units REQUIRED
+  PATHS ${CMAKE_PREFIX_PATH}/units
+  )
+if(units_FOUND)
+  target_link_libraries(test_exe units-static)
+  #target_link_libraries(test_exe ${units_LIBRARY}) #units::units compile_flags_target)
+  #target_include_directories(test_exe PRIVATE ${UNITS_INCLUDE_DIR})
+else()
+ message(FATAL_ERROR "Dependency units not found")
+endif()

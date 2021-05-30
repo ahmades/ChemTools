@@ -1,0 +1,20 @@
+- Reactor:        CONSTANT_PRESSURE
+  Mechanism:
+    Description:  Constant pressure reactor
+    Path:         ../data/gri30.cti
+  Description:    case set
+  Cases:
+    Case:
+      Description: useful case
+      Pressure:
+        Unit:  Pa
+        #Value: 101325.0 # commented mandatory key
+      Temperature:
+        Unit:  Kelvin
+        Value: 1300.0
+      Composition:
+        Type:  mole fraction
+        Value: [[CH4, 0.1], [O2, 0.5], [N2, 0.4]]
+      Time:
+        Unit:  ms
+        Value: 1.0
