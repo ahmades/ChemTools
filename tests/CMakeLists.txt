@@ -25,9 +25,11 @@ target_sources(
   PRIVATE
   src/tests.cpp
   src/test_chemistry.cpp
-  src/test_sundials_cvode.cpp
+  src/test_sundials_cvode_iterative.cpp
+  src/test_sundials_cvode_direct_dense.cpp
   src/test_input_parser.cpp
   ../src/input_parser.cpp
+  ../src/sundials_cvode.cpp
   )
 
 # includes
@@ -42,7 +44,7 @@ target_include_directories(
 set_property(TARGET test_exe PROPERTY CXX_STANDARD 14)
 
 # extra compiler options
-target_compile_options(test_exe PRIVATE -s ) #-pedantic -Wall -Wextra -Werror)
+target_compile_options(test_exe PRIVATE -s -pedantic -Wall -Wextra -Werror)
 
 # path to dependencies
 if(NOT DEFINED LIB_PATH)
@@ -98,8 +100,8 @@ find_path(
   PATH_SUFFIXES cantera
   )
 if(CANTERA_INCLUDE_DIR)
-  string( REPLACE "include/cantera" "include" CANTERA_INCLUDE_DIR ${CANTERA_INCLUDE_DIR} )
-  target_include_directories(test_exe PRIVATE ${CANTERA_INCLUDE_DIR})
+  string(REPLACE "include/cantera" "include" CANTERA_INCLUDE_DIR ${CANTERA_INCLUDE_DIR})
+  target_include_directories(test_exe SYSTEM PRIVATE ${CANTERA_INCLUDE_DIR})
 else()
  message(FATAL_ERROR "Dependency: Cantera includes not found")
 endif()
@@ -170,8 +172,6 @@ find_package(
   )
 if(units_FOUND)
   target_link_libraries(test_exe units-static)
-  #target_link_libraries(test_exe ${units_LIBRARY}) #units::units compile_flags_target)
-  #target_include_directories(test_exe PRIVATE ${UNITS_INCLUDE_DIR})
 else()
  message(FATAL_ERROR "Dependency units not found")
 endif()

@@ -54,52 +54,69 @@ namespace SUNDIALS {
       { }
     };
 
+    class TimeStepcontrol {
+    public:
+      long int n_steps;
+      realtype init_step;
+      realtype min_step;
+      realtype max_step;
+
+      /* zero initialisation for all members sets CVODE's defaults
+         n_steps = 500
+         init_step = sol( ||0.5 * h * d^2y/dt^2||_rms = 1 )
+         min_step = 0.0
+         max_step = inf
+       */
+      TimeStepcontrol()
+        : n_steps{ 0 }
+        , init_step{ 0.0 }
+        , min_step{ 0.0 }
+        , max_step{ 0.0 }
+      {}
+    };
+
+    class SolverControl {
+    public:
+      int max_order; // lib default: if BDF is selected with max_order >= 3
+      int max_warn_msgs;
+      bool stab_lim_det_active;
+      int max_err_test_fails;
+      int max_nonlin_iters;
+      int max_conv_fails;
+      realtype nonlin_conv_coef;
+      
+      SolverControl()
+      : max_order{ -1 }
+      , max_warn_msgs{ 10 }
+      , stab_lim_det_active{ false }
+      , max_err_test_fails{ 7 }
+      , max_nonlin_iters{ 3 }
+      , max_conv_fails{ 10 }
+      , nonlin_conv_coef{ 0.1 }
+      {}
+    };
+    
     class IntegrationTolerance {
     public:
       realtype relative;
-      realtype absolute;
+      std::vector<realtype> absolute;
       
       IntegrationTolerance( )
         : relative{ 1.0e-6 }
-        , absolute{ 1.0e-6 }
+        , absolute(1, 1.0e-6 )
       { }
-    };
 
-    class CommonUserFunctions {
-    public:
-      CVRhsFn right_hand_side;
-      CVProjFn projection;
-      CVErrHandlerFn error_handler;
-      
-      CommonUserFunctions( )
-        : right_hand_side{ nullptr }
-        , projection{ nullptr }
-        , error_handler{ nullptr }
+      IntegrationTolerance( realtype const relative_
+                            , std::vector<realtype> const& absolute_ )
+        : relative{ relative_ }
+        , absolute{ absolute_ }
       { }
-    };
 
-    class DirectUserFunctions {
-    public:
-      CVLsJacFn jacobian;
-      
-      DirectUserFunctions( )
-        : jacobian{ nullptr }
-      { }
-    };
-    
-    class IterativeUserFunctions {
-    public:
-      CVLsJacTimesSetupFn jacobian_setup;
-      CVLsJacTimesVecFn jacobian_times_vector;
-      CVLsPrecSetupFn preconditioner_setup;
-      CVLsPrecSolveFn preconditioner_solve;
-      
-      IterativeUserFunctions( )
-        : jacobian_setup{ nullptr }
-        , jacobian_times_vector{ nullptr }
-        , preconditioner_setup{ nullptr }
-        , preconditioner_solve{ nullptr }
-      { }
+      IntegrationTolerance( realtype const relative_
+                            , realtype const absolute_ )
+        : relative{ relative_ }
+        , absolute(1, absolute_ )
+      {}
     };
 
     class IterativeLinarSolverOptions {
@@ -186,6 +203,7 @@ namespace SUNDIALS {
     };
     
   } // namespace Types
+  
 } // namespace SUNDIALS
 
 #endif //SUNDIALS_TYPES_HPP

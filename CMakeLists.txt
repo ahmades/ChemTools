@@ -21,6 +21,7 @@ target_sources(
   PRIVATE
   src/main.cpp
   src/input_parser.cpp
+  src/sundials_cvode.cpp
   )
 
 # includes
@@ -34,7 +35,7 @@ target_include_directories(
 set_property(TARGET exe PROPERTY CXX_STANDARD 14)
 
 # extra compiler options
-target_compile_options(exe PRIVATE -s ) #-pedantic -Wall -Wextra -Werror)
+target_compile_options(test_exe PRIVATE -pedantic -Wall -Wextra -Werror)
 
 # path to dependencies
 if(NOT DEFINED LIB_PATH)
@@ -80,7 +81,7 @@ find_path(
   )
 if(CANTERA_INCLUDE_DIR)
   string( REPLACE "include/cantera" "include" CANTERA_INCLUDE_DIR ${CANTERA_INCLUDE_DIR} )
-  target_include_directories(exe PRIVATE ${CANTERA_INCLUDE_DIR})
+  target_include_directories(exe SYSTEM PRIVATE ${CANTERA_INCLUDE_DIR})
 else()
  message(FATAL_ERROR "Dependency: Cantera includes not found")
 endif()
@@ -151,8 +152,6 @@ find_package(
   )
 if(units_FOUND)
   target_link_libraries(exe units-static)
-  #target_link_libraries(exe ${units_LIBRARY}) #units::units compile_flags_target)
-  #target_include_directories(exe PRIVATE ${UNITS_INCLUDE_DIR})
 else()
  message(FATAL_ERROR "Dependency units not found")
 endif()
