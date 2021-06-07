@@ -155,3 +155,14 @@ if(units_FOUND)
 else()
  message(FATAL_ERROR "Dependency units not found")
 endif()
+
+# -- Dependency: Eigen3
+find_package(
+  Eigen3 REQUIRED
+  PATHS ${CMAKE_PREFIX_PATH}/eigen
+  )
+if(Eigen3_FOUND)
+  target_link_libraries(test_exe Eigen3::Eigen)
+else()
+ message(FATAL_ERROR "Dependency Eigen3 not found")
+endif()
