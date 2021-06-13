@@ -1,4 +1,4 @@
-# min cmake version
+ # min cmake version
 cmake_minimum_required(VERSION 3.14.0)
 
 # project description
@@ -22,6 +22,9 @@ target_sources(
   src/main.cpp
   src/input_parser.cpp
   src/sundials_cvode.cpp
+  src/results_csv_writer.cpp
+  src/results_hdf5_writer.cpp
+  src/results_console_logger.cpp
   )
 
 # includes
@@ -35,7 +38,7 @@ target_include_directories(
 set_property(TARGET exe PROPERTY CXX_STANDARD 14)
 
 # extra compiler options
-target_compile_options(test_exe PRIVATE -pedantic -Wall -Wextra -Werror)
+target_compile_options(exe PRIVATE -pedantic -Wall -Wextra -Werror)
 
 # path to dependencies
 if(NOT DEFINED LIB_PATH)
@@ -49,11 +52,7 @@ else()
 endif()
   
 # -- Dependency: fmt
-find_package(
-  fmt
-  REQUIRED
-  PATHS ${CMAKE_PREFIX_PATH}/fmt
-  )
+find_package(fmt REQUIRED)
 if(fmt_FOUND)
   target_link_libraries(exe fmt::fmt)
 else()
@@ -119,10 +118,7 @@ else()
 endif()
 
 # -- Dependency: yaml-cpp
-find_package(
-  yaml-cpp REQUIRED
-  PATHS ${CMAKE_PREFIX_PATH}/yaml-cpp
-  )
+find_package(yaml-cpp REQUIRED)
 if(yaml-cpp_FOUND)
   target_link_libraries(exe yaml-cpp)
 else()
@@ -146,10 +142,7 @@ else()
 endif()   
 
 # -- Dependency: units
-find_package(
-  units REQUIRED
-  PATHS ${CMAKE_PREFIX_PATH}/units
-  )
+find_package(units REQUIRED)
 if(units_FOUND)
   target_link_libraries(exe units-static)
 else()
@@ -157,12 +150,19 @@ else()
 endif()
 
 # -- Dependency: Eigen3
-find_package(
-  Eigen3 REQUIRED
-  PATHS ${CMAKE_PREFIX_PATH}/eigen
-  )
+find_package(Eigen3 REQUIRED)
 if(Eigen3_FOUND)
-  target_link_libraries(test_exe Eigen3::Eigen)
+  target_link_libraries(exe Eigen3::Eigen)
 else()
  message(FATAL_ERROR "Dependency Eigen3 not found")
+endif()
+
+#-- Dependency: HDF5
+set(HDF5_USE_STATIC_LIBRARIES ON)
+find_package(HDF5 REQUIRED COMPONENTS CXX HL)
+if(HDF5_FOUND)
+  target_include_directories(exe PRIVATE ${HDF5_INCLUDE_DIRS})
+  target_link_libraries(exe ${HDF5_CXX_LIBRARIES} ${HDF5_CXX_HL_LIBRARIES})
+else()
+  message(FATAL_ERROR "Dependency HDF5 not found")
 endif()

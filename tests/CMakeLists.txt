@@ -28,8 +28,12 @@ target_sources(
   src/test_sundials_cvode_iterative.cpp
   src/test_sundials_cvode_direct_dense.cpp
   src/test_input_parser.cpp
+  src/test_result_observers.cpp
   ../src/input_parser.cpp
   ../src/sundials_cvode.cpp
+  ../src/results_csv_writer.cpp
+  ../src/results_hdf5_writer.cpp
+  ../src/results_console_logger.cpp
   )
 
 # includes
@@ -58,10 +62,7 @@ else()
 endif()
 
 # -- Dependency: Catch2
-find_package(
-  Catch2 REQUIRED
-  PATHS ${CMAKE_PREFIX_PATH}/catch2
-  )
+find_package(Catch2 REQUIRED)
 if(Catch2_FOUND)
   target_link_libraries(test_exe Catch2::Catch2)
 else()
@@ -69,11 +70,7 @@ else()
 endif()
 
 # -- Dependency: fmt
-find_package(
-  fmt
-  REQUIRED
-  PATHS ${CMAKE_PREFIX_PATH}/fmt
-  )
+find_package(fmt REQUIRED)
 if(fmt_FOUND)
   target_link_libraries(test_exe fmt::fmt)
 else()
@@ -139,10 +136,7 @@ else()
 endif()
 
 # -- Dependency: yaml-cpp
-find_package(
-  yaml-cpp REQUIRED
-  PATHS ${CMAKE_PREFIX_PATH}/yaml-cpp
-  )
+find_package(yaml-cpp REQUIRED)
 if(yaml-cpp_FOUND)
   target_link_libraries(test_exe yaml-cpp)
 else()
@@ -166,10 +160,7 @@ else()
 endif()   
 
 # -- Dependency: units
-find_package(
-  units REQUIRED
-  PATHS ${CMAKE_PREFIX_PATH}/units
-  )
+find_package(units REQUIRED)
 if(units_FOUND)
   target_link_libraries(test_exe units-static)
 else()
@@ -177,12 +168,19 @@ else()
 endif()
 
 # -- Dependency: Eigen3
-find_package(
-  Eigen3 REQUIRED
-  PATHS ${CMAKE_PREFIX_PATH}/eigen
-  )
+find_package(Eigen3 REQUIRED)
 if(Eigen3_FOUND)
   target_link_libraries(test_exe Eigen3::Eigen)
 else()
  message(FATAL_ERROR "Dependency Eigen3 not found")
+endif()
+
+#-- Dependency: HDF5
+set(HDF5_USE_STATIC_LIBRARIES ON)
+find_package(HDF5 REQUIRED COMPONENTS CXX HL)
+if(HDF5_FOUND)
+  target_include_directories(test_exe PRIVATE ${HDF5_INCLUDE_DIRS})
+  target_link_libraries(test_exe ${HDF5_CXX_LIBRARIES} ${HDF5_CXX_HL_LIBRARIES})
+else()
+  message(FATAL_ERROR "Dependency HDF5 not found")
 endif()
