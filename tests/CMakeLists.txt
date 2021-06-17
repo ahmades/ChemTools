@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.14.0)
 
 # project description
 project(
-  PROJ
+  chem_tools_tests
   VERSION 1.0.0
   DESCRIPTION "ChemTools automated tests"
   LANGUAGES CXX
@@ -17,11 +17,11 @@ if(TEST_VERBOSE)
 endif()
 
 # executable
-add_executable(test_exe)
+add_executable(${PROJECT_NAME})
 
 # sources
 target_sources(
-  test_exe
+  ${PROJECT_NAME}
   PRIVATE
   src/main.cpp
   src/chemistry.cpp
@@ -38,17 +38,17 @@ target_sources(
 
 # includes
 target_include_directories(
-  test_exe
+  ${PROJECT_NAME}
   PRIVATE
   include
   ../include
   )
 
 # c++ standard
-set_property(TARGET test_exe PROPERTY CXX_STANDARD 14)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14)
 
 # extra compiler options
-target_compile_options(test_exe PRIVATE -s -pedantic -Wall -Wextra -Werror)
+target_compile_options(${PROJECT_NAME} PRIVATE -s -pedantic -Wall -Wextra -Werror)
 
 # path to dependencies
 if(NOT DEFINED LIB_PATH)
@@ -58,13 +58,13 @@ if(NOT DEFINED LIB_PATH)
     " Use -DLIB_PATH=/path/to/dependenices to set this path."
     )
 else()
-  set(CMAKE_PREFIX_PATH ${LIB_PATH})
+  list(APPEND CMAKE_PREFIX_PATH ${LIB_PATH})
 endif()
 
 # -- Dependency: Catch2
 find_package(Catch2 REQUIRED)
 if(Catch2_FOUND)
-  target_link_libraries(test_exe Catch2::Catch2)
+  target_link_libraries(${PROJECT_NAME} Catch2::Catch2)
 else()
  message(FATAL_ERROR "Dependency Catch2 not found")
 endif()
@@ -72,7 +72,7 @@ endif()
 # -- Dependency: fmt
 find_package(fmt REQUIRED)
 if(fmt_FOUND)
-  target_link_libraries(test_exe fmt::fmt)
+  target_link_libraries(${PROJECT_NAME} fmt::fmt)
 else()
  message(FATAL_ERROR "Dependency fmt not found")
 endif()
@@ -85,7 +85,7 @@ find_library(
   NO_DEFAULT_PATH
   )
 if(CANTERA_LIBRARY)
-  target_link_libraries(test_exe ${CANTERA_LIBRARY})
+  target_link_libraries(${PROJECT_NAME} ${CANTERA_LIBRARY})
 else()
  message(FATAL_ERROR "Dependency: Cantera library not found")
 endif()
@@ -98,7 +98,7 @@ find_path(
   )
 if(CANTERA_INCLUDE_DIR)
   string(REPLACE "include/cantera" "include" CANTERA_INCLUDE_DIR ${CANTERA_INCLUDE_DIR})
-  target_include_directories(test_exe SYSTEM PRIVATE ${CANTERA_INCLUDE_DIR})
+  target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${CANTERA_INCLUDE_DIR})
 else()
  message(FATAL_ERROR "Dependency: Cantera includes not found")
 endif()
@@ -107,7 +107,7 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 if(Threads_FOUND)
-  target_link_libraries(test_exe Threads::Threads)
+  target_link_libraries(${PROJECT_NAME} Threads::Threads)
 else()
   message(FATAL_ERROR "Dependency: Threads not found")
 endif()
@@ -122,7 +122,7 @@ foreach(SUNDIALS_COMPONENT ${SUNDIALS_REQUIRED_COMPONENTS})
     NO_DEFAULT_PATH
     )
   if(SUNDIALS_LIBRARY)
-    target_link_libraries(test_exe ${SUNDIALS_LIBRARY})
+    target_link_libraries(${PROJECT_NAME} ${SUNDIALS_LIBRARY})
   else()
     message(FATAL_ERROR "Dependency: Sundials component library ${SUNDIALS_COMPONENT} not found")
   endif()
@@ -130,7 +130,7 @@ endforeach()
 
 set(SUNDIALS_INCLUDE_DIR ${CMAKE_PREFIX_PATH}/sundials/include)
 if(EXISTS ${SUNDIALS_INCLUDE_DIR})
-  target_include_directories(test_exe PRIVATE  ${SUNDIALS_INCLUDE_DIR})
+  target_include_directories(${PROJECT_NAME} PRIVATE  ${SUNDIALS_INCLUDE_DIR})
 else()
   message(FATAL_ERROR "Dependency: Sundials includes not found")
 endif()
@@ -138,7 +138,7 @@ endif()
 # -- Dependency: yaml-cpp
 find_package(yaml-cpp REQUIRED)
 if(yaml-cpp_FOUND)
-  target_link_libraries(test_exe yaml-cpp)
+  target_link_libraries(${PROJECT_NAME} yaml-cpp)
 else()
  message(FATAL_ERROR "Dependency yaml-cpp not found")
 endif()
@@ -151,7 +151,7 @@ find_package(
   )
 if(Boost_FOUND)
   target_link_libraries(
-    test_exe
+    ${PROJECT_NAME}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     )
@@ -162,7 +162,7 @@ endif()
 # -- Dependency: units
 find_package(units REQUIRED)
 if(units_FOUND)
-  target_link_libraries(test_exe units-static)
+  target_link_libraries(${PROJECT_NAME} units-static)
 else()
  message(FATAL_ERROR "Dependency units not found")
 endif()
@@ -170,7 +170,7 @@ endif()
 # -- Dependency: Eigen3
 find_package(Eigen3 REQUIRED)
 if(Eigen3_FOUND)
-  target_link_libraries(test_exe Eigen3::Eigen)
+  target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
 else()
  message(FATAL_ERROR "Dependency Eigen3 not found")
 endif()
@@ -179,8 +179,8 @@ endif()
 set(HDF5_USE_STATIC_LIBRARIES ON)
 find_package(HDF5 REQUIRED COMPONENTS CXX HL)
 if(HDF5_FOUND)
-  target_include_directories(test_exe PRIVATE ${HDF5_INCLUDE_DIRS})
-  target_link_libraries(test_exe ${HDF5_CXX_LIBRARIES} ${HDF5_CXX_HL_LIBRARIES})
+  target_include_directories(${PROJECT_NAME} PRIVATE ${HDF5_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} ${HDF5_CXX_LIBRARIES} ${HDF5_CXX_HL_LIBRARIES})
 else()
   message(FATAL_ERROR "Dependency HDF5 not found")
 endif()
