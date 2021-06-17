@@ -12,7 +12,7 @@
 #include <catch2/catch.hpp>
 
 #include "test_config.hpp"
-#include "sundials_cvode.hpp"
+#include "sundials/cvode/interface.hpp"
 
 
 /* -----------------------------------------------------------------
@@ -136,14 +136,14 @@ struct Time {
   {}
 };
 
-class CVDiurnalKry : public SUNDIALS::Client {
+class CVDiurnalKry : public SUNDIALS::CVODE::Client {
   
 public:
   
   CVDiurnalKry( Domain const& domain
                 , PhysicalParameters const& phys_params
                 , Time const & time
-                , SUNDIALS::Types::IntegrationTolerance const& tolerance )
+                , SUNDIALS::CVODE::Types::IntegrationTolerance const& tolerance )
     : m_domain( domain )
     , m_phys_params( phys_params )
     , m_time( time )
@@ -231,7 +231,7 @@ private:
   Domain m_domain;                                   // input: domain parameters
   PhysicalParameters m_phys_params;                  // input: physical parameters
   Time m_time;                                       // input: time info
-  SUNDIALS::Types::IntegrationTolerance m_tolerance; // input: tolerances
+  SUNDIALS::CVODE::Types::IntegrationTolerance m_tolerance; // input: tolerances
   
   int m_neq;                                         // number of equations
   realtype m_coef_q_4;                               // coefficient q4
@@ -559,7 +559,7 @@ TEST_CASE( "2-species diurnal kinetics advection-diffusion PDE "
   
   realtype const rel_tol = 1.0e-5;          // scalar relative tolerance
   realtype const abs_tol = 100.0 * rel_tol; // scalar absolute tolerance
-  SUNDIALS::Types::IntegrationTolerance const tolerance( rel_tol, abs_tol );
+  SUNDIALS::CVODE::Types::IntegrationTolerance const tolerance( rel_tol, abs_tol );
   
   CVDiurnalKry client( domain
                        , phys_params
@@ -571,18 +571,18 @@ TEST_CASE( "2-species diurnal kinetics advection-diffusion PDE "
   client.Initialise();  
 
   // select strategy
-  SUNDIALS::SPGMR strategy;
+  SUNDIALS::CVODE::SPGMR strategy;
 
-  strategy.SetLinearSolverOptions( SUNDIALS::Types::Preconditioner::left
-                                   , SUNDIALS::Types::GramSchmidt::modified
+  strategy.SetLinearSolverOptions( SUNDIALS::CVODE::Types::Preconditioner::left
+                                   , SUNDIALS::CVODE::Types::GramSchmidt::modified
                                    , 5
                                    , 0 );
       
   // set strategy
-  SUNDIALS::CVODE cvode( &strategy );
+  SUNDIALS::CVODE::Solver cvode( &strategy );
   
   // set linear multistep method
-  cvode.SetLinearMultiStepMethod( SUNDIALS::Types::LinearMultisptepMethod::BDF );
+  cvode.SetLinearMultiStepMethod( SUNDIALS::CVODE::Types::LinearMultisptepMethod::BDF );
       
   // set client data
   cvode.SetClientData( &client );

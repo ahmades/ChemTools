@@ -21,10 +21,10 @@ target_sources(
   PRIVATE
   src/main.cpp
   src/input_parser.cpp
-  src/sundials_cvode.cpp
-  src/results_csv_writer.cpp
-  src/results_hdf5_writer.cpp
-  src/results_console_logger.cpp
+  src/sundials/cvode/interface.cpp
+  src/results/csv_writer.cpp
+  src/results/hdf5_writer.cpp
+  src/results/console_logger.cpp
   )
 
 # includes

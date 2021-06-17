@@ -5,7 +5,7 @@
 
 #include <H5Cpp.h>
 
-#include "results_observer.hpp"
+#include "results/observer.hpp"
 
 namespace Results {
 

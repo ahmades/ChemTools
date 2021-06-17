@@ -17,8 +17,8 @@
 #include <catch2/catch.hpp>
 
 #include "test_config.hpp"
-#include "input_types.hpp"
-#include "input_parser.hpp"
+#include "input/types.hpp"
+#include "input/parser.hpp"
 
 TEST_CASE( "Input can be parsed", "[input]" ) {
 

@@ -9,7 +9,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/system/error_code.hpp>
 
-#include "results_hdf5_writer.hpp"
+#include "results/hdf5_writer.hpp"
 
 namespace Results {
   

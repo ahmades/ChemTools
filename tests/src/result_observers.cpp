@@ -14,9 +14,9 @@
 #include <boost/system/error_code.hpp>
 
 #include "test_config.hpp"
-#include "results_csv_writer.hpp"
-#include "results_hdf5_writer.hpp"
-#include "results_console_logger.hpp"
+#include "results/csv_writer.hpp"
+#include "results/hdf5_writer.hpp"
+#include "results/console_logger.hpp"
 
 // concrete subjects
 

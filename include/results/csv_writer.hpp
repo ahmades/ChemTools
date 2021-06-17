@@ -11,7 +11,7 @@
 
 #include <cassert>
 
-#include "results_observer.hpp"
+#include "results/observer.hpp"
 
 namespace Results {
 

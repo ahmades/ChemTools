@@ -12,7 +12,7 @@
 #include <catch2/catch.hpp>
 
 #include "test_config.hpp"
-#include "sundials_cvode.hpp"
+#include "sundials/cvode/interface.hpp"
 
 struct Time {
   realtype start;
@@ -24,12 +24,12 @@ struct Time {
   {}
 };
 
-class CVRobertsDNS : public SUNDIALS::Client {
+class CVRobertsDNS : public SUNDIALS::CVODE::Client {
 public:
 
   CVRobertsDNS( std::vector<realtype> const& state
                 , Time const & time
-                , SUNDIALS::Types::IntegrationTolerance const& tolerance )
+                , SUNDIALS::CVODE::Types::IntegrationTolerance const& tolerance )
     : m_state( state )
     , m_time( time )
     , m_tolerance( tolerance )
@@ -82,7 +82,7 @@ private:
   
   std::vector<realtype> m_state;                     // input: initial state
   Time m_time;                                       // input: time info
-  SUNDIALS::Types::IntegrationTolerance m_tolerance; // input: tolerances
+  SUNDIALS::CVODE::Types::IntegrationTolerance m_tolerance; // input: tolerances
   
 };
 
@@ -95,7 +95,7 @@ TEST_CASE( "3-species reaction PDE system can be solved", "[direct dense solver]
   
   realtype const rel_tol = 1.0e-4; // scalar relative tolerance
   std::vector<realtype> const abs_tol{ 1.0e-8, 1.0e-14, 1.0e-6}; // vector absolute tolerance
-  SUNDIALS::Types::IntegrationTolerance const tolerance( rel_tol, abs_tol );
+  SUNDIALS::CVODE::Types::IntegrationTolerance const tolerance( rel_tol, abs_tol );
   
   CVRobertsDNS client( state_init
                        , time
@@ -105,12 +105,12 @@ TEST_CASE( "3-species reaction PDE system can be solved", "[direct dense solver]
   client.Initialise();  
 
   // select strategy
-  SUNDIALS::Dense strategy;
+  SUNDIALS::CVODE::Dense strategy;
   // set strategy
-  SUNDIALS::CVODE cvode( &strategy );
+  SUNDIALS::CVODE::Solver cvode( &strategy );
   
   // set linear multistep method
-  cvode.SetLinearMultiStepMethod( SUNDIALS::Types::LinearMultisptepMethod::BDF );
+  cvode.SetLinearMultiStepMethod( SUNDIALS::CVODE::Types::LinearMultisptepMethod::BDF );
       
   // set client data
   cvode.SetClientData( &client );

@@ -1,7 +1,7 @@
 #ifndef INPUT_PARSER_HPP
 #define INPUT_PARSER_HPP
 
-#include "input_types.hpp"
+#include "input/types.hpp"
 
 namespace Input {
 

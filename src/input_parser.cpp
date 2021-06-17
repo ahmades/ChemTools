@@ -16,8 +16,8 @@
 
 #include <fmt/format.h>
 
-#include "input_types.hpp"
-#include "input_parser.hpp"
+#include "input/types.hpp"
+#include "input/parser.hpp"
 #include "chemistry.hpp"
 
 namespace YAML {

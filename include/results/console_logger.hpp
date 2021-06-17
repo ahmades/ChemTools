@@ -1,7 +1,7 @@
 #ifndef RESULTS_CONSOLE_LOGGER_HPP
 #define RESULTS_CONSOLE_LOGGER_HPP
 
-#include "results_observer.hpp"
+#include "results/observer.hpp"
 
 namespace Results {
 
