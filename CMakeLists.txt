@@ -26,6 +26,8 @@ target_sources(
   src/results/hdf5_writer.cpp
   src/results/console_logger.cpp
   src/embedded_python_functions.cpp
+  src/applications/reactors/base.cpp
+  src/applications/reactors/reactors.cpp
   )
 
 # includes

@@ -30,12 +30,15 @@ target_sources(
   src/input_parser.cpp
   src/result_observers.cpp
   src/embedded_python.cpp
+  src/reactor.cpp
   ../src/input_parser.cpp
   ../src/sundials/cvode/interface.cpp
   ../src/results/csv_writer.cpp
   ../src/results/hdf5_writer.cpp
   ../src/results/console_logger.cpp
   ../src/embedded_python_functions.cpp
+  ../src/applications/reactors/base.cpp
+  ../src/applications/reactors/reactors.cpp
   )
 
 # includes
@@ -196,8 +199,3 @@ if(Python_FOUND)
 else()
   message(FATAL_ERROR "Dependency Python not found")
 endif()
-
-
-#find_package(PythonLibs REQUIRED)
-#target_include_directories(${PROJECT_NAME} PRIVATE ${PYTHON_INCLUDE_DIRS})
-#target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})

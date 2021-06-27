@@ -43,7 +43,7 @@ namespace Chemistry {
 
   // cleans up xml clutter left out by cantera, should be called on exit
   // lib does not offer a btter solution for this
-  static void CleanUp() {
+  inline static void CleanUp() {
     Cantera::appdelete();
   }
 
@@ -188,7 +188,7 @@ namespace Chemistry {
   //
   // -------------- convenience factory
   //
-  static std::unique_ptr<IChemistry>
+  inline static std::unique_ptr<IChemistry>
   Create( std::string const& mechanism
           , Type const type
           , TransportModel transport_model = TransportModel::MixtureAveraged ) {
