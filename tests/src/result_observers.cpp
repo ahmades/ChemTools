@@ -96,14 +96,14 @@ TEST_CASE( "Results can be observed", "[results]" ) {
     
     try {
       // attach to csv writer
-      csv_writer = std::make_unique<Results::CSVWriter>( motion, path, 1 );
+      csv_writer = std::make_unique<Results::CSVWriter>( motion, path );
       attached_observers = motion.AttachedObservers();
       REQUIRE( 1 == attached_observers );
       if( TestConfig::verbose ) fmt::print( "Motion attached observer(s) = {} \n"
                                             , attached_observers );
 
       // attach to hdf5 writer
-      hdf5_writer = std::make_unique<Results::HDF5Writer>( motion, path, 1 );
+      hdf5_writer = std::make_unique<Results::HDF5Writer>( motion, path );
       hdf5_writer->SetCompressionLevel( 4 );
       attached_observers = motion.AttachedObservers();
       REQUIRE( 2 == attached_observers );
@@ -111,7 +111,7 @@ TEST_CASE( "Results can be observed", "[results]" ) {
                                             , attached_observers );
 
       // attach to console logger
-      console_logger = std::make_unique<Results::ConsoleLogger>( motion, 2 );
+      console_logger = std::make_unique<Results::ConsoleLogger>( motion );
       attached_observers = motion.AttachedObservers();
       REQUIRE( 3 == attached_observers );
       if( TestConfig::verbose ) fmt::print( "Motion attached observer(s) = {} \n"
@@ -135,7 +135,7 @@ TEST_CASE( "Results can be observed", "[results]" ) {
                                               , attached_observers );
       } else if( i == i_reattach ) {
         // reattach from csv writer
-        motion.AttachObserver( *csv_writer.get(), 1 );
+        motion.AttachObserver( *csv_writer.get() );
         attached_observers = motion.AttachedObservers();
         REQUIRE( 3 == attached_observers );
         if( TestConfig::verbose ) fmt::print( "Motion attached observer(s) = {} \n"

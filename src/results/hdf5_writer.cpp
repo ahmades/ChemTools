@@ -14,8 +14,7 @@
 namespace Results {
   
   HDF5Writer::HDF5Writer( Subject& subject_
-                          , std::string const& path_
-                          , size_t const update_frequency_ )
+                          , std::string const& path_ )
     : subject( subject_ )
     , path( path_ )
     , file( nullptr )
@@ -23,7 +22,7 @@ namespace Results {
     , compression_level{ 3 }
   {
     // attach
-    subject.AttachObserver( *this, update_frequency_ );
+    subject.AttachObserver( *this );
 
     try {
       Initialise();

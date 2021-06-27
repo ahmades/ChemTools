@@ -8,8 +8,7 @@ namespace Results {
   class ConsoleLogger: public Observer { 
   public:
     
-    ConsoleLogger( Subject& subject_
-                   , size_t const update_frequency_ = 1 );
+    ConsoleLogger( Subject& subject_ );
   
     ~ConsoleLogger();
     

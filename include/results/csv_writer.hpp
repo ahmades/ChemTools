@@ -19,8 +19,7 @@ namespace Results {
   public:
     
     CSVWriter( Subject& subject_
-               , std::string const& path
-               , size_t const update_frequency_ = 1 );
+               , std::string const& path );
     
     ~CSVWriter();
     

@@ -5,12 +5,11 @@
 
 namespace Results {
   
-  ConsoleLogger::ConsoleLogger( Subject& subject_
-                                , size_t const update_frequency_ )
+  ConsoleLogger::ConsoleLogger( Subject& subject_ )
     : subject( subject_ )
   {
     // attach
-    subject.AttachObserver( *this, update_frequency_ );
+    subject.AttachObserver( *this );
   }
   
   ConsoleLogger::~ConsoleLogger() {

@@ -97,45 +97,34 @@ namespace Results {
   
     Subject()
       : results_meta()
-      , observers_data()
-      , update_frequency()
+      , observers()
     {}
   
     virtual ~Subject() = default;
  
-    void AttachObserver( Observer& observer
-                         , size_t const update_frequency_ ) {
-      update_frequency.push_back( update_frequency_ );
-      observers_data.emplace_back( ObserverData( observer, update_frequency_ ) );
+    void AttachObserver( Observer& observer ) {
+      observers.push_back( &observer );
     }
   
     void DetachObserver( Observer& observer ) {
-      update_frequency.pop_back(); 
-      observers_data.erase( std::remove_if( observers_data.begin()
-                                            , observers_data.end()
-                                            , [&]( ObserverData const& data )
-                                            { return data.observer == &observer; } )
-                            , observers_data.end() );
+      observers.erase( std::remove( observers.begin()
+                                    , observers.end()
+                                    , &observer ) );
     }
   
     void NotifyObserver() {
-      for( auto& observer_data : observers_data ) {
-        if( 0 == ( observer_data.n_updates % observer_data.update_frequency ) ) {
-          observer_data.observer->Update( *this );
-        }
-        observer_data.n_updates++;
+      for( auto& observer : observers ) {
+          observer->Update( *this );
       }
     }
 
     size_t AttachedObservers() {
-      return observers_data.size();
+      return observers.size();
     }
   
   private:
   
-    std::vector<ObserverData> observers_data;
-    std::vector<size_t> update_frequency;
-  
+    std::vector<Observer*> observers; 
   };
 
 } // namespace Results
