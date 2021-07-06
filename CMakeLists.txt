@@ -25,6 +25,7 @@ target_sources(
   src/results/csv_writer.cpp
   src/results/hdf5_writer.cpp
   src/results/console_logger.cpp
+  src/embedded_python_functions.cpp
   )
 
 # includes
@@ -165,4 +166,14 @@ if(HDF5_FOUND)
   target_link_libraries(${PROJECT_NAME} ${HDF5_CXX_LIBRARIES} ${HDF5_CXX_HL_LIBRARIES})
 else()
   message(FATAL_ERROR "Dependency HDF5 not found")
+endif()
+
+#-- Dependency: Python
+# Look preferably for version 3. If not found, version 2.
+find_package(Python COMPONENTS Development)
+if(Python_FOUND)
+  target_include_directories(${PROJECT_NAME} PRIVATE ${Python_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} ${Python_LIBRARIES})
+else()
+  message(FATAL_ERROR "Dependency Python not found")
 endif()

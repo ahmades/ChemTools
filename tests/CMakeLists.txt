@@ -29,11 +29,13 @@ target_sources(
   src/sundials_cvode_direct_dense.cpp
   src/input_parser.cpp
   src/result_observers.cpp
+  src/embedded_python.cpp
   ../src/input_parser.cpp
   ../src/sundials/cvode/interface.cpp
   ../src/results/csv_writer.cpp
   ../src/results/hdf5_writer.cpp
   ../src/results/console_logger.cpp
+  ../src/embedded_python_functions.cpp
   )
 
 # includes
@@ -184,3 +186,18 @@ if(HDF5_FOUND)
 else()
   message(FATAL_ERROR "Dependency HDF5 not found")
 endif()
+
+#-- Dependency: Python
+# Look preferably for version 3. If not found, version 2.
+find_package(Python COMPONENTS Development)
+if(Python_FOUND)
+  target_include_directories(${PROJECT_NAME} PRIVATE ${Python_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} ${Python_LIBRARIES})
+else()
+  message(FATAL_ERROR "Dependency Python not found")
+endif()
+
+
+#find_package(PythonLibs REQUIRED)
+#target_include_directories(${PROJECT_NAME} PRIVATE ${PYTHON_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
