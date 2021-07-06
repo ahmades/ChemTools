@@ -34,5 +34,8 @@
 # In-source build dir
 build
 
+# Python cache
+__pycache__/
+
 # Backup files
 *~
