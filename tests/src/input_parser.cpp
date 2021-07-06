@@ -31,70 +31,70 @@ TEST_CASE( "Input can be parsed", "[input]" ) {
 
   // invalid node: pressure value missing
   {
-    std::string const config = "../tests/data/config_invalid_node.yaml";
+    std::string const config = "../tests/data/yaml_input/config_invalid_node.yaml";
     Input::Parser parser;
     REQUIRE_THROWS_AS( parser = Input::Parser( config ), YAML::InvalidNode );
   }
 
   // invalid conversion: pressure value is a string instead of double
   {
-    std::string const config = "../tests/data/config_bad_conversion.yaml";
+    std::string const config = "../tests/data/yaml_input/config_bad_conversion.yaml";
     Input::Parser parser;
     REQUIRE_THROWS_AS( parser = Input::Parser( config ), YAML::BadConversion );
   }
 
   // invalid mechanism: wrong path
   {
-    std::string const config = "../tests/data/config_invalid_mech.yaml";
+    std::string const config = "../tests/data/yaml_input/config_invalid_mech.yaml";
     Input::Parser parser;
     REQUIRE_THROWS_AS( parser = Input::Parser( config ), boost::filesystem::filesystem_error );
   }
 
   // invalid value: negative pressure
   {
-    std::string const config = "../tests/data/config_negative_press.yaml";
+    std::string const config = "../tests/data/yaml_input/config_negative_press.yaml";
     Input::Parser parser;
     REQUIRE_THROWS_AS( parser = Input::Parser( config ), std::runtime_error );
   }
 
   // invalid value: negative temperature
   {
-    std::string const config = "../tests/data/config_negative_temp.yaml";
+    std::string const config = "../tests/data/yaml_input/config_negative_temp.yaml";
     Input::Parser parser;
     REQUIRE_THROWS_AS( parser = Input::Parser( config ), std::runtime_error );
   }
 
   // duplicate species in composition tuples
   {
-    std::string const config = "../tests/data/config_duplicate_spec.yaml";
+    std::string const config = "../tests/data/yaml_input/config_duplicate_spec.yaml";
     Input::Parser parser;
     REQUIRE_THROWS_AS( parser = Input::Parser( config ), std::runtime_error );
   }
 
   // negative species in composition tuples
   {
-    std::string const config = "../tests/data/config_negative_spec.yaml";
+    std::string const config = "../tests/data/yaml_input/config_negative_spec.yaml";
     Input::Parser parser;
     REQUIRE_THROWS_AS( parser = Input::Parser( config ), std::runtime_error );
   }
 
   // invalid species in composition tuples
   {
-    std::string const config = "../tests/data/config_invalid_spec.yaml";
+    std::string const config = "../tests/data/yaml_input/config_invalid_spec.yaml";
     Input::Parser parser;
     REQUIRE_THROWS_AS( parser = Input::Parser( config ), std::runtime_error );
   }
 
   // nonconservative composition
   {
-    std::string const config = "../tests/data/config_nonconservative_comp.yaml";
+    std::string const config = "../tests/data/yaml_input/config_nonconservative_comp.yaml";
     Input::Parser parser;
     REQUIRE_THROWS_AS( parser = Input::Parser( config ), std::runtime_error );
   }
 
   // different types of case sets with variable number of cases
   {
-    std::string const config = "../tests/data/config_multiple_reactors.yaml";
+    std::string const config = "../tests/data/yaml_input/config_multiple_reactors.yaml";
     Input::Parser parser;
     REQUIRE_NOTHROW( parser = Input::Parser( config ) );
     Input::Parameters const& parameters = parser.GetParameters();
@@ -142,7 +142,7 @@ TEST_CASE( "Input can be parsed", "[input]" ) {
 
   
   {
-    std::string const config = "../tests/data/config.yaml";
+    std::string const config = "../tests/data/yaml_input/config.yaml";
     Input::Parser parser;
     REQUIRE_NOTHROW( parser = Input::Parser( config ) );
 

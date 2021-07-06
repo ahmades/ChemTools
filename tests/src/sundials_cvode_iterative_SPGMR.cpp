@@ -659,7 +659,7 @@ TEST_CASE( "2-species diurnal kinetics advection-diffusion PDE "
     {
       std::ifstream file;
       realtype val;
-      file.open( "../tests/data/sundials_test_cvDiurnal_kry.dat", std::ifstream::in );
+      file.open( "../tests/data/sundials_cvode/iterative_spgmr_cvDiurnal_kry.dat", std::ifstream::in );
       if( file.is_open() ) {
         while ( file >> val )  {
           expected_state.push_back( val );

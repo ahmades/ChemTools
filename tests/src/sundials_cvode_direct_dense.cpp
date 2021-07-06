@@ -177,7 +177,7 @@ TEST_CASE( "3-species reaction PDE system can be solved", "[direct dense solver]
     {
       std::ifstream file;
       realtype val;
-      file.open( "../tests/data/sundials_test_cvRoberts_dns.dat", std::ifstream::in );
+      file.open( "../tests/data/sundials_cvode/direct_dense_cvRoberts_dns.dat", std::ifstream::in );
       if( file.is_open() ) {
         while ( file >> val )  {
           expected_state.push_back( val );
