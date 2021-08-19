@@ -508,8 +508,7 @@ namespace SUNDIALS {
     // ------------ Dense matrix direct strategy
   
     Dense::Dense()
-      : IStrategy()
-      , Direct()
+      : Direct()
     {}
   
     Dense::~Dense() {}
@@ -527,8 +526,7 @@ namespace SUNDIALS {
     // ------------ Band matrix direct strategy
   
     Band::Band()
-      : IStrategy()
-      , Direct()
+      : Direct()
       , bandwidth()
     {}
     
@@ -604,8 +602,7 @@ namespace SUNDIALS {
     // ------------ SPGMR iterative strategy
   
     SPGMR::SPGMR()
-      : IStrategy()
-      , Iterative()
+      : Iterative()
     { }
   
     SPGMR::~SPGMR() { }
@@ -636,8 +633,7 @@ namespace SUNDIALS {
     // ------------ SPFGMR iterative strategy
 
     SPFGMR::SPFGMR()
-      : IStrategy()
-      , Iterative()
+      : Iterative()
     { }
   
     SPFGMR::~SPFGMR() { }
@@ -668,8 +664,7 @@ namespace SUNDIALS {
     // ------------ SPBCGS iterative strategy
      
     SPBCGS::SPBCGS()
-      : IStrategy()
-      , Iterative()
+      : Iterative()
     { }
   
     SPBCGS::~SPBCGS() { }
@@ -700,8 +695,7 @@ namespace SUNDIALS {
     // ------------ SPTFQMR iterative strategy
   
     SPTFQMR::SPTFQMR()
-      : IStrategy()
-      , Iterative()
+      : Iterative()
     { }
   
     SPTFQMR::~SPTFQMR() { }

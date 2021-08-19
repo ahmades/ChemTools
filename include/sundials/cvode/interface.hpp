@@ -101,7 +101,7 @@ namespace SUNDIALS {
     };
 
     // ------------ Direct solvers interface
-    class Direct: public virtual IStrategy {
+    class Direct: public IStrategy {
     public:
       Direct();
       ~Direct();        
@@ -115,8 +115,7 @@ namespace SUNDIALS {
     };
 
     // ------------ Dense matrix direct strategy
-    class Dense : public virtual IStrategy
-                , public Direct {
+    class Dense : public Direct {
     public:
       Dense();    
       ~Dense();
@@ -126,8 +125,7 @@ namespace SUNDIALS {
     };
 
     // ------------ Band matrix direct strategy
-    class Band : public virtual IStrategy
-               , public Direct {
+    class Band : public Direct {
     public:
       Band();
       ~Band();
@@ -141,7 +139,7 @@ namespace SUNDIALS {
     };
  
     // ------------ Iterative solvers interface
-    class Iterative: public virtual IStrategy {
+    class Iterative: public IStrategy {
     public:
       Iterative();    
       ~Iterative();
@@ -158,8 +156,7 @@ namespace SUNDIALS {
     };
 
     // ------------ SPGMR iterative strategy
-    class SPGMR : public virtual IStrategy
-                , public Iterative {
+    class SPGMR : public Iterative {
     public:
       SPGMR();
       ~SPGMR();
@@ -169,8 +166,7 @@ namespace SUNDIALS {
     };
 
     // ------------ SPFGMR iterative strategy
-    class SPFGMR : public virtual IStrategy
-                 , public Iterative {
+    class SPFGMR : public Iterative {
     public:
       SPFGMR();
       ~SPFGMR();
@@ -180,8 +176,7 @@ namespace SUNDIALS {
     };
 
     // ------------ SPBCGS iterative strategy
-    class SPBCGS : public virtual IStrategy
-                 , public Iterative {
+    class SPBCGS : public Iterative {
     public:
       SPBCGS();
       ~SPBCGS();
@@ -191,8 +186,7 @@ namespace SUNDIALS {
     };
   
     // ------------ SPTFQMR iterative strategy
-    class SPTFQMR : public virtual IStrategy
-                  , public Iterative {
+    class SPTFQMR : public Iterative {
     public:
       SPTFQMR();    
       ~SPTFQMR();
