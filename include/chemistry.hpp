@@ -221,8 +221,7 @@ namespace Chemistry {
     // create chemistry
     chemistry->Create();
 
-    // can simply return chemistry instead, move ctor would be used
-    return std::move(chemistry);
+    return chemistry;
   }
 
 } // namespace Chemistry

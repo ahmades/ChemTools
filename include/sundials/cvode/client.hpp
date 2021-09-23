@@ -134,7 +134,7 @@ namespace SUNDIALS {
                                         , N_Vector const state_nvec
                                         , N_Vector rhs_nvec
                                         , void* const client_ ) {
-        Client* const client = static_cast<Client* const>( client_ );
+        Client* const client = static_cast<Client*>( client_ );
         return client->RightHandSide( time
                                       , N_VGetArrayPointer( state_nvec )
                                       , N_VGetArrayPointer( rhs_nvec ) );
@@ -148,7 +148,7 @@ namespace SUNDIALS {
                                    , N_Vector /*tmp_1*/
                                    , N_Vector /*tmp_2*/
                                    , N_Vector /*tmp_3*/ ) {
-        Client* const client = static_cast<Client* const>( client_ );
+        Client* const client = static_cast<Client*>( client_ );
         return client->Jacobian( time
                                  , N_VGetArrayPointer( state_nvec )
                                  , N_VGetArrayPointer( rhs_nvec )
@@ -161,7 +161,7 @@ namespace SUNDIALS {
                                                    , N_Vector const state_nvec
                                                    , N_Vector const rhs_nvec
                                                    , void* const client_) {
-        Client* const client = static_cast<Client* const>( client_ );
+        Client* const client = static_cast<Client*>( client_ );
         return client->JacobianTimesVectorSetup( time
                                                  , N_VGetArrayPointer( state_nvec )
                                                  , N_VGetArrayPointer( rhs_nvec ) );
@@ -175,7 +175,7 @@ namespace SUNDIALS {
                                               , N_Vector const rhs_nvec
                                               , void* const client_
                                               , N_Vector /*tmp*/ ) {
-        Client* const client = static_cast<Client* const>( client_ );
+        Client* const client = static_cast<Client*>( client_ );
         return client->JacobianTimesVector( N_VGetArrayPointer( vector_nvec )
                                             , N_VGetArrayPointer( jacobian_vector_nvec )
                                             , time
@@ -190,7 +190,7 @@ namespace SUNDIALS {
                                               , booleantype* jac_cur_ptr
                                               , realtype const gamma
                                               , void* const client_ ) {
-        Client* const client = static_cast<Client* const>( client_ );
+        Client* const client = static_cast<Client*>( client_ );
         return client->PreconditionerSetup( time
                                             , N_VGetArrayPointer( state_nvec )
                                             , N_VGetArrayPointer( rhs_nvec )
@@ -208,7 +208,7 @@ namespace SUNDIALS {
                                               , realtype const delta
                                               , int const lr
                                               , void* const client_ ) {
-        Client* const client = static_cast<Client* const>( client_ );
+        Client* const client = static_cast<Client*>( client_ );
         return client->PreconditionerSolve( time
                                             , N_VGetArrayPointer( state_nvec )
                                             , N_VGetArrayPointer( rhs_nvec )
@@ -224,7 +224,7 @@ namespace SUNDIALS {
                                         , const char* function
                                         , char* message
                                         , void* const client_ ) {
-        Client* const client = static_cast<Client* const>( client_ );
+        Client* const client = static_cast<Client*>( client_ );
         client->ErrorHandler( error_code
                               , module
                               , function
@@ -237,7 +237,7 @@ namespace SUNDIALS {
                                      , realtype const projection_tolerane
                                      , N_Vector projection_error_nvec
                                      , void* const client_ ) {
-        Client* const client = static_cast<Client* const>( client_ );
+        Client* const client = static_cast<Client*>( client_ );
         return client->Projection( time
                                    , N_VGetArrayPointer( state_nvec )
                                    , N_VGetArrayPointer( correction_nvec )

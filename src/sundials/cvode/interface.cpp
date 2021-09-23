@@ -43,7 +43,7 @@ namespace SUNDIALS {
         throw std::invalid_argument( "IStrategy::SetClientData: "
                                      "The client data is null.");
       }
-      client = static_cast<Client* const>( client_ );
+      client = static_cast<Client*>( client_ );
     }
 
     boost::optional<int> IStrategy::SetInitStepSize( realtype const init_step ) {

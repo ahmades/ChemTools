@@ -101,7 +101,7 @@ static std::unique_ptr<Chemistry::IChemistry> Equilibrium( Input const& input ) 
     std::cerr << err.what() << std::endl;
   }
 
-  return std::move( chemistry );
+  return chemistry;
 }
 
 static ThermoOutput TestThermo( std::unique_ptr<Cantera::ThermoPhase> const& thermo
