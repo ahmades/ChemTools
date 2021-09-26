@@ -5,6 +5,7 @@
 #include <limits>
 #include <numeric>
 #include <algorithm>
+#include <memory>
 
 #include "chemistry.hpp"
 #include "sundials/cvode/interface.hpp"
@@ -43,19 +44,19 @@ namespace Apps {
             , double const total_simulation_time
             , bool const write_results );
 
-      virtual ~Base();
+      virtual ~Base() = default;
 
       Base( Base const& ) = delete;
       
       Base& operator=( Base const& ) = delete;
 
-      double Temperature();
+      double Temperature() const;
       
-      double Pressure();
+      double Pressure() const;
       
-      double Density();
+      double Density() const;
       
-      std::vector<double> const& MassFractions();
+      std::vector<double> const& MassFractions() const;
       
       int RightHandSide( realtype const /*time*/
                          , realtype* const state
@@ -64,9 +65,9 @@ namespace Apps {
       void StoreResults( double const time );
 
     protected:
-      
-      Cantera::ThermoPhase* m_thermo;
-      Cantera::Kinetics* m_kinetics;
+
+      Cantera::ThermoPhase* const m_thermo;
+      Cantera::Kinetics* const m_kinetics;
       size_t m_nspecs;
       double m_density;                           // unit = [kg/m^3]
       double m_temperature;                       // unit = [K]
@@ -117,7 +118,7 @@ namespace Apps {
                      , double const total_simulation_time
                      , bool const write_results );
       
-      ~EnergyEnabled() {}
+      virtual ~EnergyEnabled() = default;
 
       EnergyEnabled( EnergyEnabled const& ) = delete;
       

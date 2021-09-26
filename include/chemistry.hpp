@@ -1,7 +1,6 @@
 #ifndef CHEMISTRY_HPP
 #define CHEMISTRY_HPP
 
-#include <iostream>
 #include <string>
 #include <memory>
 #include <map>
@@ -43,42 +42,26 @@ namespace Chemistry {
 
   // cleans up xml clutter left out by cantera, should be called on exit
   // lib does not offer a btter solution for this
-  inline static void CleanUp() {
-    Cantera::appdelete();
-  }
+  void CleanUp();
 
   //
   // -------------- chemisty interface
   //
   class IChemistry {
+    friend class Decorator;
+  public:
+    IChemistry();
+    virtual ~IChemistry() = default;
+    virtual void Create() = 0;
+    virtual Cantera::ThermoPhase* ThermoPtr();
+    virtual Cantera::Transport* TransPtr();
+    virtual Cantera::Kinetics* KineticsPtr();
   protected:
     std::unique_ptr<Cantera::ThermoPhase> thermo;
     std::unique_ptr<Cantera::Transport> trans;
     std::unique_ptr<Cantera::Kinetics> kinetics;
-  
-  public:
-
-    IChemistry()
-      : thermo( nullptr )
-      , trans( nullptr )
-      , kinetics( nullptr )
-    {};
-  
-    virtual ~IChemistry() = default;
-
-    virtual void Create() = 0;
- 
-    virtual std::unique_ptr<Cantera::ThermoPhase>& GetThermo() {
-      return thermo;
-    }
-  
-    virtual std::unique_ptr<Cantera::Transport>& GetTrans() {
-      return trans;
-    }
-
-    virtual std::unique_ptr<Cantera::Kinetics>& GetKinetics() {
-      return kinetics;
-    }
+    virtual std::unique_ptr<Cantera::Transport>& TransUPtr();
+    virtual std::unique_ptr<Cantera::Kinetics>& KineticsUPtr();
   };
 
   //
@@ -86,19 +69,10 @@ namespace Chemistry {
   //
   class Thermo: public IChemistry {
   public:
-
-    Thermo( std::string const& mechanism_ )
-      : mechanism( mechanism_ )
-    {}
-  
+    explicit Thermo( std::string const& mechanism_ );
     ~Thermo() = default;
-  
-    void Create() override {
-      thermo = std::unique_ptr<Cantera::ThermoPhase>( Cantera::newPhase( mechanism ) );
-    }
-  
+    void Create() override;
   private:
-    
     std::string mechanism;
   };
 
@@ -107,33 +81,17 @@ namespace Chemistry {
   //
   class Decorator: public IChemistry {
   public:
-  
-    Decorator( IChemistry* chemistry_ )
-      : chemistry( chemistry_ )
-    {}
-
-    ~Decorator() = default;
- 
-    virtual void Create() {
-      chemistry->Create();
-    }
-
-    std::unique_ptr<Cantera::ThermoPhase>& GetThermo() override {
-      return chemistry->GetThermo();
-    }
-  
-    std::unique_ptr<Cantera::Transport>& GetTrans() override {
-      return chemistry->GetTrans();
-    }
-
-    std::unique_ptr<Cantera::Kinetics>& GetKinetics() override {
-      return chemistry->GetKinetics();
-    }
-   
+    explicit Decorator( std::unique_ptr<IChemistry> chemistry_ );
+    ~Decorator() = default; 
+    virtual void Create();
+    Cantera::ThermoPhase* ThermoPtr() override;
+    Cantera::Transport* TransPtr() override;
+    Cantera::Kinetics* KineticsPtr() override;
+  protected:
+    std::unique_ptr<Cantera::Transport>& TransUPtr() override;
+    std::unique_ptr<Cantera::Kinetics>& KineticsUPtr() override;
   private:
-    
     std::unique_ptr<IChemistry> chemistry;
-
   };
   
   //
@@ -141,25 +99,11 @@ namespace Chemistry {
   //
   class Transport : public Decorator {
   public:
-
-    Transport( IChemistry* chemistry
-               , TransportModel model_ = TransportModel::MixtureAveraged )
-      : Decorator( chemistry )
-      , model( model_ )
-    {}
-
+    explicit Transport( std::unique_ptr<IChemistry> chemistry
+                        , TransportModel model_ = TransportModel::MixtureAveraged );
     ~Transport() = default;
-  
-    void Create() override {
-      Decorator::Create();
-      std::unique_ptr<Cantera::Transport>& trans_uptr = Decorator::GetTrans();
-      trans_uptr = std::unique_ptr<Cantera::Transport>
-        ( Cantera::newTransportMgr( TransportModelMap.at( model )
-                                    , Decorator::GetThermo().get() ) );
-    }
-  
+    void Create() override;
   private:
-    
     TransportModel model;
   };
 
@@ -168,61 +112,18 @@ namespace Chemistry {
   //
   class Kinetics : public Decorator {
   public:
-  
-    Kinetics( IChemistry* chemistry )
-      : Decorator( chemistry )
-    {}
-
-    Kinetics() = default;
-
-    void Create() override {
-      Decorator::Create();
-      std::unique_ptr<Cantera::ThermoPhase> const& thermo_uptr = Decorator::GetThermo();
-      std::vector<Cantera::ThermoPhase*> phases{ thermo_uptr.get() };
-      std::unique_ptr<Cantera::Kinetics>& kinetics_uptr = Decorator::GetKinetics();
-      kinetics_uptr = std::unique_ptr<Cantera::Kinetics>
-          ( Cantera::newKineticsMgr( thermo_uptr->xml(), phases ) );
-    }
+    explicit Kinetics( std::unique_ptr<IChemistry> chemistry );
+    ~Kinetics() = default;
+    void Create() override;
   };
 
   //
   // -------------- convenience factory
   //
-  inline static std::unique_ptr<IChemistry>
-  Create( std::string const& mechanism
-          , Type const type
-          , TransportModel transport_model = TransportModel::MixtureAveraged ) {
-    // attach requested components
-    std::unique_ptr<IChemistry> chemistry( nullptr );
-    switch( type ) {
-    case Type::Basic :
-      chemistry = std::unique_ptr<IChemistry>( new Thermo( mechanism ) );
-      break;
-    case Type::Transport:
-      chemistry = std::unique_ptr<IChemistry>
-        ( new Transport( new Thermo( mechanism )
-                         , transport_model ) );   
-      break;
-    case Type::Kinetics:
-      chemistry = std::unique_ptr<IChemistry>
-        ( new Kinetics( new Thermo( mechanism ) ) );
-      break;
-    case Type::TransportAndKinetics:
-      chemistry = std::unique_ptr<IChemistry>
-        ( new Kinetics( new Transport( new Thermo(mechanism)
-                                       , transport_model ) ) );
-      break;
-    default:
-      return nullptr;
-    }
-
-    assert( chemistry );
-    
-    // create chemistry
-    chemistry->Create();
-
-    return chemistry;
-  }
+  std::unique_ptr<IChemistry> Create( std::string const& mechanism
+                                      , Type type
+                                      , TransportModel transport_model
+                                      = TransportModel::MixtureAveraged );
 
 } // namespace Chemistry
 

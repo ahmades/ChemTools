@@ -19,10 +19,9 @@ TEST_CASE( "Test reactors", "[reactors]" ) {
 
   std::string const mechanism = "../data/gri30.cti";
   std::unique_ptr<Chemistry::IChemistry> chemistry =
-    Chemistry::Create( mechanism
-                       , Chemistry::Type::Kinetics );
-  Cantera::ThermoPhase* const thermo = chemistry->GetThermo().get();
-  Cantera::Kinetics* const kinetics = chemistry->GetKinetics().get();
+    Chemistry::Create( mechanism, Chemistry::Type::Kinetics );
+  Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
+  Cantera::Kinetics* const kinetics = chemistry->KineticsPtr();
 
   // target: http://combustion.berkeley.edu/gri-mech/version30/targets30/ig.1b.html
   /*double pressure = 2.04 * Cantera::OneAtm;
@@ -117,7 +116,7 @@ TEST_CASE( "Test reactors", "[reactors]" ) {
         fmt::print( "Solver returned {}.\n", ret_code );
       }
       
-      if ( time < total_simulation_time ) {
+      if( time < total_simulation_time ) {
         REQUIRE( CV_SUCCESS == ret_code );
       } else {
         REQUIRE( CV_TSTOP_RETURN == ret_code );

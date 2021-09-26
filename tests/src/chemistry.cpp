@@ -86,7 +86,7 @@ static std::unique_ptr<Chemistry::IChemistry> Equilibrium( Input const& input ) 
     assert( chemistry );
 
     // get thermo object
-    std::unique_ptr<Cantera::ThermoPhase>& thermo = chemistry->GetThermo();
+    Cantera::ThermoPhase* thermo = chemistry->ThermoPtr();
     assert( thermo );
 
     // set thermo state 
@@ -104,7 +104,7 @@ static std::unique_ptr<Chemistry::IChemistry> Equilibrium( Input const& input ) 
   return chemistry;
 }
 
-static ThermoOutput TestThermo( std::unique_ptr<Cantera::ThermoPhase> const& thermo
+static ThermoOutput TestThermo( Cantera::ThermoPhase* const thermo
                                 , bool verbose = false ) {
   ThermoOutput output;
   output.temperature         = thermo->temperature();
@@ -133,7 +133,7 @@ static ThermoOutput TestThermo( std::unique_ptr<Cantera::ThermoPhase> const& the
   return output;
 }
 
-static TransOutput TestTrans( std::unique_ptr<Cantera::Transport> const& trans
+static TransOutput TestTrans( Cantera::Transport* const trans
                               , bool verbose = false  ) {  
   TransOutput output;
   output.viscosity            = trans->viscosity();
@@ -150,7 +150,7 @@ static TransOutput TestTrans( std::unique_ptr<Cantera::Transport> const& trans
   return output;
 }
 
-static KinOutput TestKin( std::unique_ptr<Cantera::Kinetics> const& kinetics
+static KinOutput TestKin( Cantera::Kinetics* const kinetics
                           , bool verbose = false  ) { 
   KinOutput output;
   size_t const n_rxns = kinetics->nReactions();
@@ -230,9 +230,9 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
         // test output
         THEN("Check thermo properties") {
           // get thermo object
-          std::unique_ptr<Cantera::ThermoPhase> const& thermo = chemistry->GetThermo();
+          Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
           assert( thermo );
-          TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) );
+          REQUIRE_NOTHROW( TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) ) );
         }
       }
 
@@ -248,17 +248,17 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
         THEN("Check thermo and transport properties") {
           {
             // get thermo object
-            std::unique_ptr<Cantera::ThermoPhase> const& thermo = chemistry->GetThermo();
+            Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
             //assert( thermo );
             REQUIRE_FALSE( thermo == nullptr );
-            TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) );
+            REQUIRE_NOTHROW( TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) ) );
           }
 
           {
             // get transport object
-            std::unique_ptr<Cantera::Transport> const& trans = chemistry->GetTrans();
+            Cantera::Transport* const trans = chemistry->TransPtr();
             REQUIRE_FALSE( trans == nullptr );
-            TestTransOutput( TestTrans( trans, TestConfig::verbose ) );
+            REQUIRE_NOTHROW( TestTransOutput( TestTrans( trans, TestConfig::verbose ) ) );
           }
         }
       }
@@ -274,16 +274,16 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
         THEN("Check thermo and kinetic properties") {
           {
             // get thermo object
-            std::unique_ptr<Cantera::ThermoPhase> const& thermo = chemistry->GetThermo();
+            Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
             REQUIRE_FALSE( thermo == nullptr );
-            TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) );
+            REQUIRE_NOTHROW( TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) ) );
           }
 
           {
             // get kinetics object
-            std::unique_ptr<Cantera::Kinetics> const& kinetics = chemistry->GetKinetics();
+            Cantera::Kinetics* const kinetics = chemistry->KineticsPtr();
             REQUIRE_FALSE( kinetics == nullptr );
-            TestKinOutput( TestKin( kinetics, TestConfig::verbose ) );
+            REQUIRE_NOTHROW( TestKinOutput( TestKin( kinetics, TestConfig::verbose ) ) );
           }
         }
       
@@ -301,23 +301,23 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
         THEN("Check thermo, transport and kinetic properties") {
           {
             // get thermo object
-            std::unique_ptr<Cantera::ThermoPhase> const& thermo = chemistry->GetThermo();
+            Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
             REQUIRE_FALSE( thermo == nullptr );
-            TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) );
+            REQUIRE_NOTHROW( TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) ) );
           }
 
           {
             // get transport object
-            std::unique_ptr<Cantera::Transport> const& trans = chemistry->GetTrans();
+            Cantera::Transport* const trans = chemistry->TransPtr();
             REQUIRE_FALSE( trans == nullptr );
-            TestTransOutput( TestTrans( trans, TestConfig::verbose ) );
+            REQUIRE_NOTHROW( TestTransOutput( TestTrans( trans, TestConfig::verbose ) ) );
           }
 
           {
             // get kinetics object
-            std::unique_ptr<Cantera::Kinetics> const& kinetics = chemistry->GetKinetics();
+            Cantera::Kinetics* const kinetics = chemistry->KineticsPtr();
             REQUIRE_FALSE( kinetics == nullptr );
-            TestKinOutput( TestKin( kinetics, TestConfig::verbose ) );
+            REQUIRE_NOTHROW( TestKinOutput( TestKin( kinetics, TestConfig::verbose ) ) );
           }
         }
       
@@ -326,10 +326,6 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
     } catch( Cantera::CanteraError const& err ) {
       std::cout << err.what() << std::endl;
     }
-
-    Chemistry::CleanUp();
     
   }
 }
-
-

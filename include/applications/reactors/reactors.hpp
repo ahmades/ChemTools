@@ -20,7 +20,7 @@ namespace Apps {
                  , double const absolute_solver_tolerance
                  , double const total_simulation_time
                  , bool const write_results );
-      ~ConstPres() {}
+      ~ConstPres() = default;
     private:
       void SetThermoState( realtype const * const state ) override;
       double EnergyDerivative() override;
@@ -39,7 +39,7 @@ namespace Apps {
                 , double const absolute_solver_tolerance
                 , double const total_simulation_time
                 , bool const write_results );
-      ~ConstVol() {}
+      ~ConstVol() = default;
     private:
       void SetThermoState( realtype const * const state ) override;
       double EnergyDerivative() override;
@@ -58,7 +58,7 @@ namespace Apps {
                      , double const absolute_solver_tolerance
                      , double const total_simulation_time
                      , bool const write_results );
-      ~ConstTempPres() {}
+      ~ConstTempPres() = default;
     private:
       void SetThermoState( realtype const * const state ) override;
     };
@@ -76,7 +76,7 @@ namespace Apps {
                     , double const absolute_solver_tolerance
                     , double const total_simulation_time
                     , bool const write_results );
-      ~ConstTempVol() {}
+      ~ConstTempVol() = default;
     private:
       void SetThermoState( realtype const * const state ) override;
     };

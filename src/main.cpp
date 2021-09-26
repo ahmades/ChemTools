@@ -1,6 +1,11 @@
 #include<cstdlib>
 
-int main(int /*argc*/, char** /*char*argv[]*/) {
+#include "chemistry.hpp"
+
+int main( int /*argc*/, char** /*argv*/ ) {
+
+  // when done clean up cantera's xml clutter
+  std::atexit( Chemistry::CleanUp );
  
   return EXIT_SUCCESS;
   

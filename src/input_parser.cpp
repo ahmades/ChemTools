@@ -173,8 +173,8 @@ namespace Input {
     }
   }
 
-  static void TemperatureIsValid( std::unique_ptr<Cantera::ThermoPhase> const& thermo
-                                              , RealScalar const& temperature_meta ) {
+  static void TemperatureIsValid( Cantera::ThermoPhase* const thermo
+                                  , RealScalar const& temperature_meta ) {
     double const temperature_min = thermo->minTemp();
     double const temperature_max = thermo->maxTemp();
     double const temperature_value = temperature_meta.Value();
@@ -208,7 +208,7 @@ namespace Input {
     }
   }
 
-  static void CompositionIsValid( std::unique_ptr<Cantera::ThermoPhase> const& thermo
+  static void CompositionIsValid( Cantera::ThermoPhase* const thermo
                                   , Composition const& composition_meta ) {
     
     CompositionPairs const& composition_pairs = composition_meta.Pairs();
@@ -308,7 +308,7 @@ namespace Input {
         std::unique_ptr<Chemistry::IChemistry> chemistry =
           Chemistry::Create( mechanism_path, Chemistry::Type::Basic );
         // get thermo ptr
-        std::unique_ptr<Cantera::ThermoPhase> const& thermo = chemistry->GetThermo();
+        Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
         
         // loop over all cases in case set
         std::vector<Case> const& cases = case_set.Cases();
@@ -320,7 +320,6 @@ namespace Input {
           // check composition
           CompositionIsValid( thermo, cas.composition );       
         }
-        Chemistry::CleanUp();
       } // case sets loop
     }
   }

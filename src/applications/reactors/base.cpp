@@ -38,23 +38,19 @@ namespace Apps {
       CompleteInstantiation();
     }
 
-    Base::~Base() {
-      Chemistry::CleanUp();
-    }
-
-    double Base::Temperature() {
+    double Base::Temperature() const {
       return m_temperature;
     }
       
-    double Base::Pressure() {
+    double Base::Pressure() const {
       return m_pressure;
     }
 
-    double Base::Density() {
+    double Base::Density() const {
       return m_density;
     }
     
-    std::vector<double> const& Base::MassFractions() {
+    std::vector<double> const& Base::MassFractions() const {
       return m_mass_fractions;
     }
     
@@ -90,7 +86,7 @@ namespace Apps {
       }
     }
 
-        void Base::CompleteInstantiation() {
+    void Base::CompleteInstantiation() {
       // compute molecular weights
       m_thermo->getMolecularWeights( m_molecular_weights.data() );
       
