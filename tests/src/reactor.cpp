@@ -130,15 +130,18 @@ TEST_CASE( "Test reactors", "[reactors]" ) {
         time_ignition = time;
         ignited = true;
       }
-      fmt::print( "t = {} s T = {} K Y_CH4 = {} \n"
-                  , time
-                  , temp
-                  , mf );
+      
+      if( TestConfig::verbose ) {
+        fmt::print( "t = {} s T = {} K Y_H2 = {} \n"
+                    , time
+                    , temp
+                    , mf );
+      }
     }
 
-    fmt::print( "\nIgnition at t = {} ms.\n",  time_ignition * 1.0e+3 );
-    
     if( TestConfig::verbose ) {
+      fmt::print( "\nIgnition at t = {} ms.\n",  time_ignition * 1.0e+3 );
+      
       std::string const title = fmt::format( fmt::emphasis::underline
                                              | fmt::emphasis::bold
                                              , "Final statistics:" );    
