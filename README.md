@@ -2,7 +2,7 @@
 ChemTools is a collection of thermochemical tools for certain chemical and combustion applications.
 
 ## Status
-This project is currently in the early stages of development. All the necessary infrastructure is in place though. The work on the core applications will hopefully start soon.
+This project is currently in the early stages of development. All the necessary infrastructure is in place though. The work on the core applications is in progress.
 
 ## Description
 Ultimately, the following applications will become available:
@@ -21,7 +21,7 @@ Ultimately, the following applications will become available:
 
 ## Language, build configuration and testing
 ChemTools:
-- is written in C++11 with some functionalities from C++14,
+- is written in C++14,
 - has CMake support, and
 - includes automated unit tests.
 
@@ -47,11 +47,12 @@ ChemTools relies on a number of excellent third-party libraries:
 - [hdf5](https://github.com/HDFGroup/hdf5) (C++ API) for the writing of structured simulation results,
 - [fmt](https://github.com/fmtlib/fmt) for formatting,
 - [Catch2](https://github.com/catchorg/Catch2) for testing,
-- [spdlog](https://github.com/gabime/spdlog) for logging (coming soon), and
+- [spdlog](https://github.com/gabime/spdlog) for logging (coming soon),
+- Pyton C API, and
 - various Boost libraries.
 
 ## Platforms
-Chemtools is developed and tested under Linux.
+Chemtools is developed and tested under Linux. Build tested with GCC versions 7.3.0 and 11.2.0.
 
 ## Documentation
 Documentation will be made available as soon some basic applications are published.
