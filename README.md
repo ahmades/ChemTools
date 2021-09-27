@@ -48,11 +48,11 @@ ChemTools relies on a number of excellent third-party libraries:
 - [fmt](https://github.com/fmtlib/fmt) for formatting,
 - [Catch2](https://github.com/catchorg/Catch2) for testing,
 - [spdlog](https://github.com/gabime/spdlog) for logging (coming soon),
-- Pyton C API, and
+- Python C API, and
 - various Boost libraries.
 
 ## Platforms
-Chemtools is developed and tested under Linux. Build tested with GCC versions 7.3.0 and 11.2.0.
+Chemtools is developed and tested under Linux. Build tested with GCC versions 7.3.0 and 11.2.0 and CMake version 3.20.2.
 
 ## Documentation
 Documentation will be made available as soon some basic applications are published.
