@@ -82,11 +82,11 @@ namespace Chemistry {
   }
     
   std::unique_ptr<Cantera::Transport>& Decorator::TransUPtr() {
-    return chemistry->TransUPtr(); //trans;
+    return chemistry->TransUPtr();
   }
 
   std::unique_ptr<Cantera::Kinetics>& Decorator::KineticsUPtr() {
-    return chemistry->KineticsUPtr(); //kinetics;
+    return chemistry->KineticsUPtr();
   }
      
   //
@@ -143,13 +143,8 @@ namespace Chemistry {
         chemistry = std::make_unique<Kinetics>( std::move( thermo ) );
         break;
       case Type::TransportAndKinetics:
-        {
-          //chemistry = std::make_unique<Kinetics>
-          //  ( std::make_unique<Transport>( std::move( thermo ), transport_model ) );
-          auto trans( std::make_unique<Transport>( std::move( thermo ), transport_model ) );
-          assert( trans);
-          chemistry = std::make_unique<Kinetics>( std::move( trans ) );
-        }
+        chemistry = std::make_unique<Kinetics>
+          ( std::make_unique<Transport>( std::move( thermo ), transport_model ) );
         break;
       default:
         return nullptr;
