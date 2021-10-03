@@ -11,8 +11,8 @@ namespace Apps {
     
     class ConstPres : public EnergyEnabled {
     public:
-      ConstPres( Cantera::ThermoPhase* const thermo
-                 , Cantera::Kinetics* const kinetics
+      ConstPres( Cantera::ThermoPhase& thermo
+                 , Cantera::Kinetics& kinetics
                  , double const temperature
                  , double const pressure
                  , std::vector<double> const& mass_fractions
@@ -30,8 +30,8 @@ namespace Apps {
     
     class ConstVol : public EnergyEnabled {
     public:
-      ConstVol( Cantera::ThermoPhase* const thermo
-                , Cantera::Kinetics* const kinetics
+      ConstVol( Cantera::ThermoPhase& thermo
+                , Cantera::Kinetics& kinetics
                 , double const temperature
                 , double const pressure
                 , std::vector<double> const& mass_fractions
@@ -49,8 +49,8 @@ namespace Apps {
     
     class ConstTempPres : public Base {
     public:
-      ConstTempPres( Cantera::ThermoPhase* const thermo
-                     , Cantera::Kinetics* const kinetics
+      ConstTempPres( Cantera::ThermoPhase& thermo
+                     , Cantera::Kinetics& kinetics
                      , double const temperature
                      , double const pressure
                      , std::vector<double> const& mass_fractions
@@ -67,8 +67,8 @@ namespace Apps {
     
     class ConstTempVol : public Base {
     public:
-      ConstTempVol( Cantera::ThermoPhase* const thermo
-                    , Cantera::Kinetics* const kinetics
+      ConstTempVol( Cantera::ThermoPhase& thermo
+                    , Cantera::Kinetics& kinetics
                     , double const temperature
                     , double const pressure
                     , std::vector<double> const& mass_fractions

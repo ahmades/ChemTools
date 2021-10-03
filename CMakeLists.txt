@@ -21,7 +21,6 @@ target_sources(
   PRIVATE
   src/main.cpp
   src/input_parser.cpp
-  src/chemistry.cpp
   src/sundials/cvode/interface.cpp
   src/results/csv_writer.cpp
   src/results/hdf5_writer.cpp

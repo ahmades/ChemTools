@@ -173,10 +173,10 @@ namespace Input {
     }
   }
 
-  static void TemperatureIsValid( Cantera::ThermoPhase* const thermo
+  static void TemperatureIsValid( Cantera::ThermoPhase const& thermo
                                   , RealScalar const& temperature_meta ) {
-    double const temperature_min = thermo->minTemp();
-    double const temperature_max = thermo->maxTemp();
+    double const temperature_min = thermo.minTemp();
+    double const temperature_max = thermo.maxTemp();
     double const temperature_value = temperature_meta.Value();
     std::string const& temperature_unit = units::to_string( temperature_meta.Unit() );
     if( temperature_value < 0 ) {
@@ -208,7 +208,7 @@ namespace Input {
     }
   }
 
-  static void CompositionIsValid( Cantera::ThermoPhase* const thermo
+  static void CompositionIsValid( Cantera::ThermoPhase const& thermo
                                   , Composition const& composition_meta ) {
     
     CompositionPairs const& composition_pairs = composition_meta.Pairs();
@@ -243,7 +243,7 @@ namespace Input {
       bool invalid_species_found = false;
       for( auto const& pair : composition_pairs ) {
         std::string const& species = pair.first;
-        if( -1 == static_cast<int>( thermo->speciesIndex( species ) ) ) {
+        if( -1 == static_cast<int>( thermo.speciesIndex( species ) ) ) {
           invalid_species += fmt::format("' '{}' '", species );
           invalid_species_found = true;
         }
@@ -298,17 +298,16 @@ namespace Input {
         // check mechanism
         std::string const& mechanism_path = case_set.GetMechanism().Path();
         //try {
-          MechanismPathIsValid( mechanism_path );
+        MechanismPathIsValid( mechanism_path );
         // } catch( boost::filesystem::filesystem_error const& fs_err ) {
         //   fmt::print( "{}\n", fs_err.what() );
         //   std::exit( EXIT_FAILURE );
         // }
         
-        // create chemistry
-        std::unique_ptr<Chemistry::IChemistry> chemistry =
-          Chemistry::Create( mechanism_path, Chemistry::Type::Basic );
+        // create chemistry with thermo
+        Chemistry::Thermo chemistry( mechanism_path );
         // get thermo ptr
-        Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
+        Cantera::ThermoPhase const& thermo = chemistry.thermo();
         
         // loop over all cases in case set
         std::vector<Case> const& cases = case_set.Cases();

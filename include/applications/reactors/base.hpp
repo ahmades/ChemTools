@@ -34,8 +34,8 @@ namespace Apps {
 
       Base();
       
-      Base( Cantera::ThermoPhase* const thermo
-            , Cantera::Kinetics* const kinetics
+      Base( Cantera::ThermoPhase& thermo
+            , Cantera::Kinetics& kinetics
             , double const temperature
             , double const pressure
             , std::vector<double> const& mass_fractions
@@ -66,8 +66,8 @@ namespace Apps {
 
     protected:
 
-      Cantera::ThermoPhase* const m_thermo;
-      Cantera::Kinetics* const m_kinetics;
+      Cantera::ThermoPhase& m_thermo;
+      Cantera::Kinetics& m_kinetics;
       size_t m_nspecs;
       double m_density;                           // unit = [kg/m^3]
       double m_temperature;                       // unit = [K]
@@ -108,8 +108,8 @@ namespace Apps {
     class EnergyEnabled: public Base {
     public:
       
-      EnergyEnabled( Cantera::ThermoPhase* const thermo
-                     , Cantera::Kinetics* const kinetics
+      EnergyEnabled( Cantera::ThermoPhase& thermo
+                     , Cantera::Kinetics& kinetics
                      , double const temperature
                      , double const pressure
                      , std::vector<double> const& mass_fractions

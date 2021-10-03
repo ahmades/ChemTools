@@ -11,8 +11,8 @@ namespace Apps {
     // --- class Base
     // ------------------------------------------------------------------------
     
-    Base::Base( Cantera::ThermoPhase* const thermo
-                , Cantera::Kinetics* const kinetics
+    Base::Base( Cantera::ThermoPhase& thermo
+                , Cantera::Kinetics& kinetics
                 , double const temperature
                 , double const pressure
                 , std::vector<double> const& mass_fractions
@@ -22,7 +22,7 @@ namespace Apps {
                 , bool const write_results )
       : m_thermo( thermo )
       , m_kinetics( kinetics )
-      , m_nspecs( m_thermo->nSpecies() )
+      , m_nspecs( m_thermo.nSpecies() )
       , m_density{ std::numeric_limits<double>::signaling_NaN() }
       , m_temperature{ temperature }
       , m_pressure{ pressure }
@@ -78,7 +78,7 @@ namespace Apps {
     }
     
     void Base::SpeciesDerivative( realtype* const derivative ) {       
-      m_kinetics->getNetProductionRates( m_net_production_rates.data() );
+      m_kinetics.getNetProductionRates( m_net_production_rates.data() );
       for( size_t i = 0; i < m_nspecs; ++i ) {
         // [kmol/(m^3.s)] * [kg/kmol] / [kg/m3] = [1/s] = unit_of( dY/dt )
         derivative[i] = m_net_production_rates[i]
@@ -88,7 +88,7 @@ namespace Apps {
 
     void Base::CompleteInstantiation() {
       // compute molecular weights
-      m_thermo->getMolecularWeights( m_molecular_weights.data() );
+      m_thermo.getMolecularWeights( m_molecular_weights.data() );
       
       // initialise the client's simulation parameters
       SetSolverParameters( );
@@ -120,8 +120,8 @@ namespace Apps {
                                                , &m_time );
       
       for( size_t i = 0; i < m_nspecs; ++i ) {
-        std::string const species_name = m_thermo->speciesName(i);
-        std::string const notation = "Y_" + m_thermo->speciesName(i);
+        std::string const species_name = m_thermo.speciesName(i);
+        std::string const notation = "Y_" + m_thermo.speciesName(i);
         Results::Subject::results_meta.Register( "Mass fractions"
                                                  , species_name
                                                  , notation
@@ -142,8 +142,8 @@ namespace Apps {
     // --- class EnergyEnabled
     // ------------------------------------------------------------------------
     
-    EnergyEnabled::EnergyEnabled( Cantera::ThermoPhase* const thermo
-                                  , Cantera::Kinetics* const kinetics
+    EnergyEnabled::EnergyEnabled( Cantera::ThermoPhase& thermo
+                                  , Cantera::Kinetics& kinetics
                                   , double const temperature
                                   , double const pressure
                                   , std::vector<double> const& mass_fractions

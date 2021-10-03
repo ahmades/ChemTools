@@ -1,5 +1,6 @@
 #include <vector>
 #include <limits>
+#include <map>
 
 #include <cmath>
 
@@ -9,36 +10,23 @@
 #include "test_config.hpp"
 #include "chemistry.hpp"
 
-struct Input {
-  std::string mechanism;
-  Chemistry::Type chemistry_type;
-  Chemistry::TransportModel transport_model;
-  double temperature;
-  double pressure;
-  Cantera::compositionMap composition;
-
-  Input( std::string const mechanism_
-         , Chemistry::Type const chemistry_type_
-         , Chemistry::TransportModel const transport_model_
-         , double const temperature_
-         , double pressure_
-         , Cantera::compositionMap const& composition_ )
-    : mechanism( mechanism_ )
-    , chemistry_type{ chemistry_type_ }
-    , transport_model{ transport_model_ }
-    , temperature{ temperature_ }
-    , pressure{ pressure_ }
-    , composition( composition_ )
-  {}
-  
-  void SetChemistryType( Chemistry::Type const chemistry_type_ ) {
-    chemistry_type = chemistry_type_;
+static void Equilibrate( Cantera::ThermoPhase& thermo
+                         , double const temperature
+                         , double pressure
+                         , Cantera::compositionMap const& composition ) {
+  try {
+    // set thermo state 
+    thermo.setState_TPX( temperature
+                         , pressure
+                         , composition );
+    
+    // compute equilibrium solution
+    thermo.equilibrate( "HP" );
+    
+  } catch( Cantera::CanteraError const& err ) {
+    std::cerr << err.what() << std::endl;
   }
-
-  void SetTransportModel( Chemistry::TransportModel const transport_model_ ) {
-    transport_model = transport_model_;
-  }
-};
+}
 
 struct ThermoOutput {
   double temperature;
@@ -49,70 +37,15 @@ struct ThermoOutput {
   double molar_specific_heat;
 };
 
-struct TransOutput {
-  double viscosity;
-  double thermal_conductivity;
-};
-
-struct RateOfProgress {
-  std::vector<double> fwd;
-  std::vector<double> rev;
-  std::vector<double> net;
-  RateOfProgress()
-    : fwd()
-    , rev()
-    , net()
-  {}
-  RateOfProgress( size_t n )
-    : fwd( n )
-    , rev( n )
-    , net( n )
-  {}
-};
-
-struct KinOutput {
-  RateOfProgress rop;
-};
-
-static std::unique_ptr<Chemistry::IChemistry> Equilibrium( Input const& input ) {
- 
-  std::unique_ptr<Chemistry::IChemistry> chemistry{ nullptr };
-  try {
-    
-    // instantiate chemistry object
-    chemistry = Create( input.mechanism
-                        , input.chemistry_type
-                        , input.transport_model );
-    assert( chemistry );
-
-    // get thermo object
-    Cantera::ThermoPhase* thermo = chemistry->ThermoPtr();
-    assert( thermo );
-
-    // set thermo state 
-    thermo->setState_TPX( input.temperature
-                          , input.pressure
-                          , input.composition );
-
-    // compute equilibrium solution
-    thermo->equilibrate( "HP" );
-    
-  } catch( Cantera::CanteraError const& err ) {
-    std::cerr << err.what() << std::endl;
-  }
-
-  return chemistry;
-}
-
-static ThermoOutput TestThermo( Cantera::ThermoPhase* const thermo
-                                , bool verbose = false ) {
+static ThermoOutput GetThermoOutput( Cantera::ThermoPhase const& thermo
+                                     , bool verbose = false ) {
   ThermoOutput output;
-  output.temperature         = thermo->temperature();
-  output.pressure            = thermo->pressure();
-  output.density             = thermo->density();
-  output.molar_enthalpy      = thermo->enthalpy_mole();
-  output.molar_entropy       = thermo->entropy_mole();
-  output.molar_specific_heat = thermo->cp_mole();
+  output.temperature         = thermo.temperature();
+  output.pressure            = thermo.pressure();
+  output.density             = thermo.density();
+  output.molar_enthalpy      = thermo.enthalpy_mole();
+  output.molar_entropy       = thermo.entropy_mole();
+  output.molar_specific_heat = thermo.cp_mole();
 
   if( verbose ) {
     Cantera::writelog( "\nThermo properties at the equilibrium state:\n"
@@ -133,11 +66,16 @@ static ThermoOutput TestThermo( Cantera::ThermoPhase* const thermo
   return output;
 }
 
-static TransOutput TestTrans( Cantera::Transport* const trans
-                              , bool verbose = false  ) {  
-  TransOutput output;
-  output.viscosity            = trans->viscosity();
-  output.thermal_conductivity = trans->thermalConductivity();
+struct TransportOutput {
+  double viscosity;
+  double thermal_conductivity;
+};
+
+static TransportOutput GetTransOutput( Cantera::Transport& trans
+                                       , bool verbose = false  ) {  
+  TransportOutput output;
+  output.viscosity            = trans.viscosity();
+  output.thermal_conductivity = trans.thermalConductivity();
 
   if( verbose ) {
     Cantera::writelog( "\nTransport properties at the equilibrium state:\n"
@@ -150,22 +88,43 @@ static TransOutput TestTrans( Cantera::Transport* const trans
   return output;
 }
 
-static KinOutput TestKin( Cantera::Kinetics* const kinetics
-                          , bool verbose = false  ) { 
-  KinOutput output;
-  size_t const n_rxns = kinetics->nReactions();
+
+struct RateOfProgress {
+  std::vector<double> fwd;
+  std::vector<double> rev;
+  std::vector<double> net;
+  RateOfProgress()
+    : fwd()
+    , rev()
+    , net()
+  {}
+  RateOfProgress( size_t n )
+    : fwd( n )
+    , rev( n )
+    , net( n )
+  {}
+};
+
+struct KineticsOutput {
+  RateOfProgress rop;
+};
+
+static KineticsOutput GetKineticsOutput( Cantera::Kinetics& kinetics
+                                         , bool verbose = false  ) { 
+  KineticsOutput output;
+  size_t const n_rxns = kinetics.nReactions();
   
   output.rop = RateOfProgress( n_rxns );
-  kinetics->getFwdRatesOfProgress( output.rop.fwd.data() );
-  kinetics->getRevRatesOfProgress( output.rop.rev.data() );
-  kinetics->getNetRatesOfProgress( output.rop.net.data() );
+  kinetics.getFwdRatesOfProgress( output.rop.fwd.data() );
+  kinetics.getRevRatesOfProgress( output.rop.rev.data() );
+  kinetics.getNetRatesOfProgress( output.rop.net.data() );
 
   if( verbose ) {
     Cantera::writelog("\nReactions and their forward, reverse and net rates of progress:\n");
     for( size_t i = 0; i < n_rxns; i++ ) {
       Cantera::writelog( "{:6s} {:35s} {:14.5g} {:14.5g} {:14.5g}  kmol/m3/s\n"
                          , 'R' + std::to_string( i + 1 )
-                         , kinetics->reactionString( i )
+                         , kinetics.reactionString( i )
                          , output.rop.fwd[i]
                          , output.rop.rev[i]
                          , output.rop.net[i] );
@@ -184,25 +143,23 @@ static void TestThermoOutput( ThermoOutput const& output ) {
   CHECK( Approx(  3.734765e+04 ).epsilon( TestConfig::tolerance ) == output.molar_specific_heat );
 }
 
-static void TestTransOutput( TransOutput const& output ) {
+static void TestTransportOutput( TransportOutput const& output ) {
   CHECK( Approx( 5.837424e-05 ).epsilon( TestConfig::tolerance ) == output.viscosity );
   CHECK( Approx( 1.747307e-01 ).epsilon( TestConfig::tolerance ) == output.thermal_conductivity );
 }
 
-static void TestKinOutput( KinOutput const& output ) {
+
+static void TestKineticsOutput( KineticsOutput const& output ) {
   RateOfProgress const& rop = output.rop;
   for( size_t i = 0; i < rop.net.size(); i++ ) {
     CHECK_THAT( output.rop.net[i], Catch::Matchers::WithinAbs( 0.0, TestConfig::tolerance ) );
   }
 }
 
-SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
+SCENARIO( "Chemical equilibtium state can be computed", "[chemistry]" ) {
  
-  GIVEN( "Chemistry parameters without a chemistry type" ) {
-    // input parameters
+  GIVEN( "Chemistry parameters" ) {
     std::string const mechanism = "../data/gri30.cti";
-    Chemistry::Type const chemistry_type = Chemistry::Type::Invalid;
-    Chemistry::TransportModel const transport_model = Chemistry::TransportModel::None;
     double const temperature = 500.0;
     double const pressure =  2.0 * Cantera::OneAtm;
     Cantera::compositionMap const composition = {
@@ -211,116 +168,70 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
       { "N2"  , 3.76 }
     };
 
-    // set input with chemistry_type set to invalid
-    Input input( mechanism
-                 , chemistry_type
-                 , transport_model
-                 , temperature
-                 , pressure
-                 , composition );
-
     try {
       
-      WHEN( "Basic chemsitry is requested" ) {
-        // reset chemistry type
-        input.SetChemistryType( Chemistry::Type::Basic );
-        // equilibrate
-        std::unique_ptr<Chemistry::IChemistry> const chemistry( Equilibrium( input ) );
-      
-        // test output
+      WHEN( "Thermo is requested" ) {
+
+        Chemistry::Thermo chemistry( mechanism );
+        Cantera::ThermoPhase& thermo = chemistry.thermo();
+        Equilibrate( thermo
+                     , temperature
+                     , pressure
+                     , composition );
         THEN("Check thermo properties") {
-          // get thermo object
-          Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
-          assert( thermo );
-          REQUIRE_NOTHROW( TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) ) );
+          REQUIRE_NOTHROW( TestThermoOutput( GetThermoOutput( thermo, TestConfig::verbose ) ) );
         }
       }
 
-      WHEN( "Basic chemsitry with transport is requested" ) {
-        // reset chemistry type
-        input.SetChemistryType( Chemistry::Type::Transport );
-        input.SetTransportModel( Chemistry::TransportModel::MixtureAveraged );
-      
-        // equilibrate
-        std::unique_ptr<Chemistry::IChemistry> const chemistry( Equilibrium( input ) );
-      
+      WHEN( "Thermoy and transport are requested" ) {
+        Chemistry::TransportModel const transport_model = Chemistry::TransportModel::MixtureAveraged;
+        Chemistry::ThermoTransport chemistry( mechanism, transport_model );
+        Cantera::ThermoPhase& thermo = chemistry.thermo();
+        Equilibrate( thermo
+                     , temperature
+                     , pressure
+                     , composition );
+        
         // test output
         THEN("Check thermo and transport properties") {
-          {
-            // get thermo object
-            Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
-            //assert( thermo );
-            REQUIRE_FALSE( thermo == nullptr );
-            REQUIRE_NOTHROW( TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) ) );
-          }
-
-          {
-            // get transport object
-            Cantera::Transport* const trans = chemistry->TransPtr();
-            REQUIRE_FALSE( trans == nullptr );
-            REQUIRE_NOTHROW( TestTransOutput( TestTrans( trans, TestConfig::verbose ) ) );
-          }
+          REQUIRE_NOTHROW( TestThermoOutput( GetThermoOutput( thermo, TestConfig::verbose ) ) );
+          REQUIRE_NOTHROW( TestTransportOutput( GetTransOutput( chemistry.transport(), TestConfig::verbose ) ) );
         }
       }
-
-      WHEN( "Basic chemsitry with kinetics and kinetics is requested" ) {
-        // reset chemistry type
-        input.SetChemistryType( Chemistry::Type::Kinetics );
       
-        // equilibrate
-        std::unique_ptr<Chemistry::IChemistry> const chemistry( Equilibrium( input ) );
+
+      WHEN( "Thermo and kinetics and kinetics are requested" ) {
+        Chemistry::ThermoKinetics chemistry( mechanism );
+        Cantera::ThermoPhase& thermo = chemistry.thermo();
+        Equilibrate( thermo
+                     , temperature
+                     , pressure
+                     , composition );
       
         // test output
         THEN("Check thermo and kinetic properties") {
-          {
-            // get thermo object
-            Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
-            REQUIRE_FALSE( thermo == nullptr );
-            REQUIRE_NOTHROW( TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) ) );
-          }
-
-          {
-            // get kinetics object
-            Cantera::Kinetics* const kinetics = chemistry->KineticsPtr();
-            REQUIRE_FALSE( kinetics == nullptr );
-            REQUIRE_NOTHROW( TestKinOutput( TestKin( kinetics, TestConfig::verbose ) ) );
-          }
+          REQUIRE_NOTHROW( TestThermoOutput( GetThermoOutput( thermo, TestConfig::verbose ) ) );
+          REQUIRE_NOTHROW( TestKineticsOutput( GetKineticsOutput( chemistry.kinetics(), TestConfig::verbose ) ) );
         }
-      
+        
       }
-    
-      WHEN( "Basic chemsitry with transport and kinetics is requested" ) {
-        // reset chemistry type
-        input.SetChemistryType( Chemistry::Type::TransportAndKinetics );
-        input.SetTransportModel( Chemistry::TransportModel::MixtureAveraged );
-      
-        // equilibrate
-        std::unique_ptr<Chemistry::IChemistry> const chemistry( Equilibrium( input ) );
+
+      WHEN( "Thermo, transport and kinetics are requested" ) {
+        Chemistry::TransportModel const transport_model = Chemistry::TransportModel::MixtureAveraged;
+        Chemistry::ThermoTransportKinetics chemistry( mechanism, transport_model );
+        Cantera::ThermoPhase& thermo = chemistry.thermo();
+        Equilibrate( thermo
+                     , temperature
+                     , pressure
+                     , composition );
       
         // test output
         THEN("Check thermo, transport and kinetic properties") {
-          {
-            // get thermo object
-            Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
-            REQUIRE_FALSE( thermo == nullptr );
-            REQUIRE_NOTHROW( TestThermoOutput( TestThermo( thermo, TestConfig::verbose ) ) );
-          }
-
-          {
-            // get transport object
-            Cantera::Transport* const trans = chemistry->TransPtr();
-            REQUIRE_FALSE( trans == nullptr );
-            REQUIRE_NOTHROW( TestTransOutput( TestTrans( trans, TestConfig::verbose ) ) );
-          }
-
-          {
-            // get kinetics object
-            Cantera::Kinetics* const kinetics = chemistry->KineticsPtr();
-            REQUIRE_FALSE( kinetics == nullptr );
-            REQUIRE_NOTHROW( TestKinOutput( TestKin( kinetics, TestConfig::verbose ) ) );
-          }
+          REQUIRE_NOTHROW( TestThermoOutput( GetThermoOutput( thermo, TestConfig::verbose ) ) );
+          REQUIRE_NOTHROW( TestTransportOutput( GetTransOutput( chemistry.transport(), TestConfig::verbose ) ) );
+          REQUIRE_NOTHROW( TestKineticsOutput( GetKineticsOutput( chemistry.kinetics(), TestConfig::verbose ) ) );
         }
-      
+        
       }
 
     } catch( Cantera::CanteraError const& err ) {
@@ -328,4 +239,79 @@ SCENARIO( "Equilibtium state can be computed", "[chemistry]" ) {
     }
     
   }
+}
+
+TEST_CASE( "Chemistry objects can be moved", "[chemistry]" ) {
+
+  enum { GRI12 = 0, GRI211 = 1, GRI30 = 2 };
+  std::map<int, std::string> const mechanism = {
+    std::make_pair( GRI12 , "../data/gri12.cti" ),
+    std::make_pair( GRI211, "../data/gri211.cti" ),
+    std::make_pair( GRI30 , "../data/gri30.cti"  ),
+  };
+  double const temperature = 500.0;
+  double const pressure =  2.0 * Cantera::OneAtm;
+  Cantera::compositionMap const composition = {
+    { "CH4" , 1.00 },
+    { "O2"  , 1.00 },
+    { "N2"  , 3.76 }
+  };
+  
+  std::vector<Chemistry::ThermoTransportKinetics> chemistry;
+  chemistry.reserve( mechanism.size() );
+
+  Chemistry::TransportModel const transport_model = Chemistry::TransportModel::MixtureAveraged;
+
+  // emplace back first instance GRI-Mec 1.2
+  chemistry.emplace_back( mechanism.at( GRI12 ), transport_model );
+  {
+    {
+      Cantera::ThermoPhase const & thermo = chemistry[GRI12].thermo();
+      CHECK( 32 == thermo.nSpecies() );
+      CHECK( 13 == thermo.speciesIndex( "CH4" ) );
+    }
+    {
+      Cantera::Kinetics const & kinetics = chemistry[GRI12].kinetics();
+      CHECK( 177 == kinetics.nReactions() );
+      CHECK( "C2H4 + CH3 <=> C2H3 + CH4" == kinetics.reactionString( 163 ) );
+    }
+  }
+  
+  // push back second instance GRI-Mec 2.11
+  chemistry.push_back( std::move( Chemistry::ThermoTransportKinetics
+                                  ( mechanism.at( GRI211 ), transport_model ) ) );
+  {
+    {
+      Cantera::ThermoPhase const& thermo = chemistry[GRI211].thermo();
+      CHECK( 49 == thermo.nSpecies() );
+      CHECK( 6 == thermo.speciesIndex( "HO2" ) );
+    }
+    {
+      Cantera::Kinetics const& kinetics = chemistry[GRI211].kinetics();
+      CHECK( 279 == kinetics.nReactions() );
+      CHECK( "CH3O + H <=> CH3 + OH" == kinetics.reactionString( 65 ) );
+    }
+  }
+    
+  // insert third instance at the end of the vecor GRI-Mec 3.0 
+  {
+    Chemistry::ThermoTransportKinetics instance_1;
+    instance_1.Create( mechanism.at( GRI30 ), transport_model );
+    Chemistry::ThermoTransportKinetics instance_2;
+    instance_2 = std::move( instance_1 );
+    Chemistry::ThermoTransportKinetics instance_3( std::move( instance_2) );
+    chemistry.insert( chemistry.end(), std::move( instance_3 ) );
+  }
+
+  {
+    Chemistry::ThermoTransportKinetics& chem_gri30 = chemistry.back();
+    Equilibrate( chem_gri30.thermo()
+                 , temperature
+                 , pressure
+                 , composition );
+    REQUIRE_NOTHROW( TestThermoOutput( GetThermoOutput( chem_gri30.thermo() ) ) );
+    REQUIRE_NOTHROW( TestTransportOutput( GetTransOutput( chem_gri30.transport() ) ) );
+    REQUIRE_NOTHROW( TestKineticsOutput( GetKineticsOutput( chem_gri30.kinetics() ) ) );
+  }
+
 }

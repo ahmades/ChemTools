@@ -6,6 +6,7 @@
 #include <map>
 #include <stdexcept>
 #include <optional>
+#include <type_traits>
 
 #include <cassert>
 
@@ -16,15 +17,6 @@
 #include "cantera/kinetics.h"
 
 namespace Chemistry {
-  
-  // type of chemistry to create
-  enum class Type {
-    Invalid
-    , Basic
-    , Transport
-    , Kinetics
-    , TransportAndKinetics
-   };
 
   // type of transport model when transport is active
   enum class TransportModel {
@@ -34,7 +26,7 @@ namespace Chemistry {
   };
 
   // Map of transport type to string
-  static std::map<TransportModel, std::string> TransportModelMap = {
+  static std::map<TransportModel, std::string> const TransportModelMap = {
     { TransportModel::None           , "None"  },
     { TransportModel::MixtureAveraged, "Mix"   },
     { TransportModel::MultiComponent , "Multi" }
@@ -42,89 +34,205 @@ namespace Chemistry {
 
   // cleans up xml clutter left out by cantera, should be called on exit
   // lib does not offer a btter solution for this
-  void CleanUp();
+  inline void CleanUp() {
+    Cantera::appdelete();
+  }
 
-  //
-  // -------------- chemisty interface
-  //
-  class IChemistry {
-    friend class Decorator;
+  // Thermo class, non-copyable
+  class Thermo {
+  private:
+    std::unique_ptr<Cantera::ThermoPhase> m_thermo;
+    
   public:
-    IChemistry();
-    virtual ~IChemistry() = default;
-    virtual void Create() = 0;
-    virtual Cantera::ThermoPhase* ThermoPtr();
-    virtual Cantera::Transport* TransPtr();
-    virtual Cantera::Kinetics* KineticsPtr();
-  protected:
-    std::unique_ptr<Cantera::ThermoPhase> thermo;
-    std::unique_ptr<Cantera::Transport> trans;
-    std::unique_ptr<Cantera::Kinetics> kinetics;
-    virtual std::unique_ptr<Cantera::Transport>& TransUPtr();
-    virtual std::unique_ptr<Cantera::Kinetics>& KineticsUPtr();
-  };
-
-  //
-  // -------------- simplest IChemistry instance only has thermo
-  //
-  class Thermo: public IChemistry {
-  public:
-    explicit Thermo( std::string const& mechanism_ );
+    Thermo()
+      : m_thermo( nullptr )
+    {}
+    
+    explicit Thermo( std::string const& mechanism )
+      : m_thermo( nullptr )
+    {
+      Create( mechanism );
+    }
+    
+    Thermo( Thermo const& other ) = delete;
+    
+    Thermo& operator = ( Thermo const& other ) = delete;
+    
+    Thermo( Thermo&& other ) = default;
+    
+    Thermo& operator = ( Thermo&& other ) = default;
+    
     ~Thermo() = default;
-    void Create() override;
-  private:
-    std::string mechanism;
+
+    void Create( std::string const& mechanism ) {
+      if( !m_thermo ) {
+        m_thermo.reset( Cantera::newPhase( mechanism ) );
+        assert( m_thermo );
+      }
+    }
+
+    Cantera::ThermoPhase& thermo() const {
+      return *m_thermo.get();
+    }
+    
+    Cantera::ThermoPhase& operator()() const {
+      return *m_thermo.get();
+    }
   };
 
-  //
-  // -------------- decorator
-  //
-  class Decorator: public IChemistry {
-  public:
-    explicit Decorator( std::unique_ptr<IChemistry> chemistry_ );
-    ~Decorator() = default; 
-    virtual void Create();
-    Cantera::ThermoPhase* ThermoPtr() override;
-    Cantera::Transport* TransPtr() override;
-    Cantera::Kinetics* KineticsPtr() override;
-  protected:
-    std::unique_ptr<Cantera::Transport>& TransUPtr() override;
-    std::unique_ptr<Cantera::Kinetics>& KineticsUPtr() override;
+  // Transport class, non-copyable
+  // Creates a Transport object given a ThermoPhase
+  class Transport {
   private:
-    std::unique_ptr<IChemistry> chemistry;
-  };
-  
-  //
-  // -------------- attaches transport
-  //
-  class Transport : public Decorator {
+    std::unique_ptr<Cantera::Transport> m_trans;
+    
   public:
-    explicit Transport( std::unique_ptr<IChemistry> chemistry
-                        , TransportModel model_ = TransportModel::MixtureAveraged );
+    Transport()
+      : m_trans( nullptr )
+    {}
+    
+    explicit Transport( Cantera::ThermoPhase& thermo
+                        , TransportModel transport_model
+                        = TransportModel::MixtureAveraged )
+      : m_trans( nullptr )
+    {
+      Create( thermo, transport_model );
+    }
+    
+    Transport( Transport const& other ) noexcept = delete;
+    
+    Transport& operator = ( Transport const& other ) = delete;
+    
+    Transport( Transport&& other ) = default;
+    
+    Transport& operator = ( Transport&& other ) = default;
+    
     ~Transport() = default;
-    void Create() override;
+
+    void Create( Cantera::ThermoPhase& thermo
+                 , TransportModel transport_model
+                 = TransportModel::MixtureAveraged ) {
+      if( !m_trans ) {
+        m_trans.reset( Cantera::newTransportMgr
+                       ( TransportModelMap.at( transport_model ), &thermo ) );
+        assert( m_trans );
+      }
+    }
+    
+    Cantera::Transport& operator()() const {
+      return *m_trans.get();
+    }
+  };
+
+  // Kinerics class, non-copyable
+  // Creates a Kinetics object given a ThermoPhase
+  class Kinetics {
   private:
-    TransportModel model;
-  };
-
-  //
-  // -------------- attaches kinetics
-  //
-  class Kinetics : public Decorator {
+    std::unique_ptr<Cantera::Kinetics> m_kinetics;
+    
   public:
-    explicit Kinetics( std::unique_ptr<IChemistry> chemistry );
+    Kinetics()
+      : m_kinetics( nullptr )
+    {}
+    
+    explicit Kinetics( Cantera::ThermoPhase& thermo )
+      : m_kinetics( nullptr )
+    {
+      Create( thermo );
+    }
+    
+    Kinetics( Kinetics const& other ) = delete;
+    
+    Kinetics& operator = ( Kinetics const& other ) = delete;
+    
+    Kinetics( Kinetics&& other ) = default;
+    
+    Kinetics& operator = ( Kinetics&& other ) = default;
+    
     ~Kinetics() = default;
-    void Create() override;
+    
+    void Create( Cantera::ThermoPhase& thermo ) {
+      if( !m_kinetics ) {
+        std::vector<Cantera::ThermoPhase*> const phases{ &thermo };
+        m_kinetics.reset( Cantera::newKineticsMgr( thermo.xml(), phases ) );
+        assert( m_kinetics );
+      }
+    }
+    
+    Cantera::Kinetics& operator()() const {
+      return *m_kinetics.get();
+    }
   };
 
-  //
-  // -------------- convenience factory
-  //
-  std::unique_ptr<IChemistry> Create( std::string const& mechanism
-                                      , Type type
-                                      , TransportModel transport_model
-                                      = TransportModel::MixtureAveraged );
+  // convenient Thermo + Transport facade
+  class ThermoTransport {
+  public:
+    Thermo thermo;
+    Transport transport;
 
+    ThermoTransport() = default;
+    
+    ThermoTransport( std::string const& mechanism
+                     , TransportModel transport_model
+                     = TransportModel::MixtureAveraged )
+      : thermo( mechanism )
+      , transport( thermo(), transport_model )
+    {}
+
+    void Create( std::string const& mechanism
+                 , TransportModel transport_model
+                 = TransportModel::MixtureAveraged ) {
+      thermo.Create( mechanism );
+      transport.Create( thermo(), transport_model );
+    }
+    
+  };
+
+  // convenien Thermo + Kinetics facade
+  class ThermoKinetics {
+  public:
+    Thermo thermo;
+    Kinetics kinetics;
+
+    ThermoKinetics() = default;
+    
+    ThermoKinetics( std::string const& mechanism )
+      : thermo( mechanism )
+      , kinetics( thermo() )
+    {}
+
+    void Create( std::string const& mechanism ) {
+      thermo.Create( mechanism );
+      kinetics.Create( thermo() );
+    }
+  };
+
+  // convenien Thermo +  Transport + Kinetics facade
+  class ThermoTransportKinetics {
+  public:
+    Thermo thermo;
+    Transport transport;
+    Kinetics kinetics;
+
+    ThermoTransportKinetics() = default;
+      
+    ThermoTransportKinetics( std::string const& mechanism
+                             , TransportModel transport_model
+                             = TransportModel::MixtureAveraged )
+      : thermo( mechanism )
+      , transport( thermo(), transport_model )
+      , kinetics( thermo() )
+    {}
+
+    void Create( std::string const& mechanism
+                 , TransportModel transport_model
+                 = TransportModel::MixtureAveraged ) {
+      thermo.Create( mechanism );
+      transport.Create( thermo(), transport_model );
+      kinetics.Create( thermo() );
+    }
+  };
+ 
 } // namespace Chemistry
 
 #endif //  CHEMISTRY_HPP

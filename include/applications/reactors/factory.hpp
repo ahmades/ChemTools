@@ -11,8 +11,8 @@ namespace Apps {
   namespace Reactor {
 
     inline std::unique_ptr<Base> Create( Type const reactor_type
-                                         , Cantera::ThermoPhase* const thermo
-                                         , Cantera::Kinetics* const kinetics
+                                         , Cantera::ThermoPhase& thermo
+                                         , Cantera::Kinetics& kinetics
                                          , double const temperature
                                          , double const pressure
                                          , std::vector<double> const& mass_fractions

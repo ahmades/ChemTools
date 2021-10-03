@@ -18,45 +18,44 @@ using namespace Apps;
 TEST_CASE( "Test reactors", "[reactors]" ) {
 
   std::string const mechanism = "../data/gri30.cti";
-  std::unique_ptr<Chemistry::IChemistry> chemistry =
-    Chemistry::Create( mechanism, Chemistry::Type::Kinetics );
-  Cantera::ThermoPhase* const thermo = chemistry->ThermoPtr();
-  Cantera::Kinetics* const kinetics = chemistry->KineticsPtr();
+  Chemistry::ThermoKinetics chemistry( mechanism );
+  Cantera::ThermoPhase& thermo = chemistry.thermo();
+  Cantera::Kinetics& kinetics = chemistry.kinetics();
 
   // target: http://combustion.berkeley.edu/gri-mech/version30/targets30/ig.1b.html
   /*double pressure = 2.04 * Cantera::OneAtm;
   double temperature = 1700.0;
-  std::vector<double> mole_fractions( thermo->nSpecies(), 0.0 );
-  mole_fractions[thermo->speciesIndex("CH4")] = 0.091;
-  mole_fractions[thermo->speciesIndex("O2")]  = 0.182;
-  mole_fractions[thermo->speciesIndex("Ar")]  = 0.727;
-  thermo->setState_TPX( temperature, pressure, mole_fractions.data()  );
-  std::vector<double> mass_fractions( thermo->nSpecies(), 0.0 );
-  thermo->getMassFractions( mass_fractions.data() );*/
+  std::vector<double> mole_fractions( thermo.nSpecies(), 0.0 );
+  mole_fractions[thermo.speciesIndex("CH4")] = 0.091;
+  mole_fractions[thermo.speciesIndex("O2")]  = 0.182;
+  mole_fractions[thermo.speciesIndex("Ar")]  = 0.727;
+  thermo.setState_TPX( temperature, pressure, mole_fractions.data()  );
+  std::vector<double> mass_fractions( thermo.nSpecies(), 0.0 );
+  thermo.getMassFractions( mass_fractions.data() );*/
   
   // target: http://combustion.berkeley.edu/gri-mech/version30/targets30/ig.st1a.html
   /*double pressure = 6.1 * Cantera::OneAtm;
   double temperature = 1356.0;
-  std::vector<double> mole_fractions( thermo->nSpecies(), 0.0 );
-  mole_fractions[thermo->speciesIndex("CH4")]  = 0.0329;
-  mole_fractions[thermo->speciesIndex("C2H6")] = 0.0021;
-  mole_fractions[thermo->speciesIndex("O2")]   = 0.0700;
-  mole_fractions[thermo->speciesIndex("Ar")]   = 0.8950;
-  thermo->setState_TPX( temperature, pressure, mole_fractions.data()  );
-  std::vector<double> mass_fractions( thermo->nSpecies(), 0.0 );
-  thermo->getMassFractions( mass_fractions.data() );*/
+  std::vector<double> mole_fractions( thermo.nSpecies(), 0.0 );
+  mole_fractions[thermo.speciesIndex("CH4")]  = 0.0329;
+  mole_fractions[thermo.speciesIndex("C2H6")] = 0.0021;
+  mole_fractions[thermo.speciesIndex("O2")]   = 0.0700;
+  mole_fractions[thermo.speciesIndex("Ar")]   = 0.8950;
+  thermo.setState_TPX( temperature, pressure, mole_fractions.data()  );
+  std::vector<double> mass_fractions( thermo.nSpecies(), 0.0 );
+  thermo.getMassFractions( mass_fractions.data() );*/
 
   // cantera
   double const pressure = Cantera::OneAtm;
   double const temperature = 1001.0;
-  size_t const n_specs = thermo->nSpecies();
+  size_t const n_specs = thermo.nSpecies();
   std::vector<double> mole_fractions( n_specs, 0.0 );
-  mole_fractions[thermo->speciesIndex("H2")] = 2.0;
-  mole_fractions[thermo->speciesIndex("O2")] = 1.0;
-  mole_fractions[thermo->speciesIndex("N2")] = 4.0;
-  thermo->setState_TPX( temperature, pressure, mole_fractions.data()  );
+  mole_fractions[thermo.speciesIndex("H2")] = 2.0;
+  mole_fractions[thermo.speciesIndex("O2")] = 1.0;
+  mole_fractions[thermo.speciesIndex("N2")] = 4.0;
+  thermo.setState_TPX( temperature, pressure, mole_fractions.data()  );
   std::vector<double> mass_fractions( n_specs, 0.0 );
-  thermo->getMassFractions( mass_fractions.data() );
+  thermo.getMassFractions( mass_fractions.data() );
 
   double const total_simulation_time = 1.0e-3;
   double const relative_solver_tolerance = 1.0e-9;
@@ -125,7 +124,7 @@ TEST_CASE( "Test reactors", "[reactors]" ) {
       reactor->StoreResults( time );
       
       double temp = cvode.Solution()[0];
-      double mf = cvode.Solution()[1 + thermo->speciesIndex("H2")];
+      double mf = cvode.Solution()[1 + thermo.speciesIndex("H2")];
       if( temp >= 1756.0 && ignited == false ) {
         time_ignition = time;
         ignited = true;
