@@ -75,10 +75,7 @@ TEST_CASE( "Test reactors", "[reactors]" ) {
                      , write_results );
 
   // attach to result observer
-  if( write_results ) {
-    Results::HDF5Writer result_writer( *(reactor.get()), "." );
-  }
-
+  Results::HDF5Writer result_writer( *(reactor.get()), "." );
   
   // select solution strategy
   SUNDIALS::CVODE::Dense strategy; 
