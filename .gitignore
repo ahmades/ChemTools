@@ -39,3 +39,14 @@ __pycache__/
 
 # Backup files
 *~
+
+# LaTeX
+doc/**/*.aux
+doc/**/*.toc
+doc/**/*.vrb
+doc/**/*.log
+doc/**/*.out
+doc/**/*.nav
+doc/**/*.snm
+doc/**/*.text.backup
+
