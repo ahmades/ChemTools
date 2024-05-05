@@ -1,0 +1,17 @@
+---
+BasedOnStyle: LLVM
+Language: Cpp
+SortIncludes: true
+PointerAlignment: Left
+ColumnLimit: 0
+IndentWidth: 2
+UseTab: Never
+BreakBeforeBraces: GNU
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: true
+NamespaceIndentation: All
+BreakBeforeBinaryOperators: All
+AlignAfterOpenBracket: true
+BinPackParameters: false
+BinPackArguments : false
+AlignOperands: true
