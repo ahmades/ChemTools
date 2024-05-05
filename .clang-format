@@ -13,5 +13,5 @@ NamespaceIndentation: All
 BreakBeforeBinaryOperators: All
 AlignAfterOpenBracket: true
 BinPackParameters: false
-BinPackArguments : false
+BinPackArguments: false
 AlignOperands: true
