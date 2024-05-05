@@ -72,7 +72,19 @@ function validate_arguments() {
 function apply_clang_format() {
     # Find all C++ source files with extensions .cpp and .hpp in the specified directories
     local cpp_files
-    cpp_files=$(find "${directories[@]}" -type f \( -name "*.cpp" -o -name "*.hpp" \))
+    cpp_files=$(
+        find "${directories[@]}" -type f \( \
+            -name "*.C" -o \
+            -name "*.cpp" -o \
+            -name "*.cxx" -o \
+            -name "*.c++" -o \
+            -name "*.cc" -o \
+            -name "*.h" -o \
+            -name "*.hpp" -o \
+            -name "*.hxx" -o \
+            -name "*.hh" \
+            \)
+    )
 
     # Loop over each file and apply clang format
     for cpp_file in $cpp_files; do
