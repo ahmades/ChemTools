@@ -21,6 +21,7 @@ jobs:
 
       - name: Check code formatting
         run: |
+          chmod +x ${{ github.workspace }}/scripts/clang-format/format.sh
           ${{ github.workspace }}/scripts/clang-format/format.sh \
             --clang_format_file ${{ github.workspace }}/.clang-format \
             --directories ${{ github.workspace }}/src ${{ github.workspace }}/include ${{ github.workspace }}/tests
