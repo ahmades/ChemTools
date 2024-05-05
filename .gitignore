@@ -50,3 +50,5 @@ doc/**/*.nav
 doc/**/*.snm
 doc/**/*.text.backup
 
+# vscode
+.vscode
