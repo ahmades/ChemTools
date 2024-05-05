@@ -3,9 +3,11 @@
 
 #include "input/types.hpp"
 
-namespace Input {
+namespace Input
+{
 
-  class Parser {
+  class Parser
+  {
   private:
     std::string config_file;
     Parameters parameters;
@@ -15,16 +17,16 @@ namespace Input {
 
     // vaildation of parsed input
     void Validate() const;
-    
+
   public:
     // constructors
     Parser();
-    Parser( std::string const& config_file_ );
+    Parser(std::string const& config_file_);
 
     // parameters getter
     Parameters const& GetParameters() const;
   };
-  
-}
+
+} // namespace Input
 
 #endif // INPUT_PARSER_HPP

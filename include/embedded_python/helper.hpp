@@ -6,83 +6,92 @@
 
 #include <Python.h>
 
-namespace CppPy {
+namespace CppPy
+{
 
-  /* 
+  /*
      Initialises and finalises the Python interprete
      When needed, a single instance should be created during initialisation
   */
 
-  class Instance {
+  class Instance
+  {
 
   public:
-    
-    Instance() {
+    Instance()
+    {
       Py_Initialize();
     }
-    
-    ~Instance() {
+
+    ~Instance()
+    {
       Py_Finalize();
     }
-    
   };
 
-  
   // Helper class for PyObject management
-  
-  class Object {
-    
+
+  class Object
+  {
+
   private:
-    
-    PyObject *py_obj;
-  
+    PyObject* py_obj;
+
   public:
-    
     Object()
-      : py_obj( nullptr )
-    {}
+        : py_obj(nullptr)
+    {
+    }
 
-    Object( PyObject* const py_obj_ )
-      : py_obj( py_obj_ )
-    {}
+    Object(PyObject* const py_obj_)
+        : py_obj(py_obj_)
+    {
+    }
 
-    ~Object() {
+    ~Object()
+    {
       Release();
     }
 
-    operator PyObject*() {
+    operator PyObject*()
+    {
       return py_obj;
     }
 
-    PyObject* operator = ( PyObject* const py_obj_ ) {
+    PyObject* operator=(PyObject* const py_obj_)
+    {
       py_obj = py_obj_;
       return py_obj;
     }
 
-    void IncreaseReference() {
-      if( py_obj ) {
-        Py_INCREF( py_obj );
-      }
+    void IncreaseReference()
+    {
+      if (py_obj)
+        {
+          Py_INCREF(py_obj);
+        }
     }
 
-    void DecreaseReference() {
-      if( py_obj ) {
-        Py_DECREF(py_obj);
-      }
+    void DecreaseReference()
+    {
+      if (py_obj)
+        {
+          Py_DECREF(py_obj);
+        }
     }
 
-    void Release() {
+    void Release()
+    {
       DecreaseReference();
       py_obj = nullptr;
     }
 
-    bool IsValid() {
+    bool IsValid()
+    {
       return py_obj ? true : false;
     }
-  
   };
 
-  
 } // namespace CppPy
 
 #endif // EMBEDDED_PYTHON_HELPER_HPP
