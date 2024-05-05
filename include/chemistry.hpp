@@ -41,12 +41,13 @@ namespace Chemistry
   }
 
   // Thermo class, non-copyable
-  class Thermo  {
-                                private:
+  class Thermo
+  {
+  private:
     std::unique_ptr<Cantera::ThermoPhase> m_thermo;
 
-     public:
-         Thermo()
+  public:
+    Thermo()
         : m_thermo(nullptr)
     {
     }
