@@ -9,8 +9,24 @@ namespace Apps
 
     // --- class ConstPres
 
-    ConstPres::ConstPres(Cantera::ThermoPhase& thermo, Cantera::Kinetics& kinetics, double const temperature, double const pressure, std::vector<double> const& mass_fractions, double const relative_solver_tolerance, double const absolute_solver_tolerance, double const total_simulation_time, bool const write_results)
-        : EnergyEnabled(thermo, kinetics, temperature, pressure, mass_fractions, relative_solver_tolerance, absolute_solver_tolerance, total_simulation_time, write_results)
+    ConstPres::ConstPres(Cantera::ThermoPhase& thermo,
+                         Cantera::Kinetics& kinetics,
+                         double const temperature,
+                         double const pressure,
+                         std::vector<double> const& mass_fractions,
+                         double const relative_solver_tolerance,
+                         double const absolute_solver_tolerance,
+                         double const total_simulation_time,
+                         bool const write_results)
+        : EnergyEnabled(thermo,
+                        kinetics,
+                        temperature,
+                        pressure,
+                        mass_fractions,
+                        relative_solver_tolerance,
+                        absolute_solver_tolerance,
+                        total_simulation_time,
+                        write_results)
     {
       // set the client's initial state
       SetInitialState();
@@ -31,7 +47,10 @@ namespace Apps
       m_thermo.getPartialMolarEnthalpies(m_energy.data());
 
       // [J/kmol] * [kmol/m^3/s] = [J//m^3/s]
-      double const inner_prod = std::inner_product(m_energy.begin(), m_energy.end(), m_net_production_rates.begin(), 0.0);
+      double const inner_prod = std::inner_product(m_energy.begin(),
+                                                   m_energy.end(),
+                                                   m_net_production_rates.begin(),
+                                                   0.0);
 
       // [J//m^3/s] / [kg/m^3] / [J/kg/K] = [K/s] = unit_of( dT/dt )
       return (-inner_prod / m_density / m_thermo.cp_mass());
@@ -39,8 +58,24 @@ namespace Apps
 
     // --- class ConsVol
 
-    ConstVol::ConstVol(Cantera::ThermoPhase& thermo, Cantera::Kinetics& kinetics, double const temperature, double const pressure, std::vector<double> const& mass_fractions, double const relative_solver_tolerance, double const absolute_solver_tolerance, double const total_simulation_time, bool const write_results)
-        : EnergyEnabled(thermo, kinetics, temperature, pressure, mass_fractions, relative_solver_tolerance, absolute_solver_tolerance, total_simulation_time, write_results)
+    ConstVol::ConstVol(Cantera::ThermoPhase& thermo,
+                       Cantera::Kinetics& kinetics,
+                       double const temperature,
+                       double const pressure,
+                       std::vector<double> const& mass_fractions,
+                       double const relative_solver_tolerance,
+                       double const absolute_solver_tolerance,
+                       double const total_simulation_time,
+                       bool const write_results)
+        : EnergyEnabled(thermo,
+                        kinetics,
+                        temperature,
+                        pressure,
+                        mass_fractions,
+                        relative_solver_tolerance,
+                        absolute_solver_tolerance,
+                        total_simulation_time,
+                        write_results)
     {
       // set the client's initial state
       SetInitialState();
@@ -64,7 +99,10 @@ namespace Apps
       m_thermo.getPartialMolarIntEnergies(m_energy.data());
 
       // [J/kmol] * [kmol/m^3/s] = [J//m^3/s]
-      double const inner_prod = std::inner_product(m_energy.begin(), m_energy.end(), m_net_production_rates.begin(), 0.0);
+      double const inner_prod = std::inner_product(m_energy.begin(),
+                                                   m_energy.end(),
+                                                   m_net_production_rates.begin(),
+                                                   0.0);
 
       // [J//m^3/s] / [kg/m^3] / [J/kg/K] = [K/s] = unit_of( dK/dt )
       return (-inner_prod / m_density / m_thermo.cv_mass());
@@ -72,14 +110,32 @@ namespace Apps
 
     // --- class ConstTempPres
 
-    ConstTempPres::ConstTempPres(Cantera::ThermoPhase& thermo, Cantera::Kinetics& kinetics, double const temperature, double const pressure, std::vector<double> const& mass_fractions, double const relative_solver_tolerance, double const absolute_solver_tolerance, double const total_simulation_time, bool const write_results)
-        : Base(thermo, kinetics, temperature, pressure, mass_fractions, relative_solver_tolerance, absolute_solver_tolerance, total_simulation_time, write_results)
+    ConstTempPres::ConstTempPres(Cantera::ThermoPhase& thermo,
+                                 Cantera::Kinetics& kinetics,
+                                 double const temperature,
+                                 double const pressure,
+                                 std::vector<double> const& mass_fractions,
+                                 double const relative_solver_tolerance,
+                                 double const absolute_solver_tolerance,
+                                 double const total_simulation_time,
+                                 bool const write_results)
+        : Base(thermo,
+               kinetics,
+               temperature,
+               pressure,
+               mass_fractions,
+               relative_solver_tolerance,
+               absolute_solver_tolerance,
+               total_simulation_time,
+               write_results)
     {
       // set the client's initial state
       SetInitialState();
 
       // set the initial temeperaturem pressure and mass fractions
-      m_thermo.setState_TPY(m_temperature, m_pressure, m_mass_fractions.data());
+      m_thermo.setState_TPY(m_temperature,
+                            m_pressure,
+                            m_mass_fractions.data());
       // compute the initial density and hold it constant
       m_pressure = m_thermo.pressure();
       // set the initial temperature and pressure and hold them constant
@@ -88,21 +144,41 @@ namespace Apps
     void ConstTempPres::SetThermoState(realtype const* const state)
     {
       // set the temperature, pressure and mass fractions
-      m_thermo.setState_TPY(m_temperature, m_pressure, state);
+      m_thermo.setState_TPY(m_temperature,
+                            m_pressure,
+                            state);
       // update the density
       m_density = m_thermo.density();
     }
 
     // --- class ConstTempVol
 
-    ConstTempVol::ConstTempVol(Cantera::ThermoPhase& thermo, Cantera::Kinetics& kinetics, double const temperature, double const pressure, std::vector<double> const& mass_fractions, double const relative_solver_tolerance, double const absolute_solver_tolerance, double const total_simulation_time, bool const write_results)
-        : Base(thermo, kinetics, temperature, pressure, mass_fractions, relative_solver_tolerance, absolute_solver_tolerance, total_simulation_time, write_results)
+    ConstTempVol::ConstTempVol(Cantera::ThermoPhase& thermo,
+                               Cantera::Kinetics& kinetics,
+                               double const temperature,
+                               double const pressure,
+                               std::vector<double> const& mass_fractions,
+                               double const relative_solver_tolerance,
+                               double const absolute_solver_tolerance,
+                               double const total_simulation_time,
+                               bool const write_results)
+        : Base(thermo,
+               kinetics,
+               temperature,
+               pressure,
+               mass_fractions,
+               relative_solver_tolerance,
+               absolute_solver_tolerance,
+               total_simulation_time,
+               write_results)
     {
       // set the client's initial state
       SetInitialState();
 
       // set the initial temeperaturem pressure and mass fractions
-      m_thermo.setState_TPY(m_temperature, m_pressure, m_mass_fractions.data());
+      m_thermo.setState_TPY(m_temperature,
+                            m_pressure,
+                            m_mass_fractions.data());
       // compute the initial density and hold it constant
       m_density = m_thermo.density();
     }
@@ -110,7 +186,9 @@ namespace Apps
     void ConstTempVol::SetThermoState(realtype const* const state)
     {
       // set the temperature, density and mass fractions
-      m_thermo.setState_TRY(m_temperature, m_density, state);
+      m_thermo.setState_TRY(m_temperature,
+                            m_density,
+                            state);
       // update the pressure
       m_pressure = m_thermo.pressure();
     }

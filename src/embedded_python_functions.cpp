@@ -33,7 +33,9 @@ namespace CppPy
     boost::system::error_code error_code;
     if (!boost::filesystem::exists(bfsp, error_code))
       {
-        BOOST_FILESYSTEM_THROW(boost::filesystem::filesystem_error("FunctionP1R2 error", bfsp, error_code));
+        BOOST_FILESYSTEM_THROW(boost::filesystem::filesystem_error("FunctionP1R2 error",
+                                                                   bfsp,
+                                                                   error_code));
       }
 
     // add module parent path to system path
@@ -64,26 +66,35 @@ namespace CppPy
         function = PyObject_GetAttrString(module, function_name.c_str());
         if (!function.IsValid() || !PyCallable_Check(function))
           {
-            throw std::invalid_argument("FunctionP1R2 error: Could not find function \""
-                                        + function_name + "\" in imported module \""
-                                        + module_path + "\".");
+            throw std::invalid_argument("FunctionP1R2 error: Could not find function \"" +
+                                        function_name +
+                                        "\" in imported module \"" +
+                                        module_path +
+                                        "\".");
           }
       }
     else
       {
-        throw std::invalid_argument("FunctionP1R2 error: Could not import module \""
-                                    + module_path + "\".");
+        throw std::invalid_argument("FunctionP1R2 error: Could not import module \"" +
+                                    module_path +
+                                    "\".");
       }
   }
 
-  bool FunctionP1R2::Evaluate(double const param, double& val_1, double& val_2)
+  bool FunctionP1R2::Evaluate(double const param,
+                              double& val_1,
+                              double& val_2)
   {
     arg = Py_BuildValue("(d)", param);
     if (!arg.IsValid())
-      return false;
+      {
+        return false;
+      }
     value = PyObject_CallObject(function, arg);
     if (!value.IsValid())
-      return false;
+      {
+        return false;
+      }
     return PyArg_ParseTuple(value, "d|d", &val_1, &val_2);
   }
 

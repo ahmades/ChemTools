@@ -101,7 +101,8 @@ namespace Chemistry
     {
     }
 
-    explicit Transport(Cantera::ThermoPhase& thermo, TransportModel transport_model = TransportModel::MixtureAveraged)
+    explicit Transport(Cantera::ThermoPhase& thermo,
+                       TransportModel transport_model = TransportModel::MixtureAveraged)
         : m_trans(nullptr)
     {
       Create(thermo, transport_model);
@@ -117,7 +118,8 @@ namespace Chemistry
 
     ~Transport() = default;
 
-    void Create(Cantera::ThermoPhase& thermo, TransportModel transport_model = TransportModel::MixtureAveraged)
+    void Create(Cantera::ThermoPhase& thermo,
+                TransportModel transport_model = TransportModel::MixtureAveraged)
     {
       if (!m_trans)
         {
@@ -186,12 +188,15 @@ namespace Chemistry
 
     ThermoTransport() = default;
 
-    ThermoTransport(std::string const& mechanism, TransportModel transport_model = TransportModel::MixtureAveraged)
-        : thermo(mechanism), transport(thermo(), transport_model)
+    ThermoTransport(std::string const& mechanism,
+                    TransportModel transport_model = TransportModel::MixtureAveraged)
+        : thermo(mechanism),
+          transport(thermo(), transport_model)
     {
     }
 
-    void Create(std::string const& mechanism, TransportModel transport_model = TransportModel::MixtureAveraged)
+    void Create(std::string const& mechanism,
+                TransportModel transport_model = TransportModel::MixtureAveraged)
     {
       thermo.Create(mechanism);
       transport.Create(thermo(), transport_model);
@@ -208,7 +213,8 @@ namespace Chemistry
     ThermoKinetics() = default;
 
     ThermoKinetics(std::string const& mechanism)
-        : thermo(mechanism), kinetics(thermo())
+        : thermo(mechanism),
+          kinetics(thermo())
     {
     }
 
@@ -229,12 +235,16 @@ namespace Chemistry
 
     ThermoTransportKinetics() = default;
 
-    ThermoTransportKinetics(std::string const& mechanism, TransportModel transport_model = TransportModel::MixtureAveraged)
-        : thermo(mechanism), transport(thermo(), transport_model), kinetics(thermo())
+    ThermoTransportKinetics(std::string const& mechanism,
+                            TransportModel transport_model = TransportModel::MixtureAveraged)
+        : thermo(mechanism),
+          transport(thermo(), transport_model),
+          kinetics(thermo())
     {
     }
 
-    void Create(std::string const& mechanism, TransportModel transport_model = TransportModel::MixtureAveraged)
+    void Create(std::string const& mechanism,
+                TransportModel transport_model = TransportModel::MixtureAveraged)
     {
       thermo.Create(mechanism);
       transport.Create(thermo(), transport_model);

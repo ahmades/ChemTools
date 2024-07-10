@@ -14,8 +14,13 @@
 namespace Results
 {
 
-  HDF5Writer::HDF5Writer(Subject& subject_, std::string const& path_)
-      : subject(subject_), path(path_), file(nullptr), map_scalars(), compression_level{3}
+  HDF5Writer::HDF5Writer(Subject& subject_,
+                         std::string const& path_)
+      : subject(subject_),
+        path(path_),
+        file(nullptr),
+        map_scalars(),
+        compression_level{3}
   {
     // attach
     subject.AttachObserver(*this);
@@ -62,7 +67,8 @@ namespace Results
     compression_level = compression_level_;
   }
 
-  static void AppendScalar(H5::DataSet* const dataset, double* const values)
+  static void AppendScalar(H5::DataSet* const dataset,
+                           double* const values)
   {
     // dataspace
     int const rank = 1;
@@ -80,10 +86,15 @@ namespace Results
     // select hyperslab
     H5::DataSpace const& file_space = dataset->getSpace();
     hsize_t const offset[rank] = {current_n_elems};
-    file_space.selectHyperslab(H5S_SELECT_SET, dims, offset);
+    file_space.selectHyperslab(H5S_SELECT_SET,
+                               dims,
+                               offset);
 
     // write
-    dataset->write(&*values, H5::PredType::NATIVE_DOUBLE, mem_space, file_space);
+    dataset->write(&*values,
+                   H5::PredType::NATIVE_DOUBLE,
+                   mem_space,
+                   file_space);
   }
 
   // updates the values of registered variables
@@ -114,7 +125,9 @@ namespace Results
     boost::system::error_code error_code;
     if (!boost::filesystem::exists(fs_path, error_code))
       {
-        BOOST_FILESYSTEM_THROW(boost::filesystem::filesystem_error("HDF5Writer error", fs_path, error_code));
+        BOOST_FILESYSTEM_THROW(boost::filesystem::filesystem_error("HDF5Writer error",
+                                                                   fs_path,
+                                                                   error_code));
       }
 
     // still need to get absolute path if relative is supplied
@@ -168,7 +181,11 @@ namespace Results
         prop_list.setDeflate(6); // compression level, default is 0 = uncompressed.
 
         // create dataset
-        std::unique_ptr<H5::DataSet> dataset = std::make_unique<H5::DataSet>(file->createDataSet(group + '/' + set, H5::PredType::NATIVE_DOUBLE, dataspace, prop_list));
+        std::unique_ptr<H5::DataSet> dataset =
+            std::make_unique<H5::DataSet>(file->createDataSet(group + '/' + set,
+                                                              H5::PredType::NATIVE_DOUBLE,
+                                                              dataspace,
+                                                              prop_list));
 
         // add attributes to dataset
         {
@@ -185,7 +202,9 @@ namespace Results
           for (auto& element : map)
             {
               // create arttribute using map key
-              H5::Attribute attribute = dataset->createAttribute(element.first, str_type, dataspace);
+              H5::Attribute attribute = dataset->createAttribute(element.first,
+                                                                 str_type,
+                                                                 dataspace);
 
               // write attribute value using map value
               attribute.write(str_type, element.second);

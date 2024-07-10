@@ -35,7 +35,9 @@ namespace Results
           {
             stream << *std::get<Meta::value>(*it_scalars);
             if (it_scalars != scalars.end() - 1)
-              stream << ',';
+              {
+                stream << ',';
+              }
           }
         stream << '\n';
       }
@@ -63,10 +65,15 @@ namespace Results
     // names
     for (auto it_scalars = scalars.begin(); it_scalars != scalars.end(); ++it_scalars)
       {
-        stream << fmt::format("{}.{}.{}", std::get<Meta::group>(*it_scalars), std::get<Meta::set>(*it_scalars), std::get<Meta::name>(*it_scalars));
+        stream << fmt::format("{}.{}.{}",
+                              std::get<Meta::group>(*it_scalars),
+                              std::get<Meta::set>(*it_scalars),
+                              std::get<Meta::name>(*it_scalars));
 
         if (it_scalars != scalars.end() - 1)
-          stream << ',';
+          {
+            stream << ',';
+          }
       }
     stream << '\n';
 
@@ -75,7 +82,9 @@ namespace Results
       {
         stream << std::get<Meta::notation>(*it_scalars);
         if (it_scalars != scalars.end() - 1)
-          stream << ',';
+          {
+            stream << ',';
+          }
       }
     stream << '\n';
 
@@ -84,7 +93,9 @@ namespace Results
       {
         stream << std::get<Meta::unit>(*it_scalars);
         if (it_scalars != scalars.end() - 1)
-          stream << ',';
+          {
+            stream << ',';
+          }
       }
     stream << '\n';
   }

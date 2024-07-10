@@ -84,7 +84,9 @@ namespace Input
   public:
     // constructor
     RealScalar(units::precise_unit const unit_)
-        : inp_unit{units::precise::invalid}, unit{unit_}, value{std::numeric_limits<double>::signaling_NaN()}
+        : inp_unit{units::precise::invalid},
+          unit{unit_},
+          value{std::numeric_limits<double>::signaling_NaN()}
     {
       if (!units::is_valid(unit))
         {
@@ -99,14 +101,11 @@ namespace Input
       inp_unit = units::unit_from_string(inp_unit_str);
       if (!units::is_valid(inp_unit))
         {
-          throw(std::invalid_argument(inp_unit_str
-                                      + " is not a valid unit."));
+          throw(std::invalid_argument(inp_unit_str + " is not a valid unit."));
         }
       if (!inp_unit.is_convertible(unit))
         {
-          throw(std::invalid_argument(inp_unit_str
-                                      + " is not convertible to "
-                                      + unit_str + '.'));
+          throw(std::invalid_argument(inp_unit_str + " is not convertible to " + unit_str + '.'));
         }
       value = units::convert(inp_value, inp_unit, unit);
     }
@@ -149,11 +148,16 @@ namespace Input
 
   public:
     Composition()
-        : type{CompositionInputType::Invalid}, inp_unit{units::precise::invalid}, unit{units::precise::invalid}, composition_pairs()
+        : type{CompositionInputType::Invalid},
+          inp_unit{units::precise::invalid},
+          unit{units::precise::invalid},
+          composition_pairs()
     {
     }
 
-    void Set(CompositionPairs const& composition_pairs_, std::string const& type_str_, std::string const& inp_unit_str_ = "")
+    void Set(CompositionPairs const& composition_pairs_,
+             std::string const& type_str_,
+             std::string const& inp_unit_str_ = "")
     {
       composition_pairs = composition_pairs_;
       std::string const type_str = boost::algorithm::to_lower_copy(type_str_);
@@ -165,16 +169,13 @@ namespace Input
           inp_unit = units::unit_from_string(inp_unit_str_);
           if (!units::is_valid(inp_unit))
             {
-              throw(std::invalid_argument(inp_unit_str_
-                                          + " is not a valid unit"));
+              throw(std::invalid_argument(inp_unit_str_ + " is not a valid unit"));
             }
 
           unit = units::precise_unit(units::mol / units::m.pow(3));
           if (!inp_unit.is_convertible(unit))
             {
-              throw(std::invalid_argument(inp_unit_str_
-                                          + " is not convertible to "
-                                          + units::to_string(unit)));
+              throw(std::invalid_argument(inp_unit_str_ + " is not convertible to " + units::to_string(unit)));
             }
 
           // convert to internal units
@@ -184,8 +185,7 @@ namespace Input
               pair.second *= conv_factor;
             }
         }
-      else if ("mass fraction" == type_str
-               || "mole fraction" == type_str)
+      else if ("mass fraction" == type_str || "mole fraction" == type_str)
         {
           // dimensionless cases: ratio, no conv needed
           type = ("mass fraction" == type_str)
@@ -195,10 +195,9 @@ namespace Input
         }
       else
         {
-          throw(std::invalid_argument("Composition type is set to \""
-                                      + type_str
-                                      + "\". The valid types are: \"concentration\", "
-                                        "\"mass fraction\" or \"mole fraction\"."));
+          throw(std::invalid_argument("Composition type is set to \"" + type_str +
+                                      "\". The valid types are: \"concentration\", "
+                                      "\"mass fraction\" or \"mole fraction\"."));
         }
     }
 
@@ -253,7 +252,10 @@ namespace Input
 
     // constructor
     Case()
-        : pressure(units::precise::pascal), temperature(units::precise::Kelvin), composition(), time{units::precise::second}
+        : pressure(units::precise::pascal),
+          temperature(units::precise::Kelvin),
+          composition(),
+          time{units::precise::second}
     {
     }
   };

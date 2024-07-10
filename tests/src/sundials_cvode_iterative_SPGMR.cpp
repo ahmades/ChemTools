@@ -70,7 +70,11 @@ struct Dimension
   realtype delta;
 
   Dimension(realtype min_, realtype max_, int npts_)
-      : min{min_}, max{max_}, mid{(min + max) / 2.0}, npts{npts_}, delta{(max_ - min_) / (npts_ - 1)}
+      : min{min_},
+        max{max_},
+        mid{(min + max) / 2.0},
+        npts{npts_},
+        delta{(max_ - min_) / (npts_ - 1)}
   {
   }
 };
@@ -81,7 +85,8 @@ struct Domain
   Dimension dim_y;
 
   Domain(Dimension dim_x_, Dimension dim_y_)
-      : dim_x(dim_x_), dim_y(dim_y_)
+      : dim_x(dim_x_),
+        dim_y(dim_y_)
   {
   }
 };
@@ -99,8 +104,26 @@ struct PhysicalParameters
   realtype coef_init_c_1; // coefficients 1 in initial profiles
   realtype coef_init_c_2; // coefficients 2 in initial profiles
 
-  PhysicalParameters(realtype Kh_, realtype coef_Kv_, realtype velocity_, realtype coef_q_1_, realtype coef_q_2_, realtype coef_c_3_, realtype coef_a_3_, realtype coef_a_4_, realtype coef_init_c_1_, realtype coef_init_c_2_)
-      : Kh{Kh_}, coef_Kv{coef_Kv_}, velocity{velocity_}, coef_q_1{coef_q_1_}, coef_q_2{coef_q_2_}, coef_c_3{coef_c_3_}, coef_a_3{coef_a_3_}, coef_a_4{coef_a_4_}, coef_init_c_1{coef_init_c_1_}, coef_init_c_2{coef_init_c_2_}
+  PhysicalParameters(realtype Kh_,
+                     realtype coef_Kv_,
+                     realtype velocity_,
+                     realtype coef_q_1_,
+                     realtype coef_q_2_,
+                     realtype coef_c_3_,
+                     realtype coef_a_3_,
+                     realtype coef_a_4_,
+                     realtype coef_init_c_1_,
+                     realtype coef_init_c_2_)
+      : Kh{Kh_},
+        coef_Kv{coef_Kv_},
+        velocity{velocity_},
+        coef_q_1{coef_q_1_},
+        coef_q_2{coef_q_2_},
+        coef_c_3{coef_c_3_},
+        coef_a_3{coef_a_3_},
+        coef_a_4{coef_a_4_},
+        coef_init_c_1{coef_init_c_1_},
+        coef_init_c_2{coef_init_c_2_}
   {
   }
 };
@@ -119,8 +142,22 @@ class CVDiurnalKry : public SUNDIALS::CVODE::Client
 {
 
 public:
-  CVDiurnalKry(Domain const& domain, PhysicalParameters const& phys_params, Time const& time, SUNDIALS::CVODE::Types::IntegrationTolerance const& tolerance)
-      : m_domain(domain), m_phys_params(phys_params), m_time(time), m_tolerance(tolerance), m_neq{m_nspecies * m_domain.dim_x.npts * m_domain.dim_y.npts}, m_coef_q_4{0.0}, m_frequency{PI / (12.0 * 3600.0)}, m_hdco{phys_params.Kh / std::pow(m_domain.dim_x.delta, 2)}, m_vdco{(1.0 / std::pow(m_domain.dim_y.delta, 2)) * m_phys_params.coef_Kv}, m_haco{phys_params.velocity / (2.0 * m_domain.dim_x.delta)}, m_prec_mat(m_domain.dim_x.npts, std::vector<realtype**>(m_domain.dim_y.npts)), m_jac_mat(m_domain.dim_x.npts, std::vector<realtype**>(m_domain.dim_y.npts)), m_pivot(m_domain.dim_x.npts, std::vector<sunindextype*>(m_domain.dim_y.npts))
+  CVDiurnalKry(Domain const& domain,
+               PhysicalParameters const& phys_params,
+               Time const& time,
+               SUNDIALS::CVODE::Types::IntegrationTolerance const& tolerance)
+      : m_domain(domain),
+        m_phys_params(phys_params),
+        m_time(time),
+        m_tolerance(tolerance),
+        m_neq{m_nspecies * m_domain.dim_x.npts * m_domain.dim_y.npts},
+        m_coef_q_4{0.0}, m_frequency{PI / (12.0 * 3600.0)},
+        m_hdco{phys_params.Kh / std::pow(m_domain.dim_x.delta, 2)},
+        m_vdco{(1.0 / std::pow(m_domain.dim_y.delta, 2)) * m_phys_params.coef_Kv},
+        m_haco{phys_params.velocity / (2.0 * m_domain.dim_x.delta)},
+        m_prec_mat(m_domain.dim_x.npts, std::vector<realtype**>(m_domain.dim_y.npts)),
+        m_jac_mat(m_domain.dim_x.npts, std::vector<realtype**>(m_domain.dim_y.npts)),
+        m_pivot(m_domain.dim_x.npts, std::vector<sunindextype*>(m_domain.dim_y.npts))
   {
     for (int ix = 0; ix < m_domain.dim_x.npts; ix++)
       {
@@ -184,9 +221,7 @@ public:
     assert(i >= 1 && i <= m_nspecies);
     assert(j >= 0 && j < m_domain.dim_x.npts);
     assert(k >= 0 && k < m_domain.dim_y.npts);
-    return data[i - 1
-                + j * m_nspecies
-                + k * m_nspecies * m_domain.dim_x.npts];
+    return data[i - 1 + j * m_nspecies + k * m_nspecies * m_domain.dim_x.npts];
   }
 
   realtype& AccessData(std::vector<realtype>& data, int i, int j, int k)
@@ -295,7 +330,11 @@ private:
   }
 
   // Jacobian-times-vector routine
-  int JacobianTimesVector(realtype* const vector, realtype* jacobian_vector, realtype const time, realtype* const state, realtype* const /*rhs_nvec*/) override
+  int JacobianTimesVector(realtype* const vector,
+                          realtype* jacobian_vector,
+                          realtype const time,
+                          realtype* const state,
+                          realtype* const /*rhs_nvec*/) override
   {
 
     // Set diurnal rate coefficients
@@ -359,14 +398,10 @@ private:
             realtype Jv1 = 0.0;
             realtype Jv2 = 0.0;
 
-            Jv1 += -(m_phys_params.coef_q_1 * m_phys_params.coef_c_3
-                     + m_phys_params.coef_q_2 * c2)
-                       * v1
-                   + (m_coef_q_4 - m_phys_params.coef_q_2 * c1) * v2;
-            Jv2 += (m_phys_params.coef_q_1 * m_phys_params.coef_c_3
-                    - m_phys_params.coef_q_2 * c2)
-                       * v1
-                   - (m_coef_q_4 + m_phys_params.coef_q_2 * c1) * v2;
+            Jv1 += -(m_phys_params.coef_q_1 * m_phys_params.coef_c_3 + m_phys_params.coef_q_2 * c2) * v1 +
+                   (m_coef_q_4 - m_phys_params.coef_q_2 * c1) * v2;
+            Jv2 += (m_phys_params.coef_q_1 * m_phys_params.coef_c_3 - m_phys_params.coef_q_2 * c2) * v1 -
+                   (m_coef_q_4 + m_phys_params.coef_q_2 * c1) * v2;
 
             // Set vertical diffusion terms
 
@@ -450,9 +485,7 @@ private:
                 realtype const c2 = AccessData(state, 2, ix, iy);
                 realtype** j = m_jac_mat[ix][iy];
                 realtype** a = m_prec_mat[ix][iy];
-                j[0][0] = (-m_phys_params.coef_q_1 * m_phys_params.coef_c_3
-                           - m_phys_params.coef_q_2 * c2)
-                          + diag;
+                j[0][0] = (-m_phys_params.coef_q_1 * m_phys_params.coef_c_3 - m_phys_params.coef_q_2 * c2) + diag;
                 j[1][0] = -m_phys_params.coef_q_2 * c1 + m_coef_q_4;
                 j[0][1] = m_phys_params.coef_q_1 * m_phys_params.coef_c_3 - m_phys_params.coef_q_2 * c2;
                 j[1][1] = (-m_phys_params.coef_q_2 * c1 - m_coef_q_4) + diag;
@@ -480,25 +513,22 @@ private:
             denseAddIdentity(m_prec_mat[ix][iy], m_nspecies);
             sunindextype retval = denseGETRF(m_prec_mat[ix][iy], m_nspecies, m_nspecies, m_pivot[ix][iy]);
             if (retval != 0)
-              return (1);
+              {
+                return (1);
+              }
           }
       }
 
     return EXIT_SUCCESS;
   }
 
-  int PreconditionerSolve(realtype const /*time*/
-                          ,
-                          realtype* const /*state*/
-                          ,
-                          realtype* const /*rhs*/
-                          ,
+  int PreconditionerSolve(realtype const /*time*/,
+                          realtype* const /*state*/,
+                          realtype* const /*rhs*/,
                           realtype* const r,
                           realtype* z,
-                          realtype const /*gamma*/
-                          ,
-                          realtype const /*delta*/
-                          ,
+                          realtype const /*gamma*/,
+                          realtype const /*delta*/,
                           int const /*lr*/)
   {
     // copy r to z
@@ -530,25 +560,16 @@ TEST_CASE("2-species diurnal kinetics advection-diffusion PDE "
   Domain const domain({0.0, 20.0, 10},   // dim_x: min, max, npts
                       {30.0, 50.0, 10}); // dim_y: min, max, npts
 
-  PhysicalParameters const phys_params(4.0e-6 // horizontal diffusivity Kh
-                                       ,
-                                       1.0e-8 // coefficient in the vertical diffusivity Kv
-                                       ,
-                                       0.001 // advection velocity V
-                                       ,
-                                       1.63e-16 // coefficient q1
-                                       ,
-                                       4.66e-16 // coefficient q2
-                                       ,
-                                       3.7e+16 // coefficient c3
-                                       ,
-                                       22.62 // coefficient in expression for q3(t)
-                                       ,
-                                       7.601 // coefficient in expression for q4(t)
-                                       ,
-                                       1.0e+6 // coefficients 1 in initial profiles
-                                       ,
-                                       1.0e+12 // coefficients 1 in initial profiles
+  PhysicalParameters const phys_params(4.0e-6,   // horizontal diffusivity Kh
+                                       1.0e-8    // coefficient in the vertical diffusivity Kv
+                                       0.001,    // advection velocity V
+                                       1.63e-16, // coefficient q1
+                                       4.66e-16, // coefficient q2
+                                       3.7e+16,  // coefficient c3
+                                       22.62,    // coefficient in expression for q3(t)
+                                       7.601,    // coefficient in expression for q4(t)
+                                       1.0e+6,   // coefficients 1 in initial profiles
+                                       1.0e+12   // coefficients 1 in initial profiles
   );
 
   Time const time(0.0, std::numeric_limits<double>::infinity());
@@ -566,7 +587,10 @@ TEST_CASE("2-species diurnal kinetics advection-diffusion PDE "
   // select strategy
   SUNDIALS::CVODE::SPGMR strategy;
 
-  strategy.SetLinearSolverOptions(SUNDIALS::CVODE::Types::Preconditioner::left, SUNDIALS::CVODE::Types::GramSchmidt::modified, 5, 0);
+  strategy.SetLinearSolverOptions(SUNDIALS::CVODE::Types::Preconditioner::left,
+                                  SUNDIALS::CVODE::Types::GramSchmidt::modified,
+                                  5,
+                                  0);
 
   // set strategy
   SUNDIALS::CVODE::Solver cvode(&strategy);
@@ -637,8 +661,7 @@ TEST_CASE("2-species diurnal kinetics advection-diffusion PDE "
 
     if (TestConfig::verbose)
       {
-        std::string const title = fmt::format(fmt::emphasis::underline
-                                                  | fmt::emphasis::bold,
+        std::string const title = fmt::format(fmt::emphasis::underline | fmt::emphasis::bold,
                                               "Final statistics:");
         fmt::print("{}\n{}\n", title, cvode.PrintSolverStatistics());
       }

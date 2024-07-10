@@ -23,8 +23,13 @@
 class Motion : public Results::Subject
 {
 public:
-  Motion(double const acceleration_, double const target_position_)
-      : acceleration{acceleration_}, target_position{target_position_}, time{0.0}, position{0.0}, velocity{0.0}
+  Motion(double const acceleration_,
+         double const target_position_)
+      : acceleration{acceleration_},
+        target_position{target_position_},
+        time{0.0},
+        position{0.0},
+        velocity{0.0}
   {
     RegisterResults();
   }
@@ -55,13 +60,33 @@ private:
     // results
     {
       std::string const group("Main results");
-      Results::Subject::results_meta.Register(group, "Time", "Time", "t", "s", &time);
-      Results::Subject::results_meta.Register(group, "Position", "Position", "x", "m", &position);
-      Results::Subject::results_meta.Register(group, "Velocity", "Velocity", "V", "m/s", &velocity);
+      Results::Subject::results_meta.Register(group,
+                                              "Time",
+                                              "Time",
+                                              "t",
+                                              "s",
+                                              &time);
+      Results::Subject::results_meta.Register(group,
+                                              "Position",
+                                              "Position",
+                                              "x",
+                                              "m",
+                                              &position);
+      Results::Subject::results_meta.Register(group,
+                                              "Velocity",
+                                              "Velocity",
+                                              "V",
+                                              "m/s",
+                                              &velocity);
     }
 
     // other results
-    Results::Subject::results_meta.Register("Auxiliary results", "DistToTarg", "Distance to target", "Dx", "m", &distance_to_target);
+    Results::Subject::results_meta.Register("Auxiliary results",
+                                            "DistToTarg",
+                                            "Distance to target",
+                                            "Dx",
+                                            "m",
+                                            &distance_to_target);
   }
 };
 
@@ -78,7 +103,9 @@ TEST_CASE("Results can be observed", "[results]")
     attached_observers = motion.AttachedObservers();
     REQUIRE(0 == attached_observers);
     if (TestConfig::verbose)
-      fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+      {
+        fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+      }
 
     std::unique_ptr<Results::CSVWriter> csv_writer;
     std::unique_ptr<Results::HDF5Writer> hdf5_writer;
@@ -91,7 +118,9 @@ TEST_CASE("Results can be observed", "[results]")
         attached_observers = motion.AttachedObservers();
         REQUIRE(1 == attached_observers);
         if (TestConfig::verbose)
-          fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+          {
+            fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+          }
 
         // attach to hdf5 writer
         hdf5_writer = std::make_unique<Results::HDF5Writer>(motion, path);
@@ -99,14 +128,18 @@ TEST_CASE("Results can be observed", "[results]")
         attached_observers = motion.AttachedObservers();
         REQUIRE(2 == attached_observers);
         if (TestConfig::verbose)
-          fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+          {
+            fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+          }
 
         // attach to console logger
         console_logger = std::make_unique<Results::ConsoleLogger>(motion);
         attached_observers = motion.AttachedObservers();
         REQUIRE(3 == attached_observers);
         if (TestConfig::verbose)
-          fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+          {
+            fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+          }
       }
     catch (boost::filesystem::filesystem_error const& fs_err)
       {
@@ -127,7 +160,9 @@ TEST_CASE("Results can be observed", "[results]")
             attached_observers = motion.AttachedObservers();
             REQUIRE(2 == attached_observers);
             if (TestConfig::verbose)
-              fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+              {
+                fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+              }
           }
         else if (i == i_reattach)
           {
@@ -136,7 +171,9 @@ TEST_CASE("Results can be observed", "[results]")
             attached_observers = motion.AttachedObservers();
             REQUIRE(3 == attached_observers);
             if (TestConfig::verbose)
-              fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+              {
+                fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+              }
           }
         motion.Compute();
       }
@@ -145,5 +182,7 @@ TEST_CASE("Results can be observed", "[results]")
   attached_observers = motion.AttachedObservers();
   REQUIRE(0 == attached_observers);
   if (TestConfig::verbose)
-    fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+    {
+      fmt::print("Motion attached observer(s) = {} \n", attached_observers);
+    }
 }

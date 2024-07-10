@@ -21,9 +21,8 @@ namespace SUNDIALS
       enum class LinearMultisptepMethod
       {
         invalid = 0,
-        Adams = CV_ADAMS // 1
-        ,
-        BDF = CV_BDF // 2
+        Adams = CV_ADAMS, // 1
+        BDF = CV_BDF      // 2
       };
 
       enum class Preconditioner
@@ -58,7 +57,10 @@ namespace SUNDIALS
         realtype reached;
 
         IntegrationTime()
-            : start{0.0}, stop{std::numeric_limits<realtype>::infinity()}, step{0.0}, reached{0.0}
+            : start{0.0},
+              stop{std::numeric_limits<realtype>::infinity()},
+              step{0.0},
+              reached{0.0}
         {
         }
       };
@@ -78,7 +80,10 @@ namespace SUNDIALS
            max_step = inf
         */
         TimeStepcontrol()
-            : n_steps{0}, init_step{0.0}, min_step{0.0}, max_step{0.0}
+            : n_steps{0},
+              init_step{0.0},
+              min_step{0.0},
+              max_step{0.0}
         {
         }
       };
@@ -95,7 +100,13 @@ namespace SUNDIALS
         realtype nonlin_conv_coef;
 
         SolverControl()
-            : max_order{-1}, max_warn_msgs{10}, stab_lim_det_active{false}, max_err_test_fails{7}, max_nonlin_iters{3}, max_conv_fails{10}, nonlin_conv_coef{0.1}
+            : max_order{-1},
+              max_warn_msgs{10},
+              stab_lim_det_active{false},
+              max_err_test_fails{7},
+              max_nonlin_iters{3},
+              max_conv_fails{10},
+              nonlin_conv_coef{0.1}
         {
         }
       };
@@ -111,13 +122,17 @@ namespace SUNDIALS
         {
         }
 
-        IntegrationTolerance(realtype const relative_, std::vector<realtype> const& absolute_)
-            : relative{relative_}, absolute{absolute_}
+        IntegrationTolerance(realtype const relative_,
+                             std::vector<realtype> const& absolute_)
+            : relative{relative_},
+              absolute{absolute_}
         {
         }
 
-        IntegrationTolerance(realtype const relative_, realtype const absolute_)
-            : relative{relative_}, absolute(1, absolute_)
+        IntegrationTolerance(realtype const relative_,
+                             realtype const absolute_)
+            : relative{relative_},
+              absolute(1, absolute_)
         {
         }
       };
@@ -131,12 +146,21 @@ namespace SUNDIALS
         int max_restarts;
 
         IterativeLinarSolverOptions()
-            : preconditioner{Preconditioner::none}, gram_schmidt{GramSchmidt::modified}, n_krylov_basis_vectors{5}, max_restarts{0}
+            : preconditioner{Preconditioner::none},
+              gram_schmidt{GramSchmidt::modified},
+              n_krylov_basis_vectors{5},
+              max_restarts{0}
         {
         }
 
-        IterativeLinarSolverOptions(Preconditioner const preconditioner_, GramSchmidt const gram_schmidt_, int const n_krylov_basis_vectors_, int const max_restarts_)
-            : preconditioner{preconditioner_}, gram_schmidt{gram_schmidt_}, n_krylov_basis_vectors{n_krylov_basis_vectors_}, max_restarts{max_restarts_}
+        IterativeLinarSolverOptions(Preconditioner const preconditioner_,
+                                    GramSchmidt const gram_schmidt_,
+                                    int const n_krylov_basis_vectors_,
+                                    int const max_restarts_)
+            : preconditioner{preconditioner_},
+              gram_schmidt{gram_schmidt_},
+              n_krylov_basis_vectors{n_krylov_basis_vectors_},
+              max_restarts{max_restarts_}
         {
         }
       };
@@ -164,7 +188,17 @@ namespace SUNDIALS
         realtype first_internal_step_size;
         long int n_stability_order_reductions;
         MainSolverStatistics()
-            : n_internal_steps{0}, n_rhs_evals{0}, n_linear_solver_setups{0}, n_error_test_fails{0}, n_nonlinear_solver_iters{0}, n_nonlinear_solver_conv_fails{0}, last_order_used{0}, current_order{0}, last_internal_step_size{0.0}, next_internal_step_size{0.0}, first_internal_step_size{0.0}, n_stability_order_reductions{0}
+            : n_internal_steps{0},
+              n_rhs_evals{0},
+              n_linear_solver_setups{0},
+              n_error_test_fails{0},
+              n_nonlinear_solver_iters{0},
+              n_nonlinear_solver_conv_fails{0},
+              last_order_used{0}, current_order{0},
+              last_internal_step_size{0.0},
+              next_internal_step_size{0.0},
+              first_internal_step_size{0.0},
+              n_stability_order_reductions{0}
         {
         }
       };
@@ -181,7 +215,14 @@ namespace SUNDIALS
         long int n_jac_vec_setup_evals;
         long int n_jac_vec_prod_evals;
         LinearSolverStatistics()
-            : n_jac_evals{0}, n_rhs_jac_evals{0}, n_linear_iterations{0}, n_linear_conv_fails{0}, n_prec_evals{0}, n_prec_solves{0}, n_jac_vec_setup_evals{0}, n_jac_vec_prod_evals{0}
+            : n_jac_evals{0},
+              n_rhs_jac_evals{0},
+              n_linear_iterations{0},
+              n_linear_conv_fails{0},
+              n_prec_evals{0},
+              n_prec_solves{0},
+              n_jac_vec_setup_evals{0},
+              n_jac_vec_prod_evals{0}
         {
         }
       };

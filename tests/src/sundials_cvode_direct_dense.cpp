@@ -27,7 +27,9 @@ struct Time
 class CVRobertsDNS : public SUNDIALS::CVODE::Client
 {
 public:
-  CVRobertsDNS(std::vector<realtype> const& state, Time const& time, SUNDIALS::CVODE::Types::IntegrationTolerance const& tolerance)
+  CVRobertsDNS(std::vector<realtype> const& state,
+               Time const& time,
+               SUNDIALS::CVODE::Types::IntegrationTolerance const& tolerance)
       : m_state(state), m_time(time), m_tolerance(tolerance)
   {
     // enable optional user functions
@@ -150,7 +152,11 @@ TEST_CASE("3-species reaction PDE system can be solved", "[direct dense solver]"
         // log if verbose
         if (TestConfig::verbose)
           {
-            fmt::print("At t = {:e} s:  y[0] = {:e}  y[1] = {:e}  y[2] = {:e}\n", time, client.State(0), client.State(1), client.State(2));
+            fmt::print("At t = {:e} s:  y[0] = {:e}  y[1] = {:e}  y[2] = {:e}\n",
+                       time,
+                       client.State(0),
+                       client.State(1),
+                       client.State(2));
           }
 
         time_step_count++;
@@ -159,8 +165,7 @@ TEST_CASE("3-species reaction PDE system can be solved", "[direct dense solver]"
 
     if (TestConfig::verbose)
       {
-        std::string const title = fmt::format(fmt::emphasis::underline
-                                                  | fmt::emphasis::bold,
+        std::string const title = fmt::format(fmt::emphasis::underline | fmt::emphasis::bold,
                                               "Final statistics:");
         fmt::print("{}\n{}\n", title, cvode.PrintSolverStatistics());
       }

@@ -145,7 +145,10 @@ namespace SUNDIALS
     public:
       Iterative();
       ~Iterative();
-      void SetLinearSolverOptions(Types::Preconditioner const preconditioner, Types::GramSchmidt const gram_schmidt, int const n_krylov_basis_vectors, int const max_restarts);
+      void SetLinearSolverOptions(Types::Preconditioner const preconditioner,
+                                  Types::GramSchmidt const gram_schmidt,
+                                  int const n_krylov_basis_vectors,
+                                  int const max_restarts);
 
     private:
       int BindUserFunctions() override;
@@ -281,8 +284,7 @@ namespace SUNDIALS
         return strategy->SetMaxConvergenceFailures(max_conv_fails);
       }
 
-      boost::optional<int> SetNonlinConvergenceCoefficient(realtype const
-                                                               nonlin_conv_coef) const
+      boost::optional<int> SetNonlinConvergenceCoefficient(realtype const nonlin_conv_coef) const
       {
         return strategy->SetNonlinConvergenceCoefficient(nonlin_conv_coef);
       }

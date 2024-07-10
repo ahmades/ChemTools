@@ -25,11 +25,15 @@ namespace CppPy
   public:
     FunctionP1R2();
 
-    FunctionP1R2(std::string const& module_path, std::string const& function_name);
+    FunctionP1R2(std::string const& module_path,
+                 std::string const& function_name);
 
-    void Load(std::string const& module_path, std::string const& function_name);
+    void Load(std::string const& module_path,
+              std::string const& function_name);
 
-    bool Evaluate(double const param, double& val_1, double& val_2);
+    bool Evaluate(double const param,
+                  double& val_1,
+                  double& val_2);
   };
 
 } // namespace CppPy

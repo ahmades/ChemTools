@@ -36,7 +36,15 @@ namespace Apps
     public:
       Base();
 
-      Base(Cantera::ThermoPhase& thermo, Cantera::Kinetics& kinetics, double const temperature, double const pressure, std::vector<double> const& mass_fractions, double const relative_solver_tolerance, double const absolute_solver_tolerance, double const total_simulation_time, bool const write_results);
+      Base(Cantera::ThermoPhase& thermo,
+           Cantera::Kinetics& kinetics,
+           double const temperature,
+           double const pressure,
+           std::vector<double> const& mass_fractions,
+           double const relative_solver_tolerance,
+           double const absolute_solver_tolerance,
+           double const total_simulation_time,
+           bool const write_results);
 
       virtual ~Base() = default;
 
@@ -52,8 +60,7 @@ namespace Apps
 
       std::vector<double> const& MassFractions() const;
 
-      int RightHandSide(realtype const /*time*/
-                        ,
+      int RightHandSide(realtype const /*time*/,
                         realtype* const state,
                         realtype* rhs) override;
 
@@ -99,7 +106,15 @@ namespace Apps
     class EnergyEnabled : public Base
     {
     public:
-      EnergyEnabled(Cantera::ThermoPhase& thermo, Cantera::Kinetics& kinetics, double const temperature, double const pressure, std::vector<double> const& mass_fractions, double const relative_solver_tolerance, double const absolute_solver_tolerance, double const total_simulation_time, bool const write_results);
+      EnergyEnabled(Cantera::ThermoPhase& thermo,
+                    Cantera::Kinetics& kinetics,
+                    double const temperature,
+                    double const pressure,
+                    std::vector<double> const& mass_fractions,
+                    double const relative_solver_tolerance,
+                    double const absolute_solver_tolerance,
+                    double const total_simulation_time,
+                    bool const write_results);
 
       virtual ~EnergyEnabled() = default;
 
@@ -109,8 +124,7 @@ namespace Apps
 
       void UpdateSolution() override;
 
-      int RightHandSide(realtype const /*time*/
-                        ,
+      int RightHandSide(realtype const /*time*/,
                         realtype* const state,
                         realtype* rhs) override;
 

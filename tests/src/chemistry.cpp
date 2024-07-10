@@ -10,7 +10,10 @@
 #include "config.hpp"
 #include "test_config.hpp"
 
-static void Equilibrate(Cantera::ThermoPhase& thermo, double const temperature, double pressure, Cantera::compositionMap const& composition)
+static void Equilibrate(Cantera::ThermoPhase& thermo,
+                        double const temperature,
+                        double pressure,
+                        Cantera::compositionMap const& composition)
 {
   try
     {
@@ -72,7 +75,8 @@ struct TransportOutput
   double thermal_conductivity;
 };
 
-static TransportOutput GetTransOutput(Cantera::Transport& trans, bool verbose = false)
+static TransportOutput GetTransOutput(Cantera::Transport& trans,
+                                      bool verbose = false)
 {
   TransportOutput output;
   output.viscosity = trans.viscosity();
@@ -110,7 +114,8 @@ struct KineticsOutput
   RateOfProgress rop;
 };
 
-static KineticsOutput GetKineticsOutput(Cantera::Kinetics& kinetics, bool verbose = false)
+static KineticsOutput GetKineticsOutput(Cantera::Kinetics& kinetics,
+                                        bool verbose = false)
 {
   KineticsOutput output;
   size_t const n_rxns = kinetics.nReactions();
@@ -125,7 +130,12 @@ static KineticsOutput GetKineticsOutput(Cantera::Kinetics& kinetics, bool verbos
       Cantera::writelog("\nReactions and their forward, reverse and net rates of progress:\n");
       for (size_t i = 0; i < n_rxns; i++)
         {
-          Cantera::writelog("{:6s} {:35s} {:14.5g} {:14.5g} {:14.5g}  kmol/m3/s\n", 'R' + std::to_string(i + 1), kinetics.reactionString(i), output.rop.fwd[i], output.rop.rev[i], output.rop.net[i]);
+          Cantera::writelog("{:6s} {:35s} {:14.5g} {:14.5g} {:14.5g}  kmol/m3/s\n",
+                            'R' + std::to_string(i + 1),
+                            kinetics.reactionString(i),
+                            output.rop.fwd[i],
+                            output.rop.rev[i],
+                            output.rop.net[i]);
         }
     }
 

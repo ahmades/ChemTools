@@ -27,10 +27,15 @@ namespace Results
 
         for (auto it_scalars = scalars.begin(); it_scalars != scalars.end(); ++it_scalars)
           {
-            fmt::print("{} =  {:e} {}", std::get<Meta::notation>(*it_scalars), *std::get<Meta::value>(*it_scalars), std::get<Meta::unit>(*it_scalars));
+            fmt::print("{} =  {:e} {}",
+                       std::get<Meta::notation>(*it_scalars),
+                       *std::get<Meta::value>(*it_scalars),
+                       std::get<Meta::unit>(*it_scalars));
 
             if (it_scalars != scalars.end() - 1)
-              fmt::print(" ");
+              {
+                fmt::print(" ");
+              }
           }
         fmt::print("\n");
       }

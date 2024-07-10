@@ -20,16 +20,27 @@ namespace SUNDIALS
   {
 
     IStrategy::IStrategy()
-        : memory{nullptr}, client{nullptr}, linear_solver{nullptr}, linear_multi_step_meth{Types::LinearMultisptepMethod::invalid}, time_step_ctrl(), solver_ctrl(), is_initialised{false}, must_be_reinitialised{false}
+        : memory{nullptr},
+          client{nullptr},
+          linear_solver{nullptr},
+          linear_multi_step_meth{Types::LinearMultisptepMethod::invalid},
+          time_step_ctrl(),
+          solver_ctrl(),
+          is_initialised{false},
+          must_be_reinitialised{false}
     {
     }
 
     IStrategy::~IStrategy()
     {
       if (memory)
-        CVodeFree(&memory);
+        {
+          CVodeFree(&memory);
+        }
       if (linear_solver)
-        SUNLinSolFree(linear_solver);
+        {
+          SUNLinSolFree(linear_solver);
+        }
     }
 
     void IStrategy::SetLinearMultiStepMethod(Types::LinearMultisptepMethod const linear_multi_step_meth_)
@@ -194,8 +205,7 @@ namespace SUNDIALS
                   : boost::optional<int>());
     }
 
-    boost::optional<int> IStrategy::SetNonlinConvergenceCoefficient(realtype const
-                                                                        nonlin_conv_coef)
+    boost::optional<int> IStrategy::SetNonlinConvergenceCoefficient(realtype const nonlin_conv_coef)
     {
       if (nonlin_conv_coef <= 0.0)
         {
@@ -221,50 +231,71 @@ namespace SUNDIALS
       assert(client);
       ret_code = CVodeSetUserData(memory, client);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the error handler
       if (client->opt_udf_set.error_handler)
         {
           ret_code = CVodeSetErrHandlerFn(memory, Client::ErrorHandlerCallback, nullptr);
           if (ret_code != CV_SUCCESS)
-            return ret_code;
+            {
+              return ret_code;
+            }
         }
 
       // initialize the integrator memory and specify the user's
       // right hand side function in u'= f(t,u), the inital time,
       // and the initial dependent variable vector u
-      ret_code = CVodeInit(memory, Client::RightHandSideCallback, client->time.start, client->state);
+      ret_code = CVodeInit(memory,
+                           Client::RightHandSideCallback,
+                           client->time.start,
+                           client->state);
       if (ret_code != 0)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the linear solver
       ret_code = SetLinearSolver();
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set UDFs here
       ret_code = BindUserFunctions();
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the projection function
       if (client->opt_udf_set.projection)
         {
           ret_code = CVodeSetProjFn(memory, Client::ProjectionCallback);
           if (ret_code != CV_SUCCESS)
-            return ret_code;
+            {
+              return ret_code;
+            }
           // hardcoded: disable error projection
           ret_code = CVodeSetProjErrEst(memory, 0);
           if (ret_code != CV_SUCCESS)
-            return ret_code;
+            {
+              return ret_code;
+            }
           // hardcoded: projection frequency
           ret_code = CVodeSetProjFrequency(memory, 1);
           if (ret_code != CV_SUCCESS)
-            return ret_code;
+            {
+              return ret_code;
+            }
           ret_code = CVodeSetEpsProj(memory, 1.0e-5);
           if (ret_code != CV_SUCCESS)
-            return ret_code;
+            {
+              return ret_code;
+            }
         }
 
       // set the constraints if any
@@ -272,48 +303,67 @@ namespace SUNDIALS
         {
           ret_code = CVodeSetConstraints(memory, client->constraint);
           if (ret_code != CV_SUCCESS)
-            return ret_code;
+            {
+              return ret_code;
+            }
         }
 
       // set the tolerances
       if (1 == client->tolerance.absolute.size())
         {
-          ret_code = CVodeSStolerances(memory, client->tolerance.relative, client->tolerance.absolute.front());
+          ret_code = CVodeSStolerances(memory,
+                                       client->tolerance.relative,
+                                       client->tolerance.absolute.front());
         }
       else
         {
-          N_Vector absolute_tolerance = N_VMake_Serial(client->n_states, client->tolerance.absolute.data());
+          N_Vector absolute_tolerance = N_VMake_Serial(client->n_states,
+                                                       client->tolerance.absolute.data());
           // N_VNew_Serial( client->n_states );
-          ret_code = CVodeSVtolerances(memory, client->tolerance.relative, absolute_tolerance);
+          ret_code = CVodeSVtolerances(memory,
+                                       client->tolerance.relative,
+                                       absolute_tolerance);
           N_VDestroy(absolute_tolerance);
         }
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the stop time
       ret_code = CVodeSetStopTime(memory, client->time.stop);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the initial step size
       ret_code = CVodeSetInitStep(memory, time_step_ctrl.init_step);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the minimum step size
       ret_code = CVodeSetMinStep(memory, time_step_ctrl.min_step);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the maximum step size
       ret_code = CVodeSetMaxStep(memory, time_step_ctrl.max_step);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the maximum number of internal steps (subdivisions) within a time step
       ret_code = CVodeSetMaxNumSteps(memory, time_step_ctrl.n_steps);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set max order of the linear multistep method
       if (-1 == solver_ctrl.max_order)
@@ -324,37 +374,51 @@ namespace SUNDIALS
         }
       ret_code = CVodeSetMaxOrd(memory, solver_ctrl.max_order);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the maximum number of warning messages
       ret_code = CVodeSetMaxHnilWarns(memory, solver_ctrl.max_warn_msgs);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the activity of the stability
       ret_code = CVodeSetStabLimDet(memory, static_cast<booleantype>(solver_ctrl.stab_lim_det_active));
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the maximum number of error test failures
       ret_code = CVodeSetMaxErrTestFails(memory, solver_ctrl.max_err_test_fails);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the maximum number of nonlinear iteartions
       ret_code = CVodeSetMaxNonlinIters(memory, solver_ctrl.max_nonlin_iters);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the maximum number of nonlinear convergence failures
       ret_code = CVodeSetMaxConvFails(memory, solver_ctrl.max_conv_fails);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set the safety factor used in the nonlinear convergence test
       ret_code = CVodeSetNonlinConvCoef(memory, solver_ctrl.nonlin_conv_coef);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // last statement in this method
       is_initialised = true;
@@ -390,7 +454,11 @@ namespace SUNDIALS
     int IStrategy::Integrate(realtype const time_target)
     {
       assert(is_initialised);
-      int ret_code = CVode(memory, time_target, client->state, &client->time.reached, CV_NORMAL);
+      int ret_code = CVode(memory,
+                           time_target,
+                           client->state,
+                           &client->time.reached,
+                           CV_NORMAL);
       /*
         As a last ditch effort, can include an internal recovery mechanism here
         before passing control to the client code:
@@ -420,42 +488,90 @@ namespace SUNDIALS
     {
       int ret_code;
       assert(memory);
-      ret_code = CVodeGetNumSteps(memory, &stats.n_internal_steps);
+      ret_code = CVodeGetNumSteps(memory,
+                                  &stats.n_internal_steps);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetNumRhsEvals(memory, &stats.n_rhs_evals);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetNumRhsEvals(memory,
+                                     &stats.n_rhs_evals);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetNumLinSolvSetups(memory, &stats.n_linear_solver_setups);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetNumLinSolvSetups(memory,
+                                          &stats.n_linear_solver_setups);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetNumErrTestFails(memory, &stats.n_error_test_fails);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetNumErrTestFails(memory,
+                                         &stats.n_error_test_fails);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetNumNonlinSolvIters(memory, &stats.n_nonlinear_solver_iters);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetNumNonlinSolvIters(memory,
+                                            &stats.n_nonlinear_solver_iters);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetNumNonlinSolvConvFails(memory, &stats.n_nonlinear_solver_conv_fails);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetNumNonlinSolvConvFails(memory,
+                                                &stats.n_nonlinear_solver_conv_fails);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetLastOrder(memory, &stats.last_order_used);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetLastOrder(memory,
+                                   &stats.last_order_used);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetCurrentOrder(memory, &stats.current_order);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetCurrentOrder(memory,
+                                      &stats.current_order);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetLastStep(memory, &stats.last_internal_step_size);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetLastStep(memory,
+                                  &stats.last_internal_step_size);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetCurrentStep(memory, &stats.next_internal_step_size);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetCurrentStep(memory,
+                                     &stats.next_internal_step_size);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetActualInitStep(memory, &stats.first_internal_step_size);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetActualInitStep(memory,
+                                        &stats.first_internal_step_size);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
-      ret_code = CVodeGetNumStabLimOrderReds(memory, &stats.n_stability_order_reductions);
+        {
+          return ret_code;
+        }
+
+      ret_code = CVodeGetNumStabLimOrderReds(memory,
+                                             &stats.n_stability_order_reductions);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
+
       return 0;
     }
 
@@ -465,28 +581,44 @@ namespace SUNDIALS
       assert(memory);
       ret_code = CVodeGetNumJacEvals(memory, &stats.n_jac_evals);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
       ret_code = CVodeGetNumLinRhsEvals(memory, &stats.n_rhs_jac_evals);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
       ret_code = CVodeGetNumLinIters(memory, &stats.n_linear_iterations);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
       ret_code = CVodeGetNumLinConvFails(memory, &stats.n_linear_conv_fails);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
       ret_code = CVodeGetNumPrecEvals(memory, &stats.n_prec_evals);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
       ret_code = CVodeGetNumPrecSolves(memory, &stats.n_prec_solves);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
       ret_code = CVodeGetNumJTSetupEvals(memory, &stats.n_jac_vec_setup_evals);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
       ret_code = CVodeGetNumJtimesEvals(memory, &stats.n_jac_vec_prod_evals);
       if (ret_code != CV_SUCCESS)
-        return ret_code;
+        {
+          return ret_code;
+        }
       return 0;
     }
 
@@ -558,7 +690,9 @@ namespace SUNDIALS
     Direct::~Direct()
     {
       if (matrix)
-        SUNMatDestroy(matrix);
+        {
+          SUNMatDestroy(matrix);
+        }
     }
 
     int Direct::BindUserFunctions()
@@ -642,13 +776,17 @@ namespace SUNDIALS
                                                                      : nullptr;
           ret_code = CVodeSetJacTimes(IStrategy::memory, jacobian_times_vector_setup_func, Client::JacobianTimesVectorCallback);
           if (ret_code != 0)
-            return ret_code;
+            {
+              return ret_code;
+            }
         }
 
       // Set the preconditioner functions
       ret_code = CVodeSetPreconditioner(memory, Client::PreconditionerSetupCallback, Client::PreconditionerSolveCallback);
       if (ret_code != 0)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       return ret_code;
     }
@@ -667,17 +805,23 @@ namespace SUNDIALS
       // create the linear solver
       linear_solver = SUNLinSol_SPGMR(client->state, static_cast<int>(options.preconditioner), options.n_krylov_basis_vectors);
       if (static_cast<void*>(linear_solver) == nullptr)
-        return -1;
+        {
+          return -1;
+        }
 
       // set the Gram-Schmidt orthogonilisation method
       int ret_code = SUNLinSol_SPGMRSetGSType(linear_solver, static_cast<int>(options.gram_schmidt));
       if (ret_code != 0)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set maximum number of allowable restarts
       ret_code = SUNLinSol_SPGMRSetMaxRestarts(linear_solver, options.max_restarts);
       if (ret_code != 0)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // attach the linear solver to the memory
       return CVodeSetLinearSolver(memory, linear_solver, nullptr);
@@ -697,17 +841,23 @@ namespace SUNDIALS
       // create the linear solver
       linear_solver = SUNLinSol_SPFGMR(client->state, static_cast<int>(options.preconditioner), options.n_krylov_basis_vectors);
       if (static_cast<void*>(linear_solver) == nullptr)
-        return -1;
+        {
+          return -1;
+        }
 
       // set the Gram-Schmidt orthogonilisation method
       int ret_code = SUNLinSol_SPFGMRSetGSType(linear_solver, static_cast<int>(options.gram_schmidt));
       if (ret_code != 0)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set maximum number of allowable restarts
       ret_code = SUNLinSol_SPFGMRSetMaxRestarts(linear_solver, options.max_restarts);
       if (ret_code != 0)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // attach the linear solver to the memory
       return CVodeSetLinearSolver(memory, linear_solver, nullptr);
@@ -727,17 +877,23 @@ namespace SUNDIALS
       // create the linear solver
       linear_solver = SUNLinSol_SPBCGS(client->state, static_cast<int>(options.preconditioner), options.n_krylov_basis_vectors);
       if (static_cast<void*>(linear_solver) == nullptr)
-        return -1;
+        {
+          return -1;
+        }
 
       // set the Gram-Schmidt orthogonilisation method
       int ret_code = SUNLinSol_SPBCGSSetPrecType(linear_solver, static_cast<int>(options.gram_schmidt));
       if (ret_code != 0)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // set maximum number of allowable restarts
       ret_code = SUNLinSol_SPBCGSSetMaxl(linear_solver, options.max_restarts);
       if (ret_code != 0)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // attach the linear solver to the memory
       return CVodeSetLinearSolver(memory, linear_solver, nullptr);
@@ -757,13 +913,17 @@ namespace SUNDIALS
       // create the linear solver
       linear_solver = SUNLinSol_SPTFQMR(client->state, static_cast<int>(options.preconditioner), options.n_krylov_basis_vectors);
       if (static_cast<void*>(linear_solver) == nullptr)
-        return -1;
+        {
+          return -1;
+        }
 
       // no Gram-Schmidt orthogonilisation method
       // set maximum number of allowable restarts
       int ret_code = SUNLinSol_SPTFQMRSetMaxl(linear_solver, options.max_restarts);
       if (ret_code != 0)
-        return ret_code;
+        {
+          return ret_code;
+        }
 
       // attach the linear solver to the memory
       return CVodeSetLinearSolver(memory, linear_solver, nullptr);

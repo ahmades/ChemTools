@@ -36,17 +36,12 @@ namespace Results
     };
 
     // scalar result type
-    using Scalar = std::tuple<std::string // group
-                              ,
-                              std::string // set
-                              ,
-                              std::string // name
-                              ,
-                              std::string // notation
-                              ,
-                              std::string // unit
-                              ,
-                              double*>; // value
+    using Scalar = std::tuple<std::string, // group
+                              std::string, // set
+                              std::string, // name
+                              std::string, // notation
+                              std::string, // unit
+                              double*>;    // value
 
     std::string file_name;
     std::vector<Scalar> scalars;
@@ -61,9 +56,19 @@ namespace Results
       file_name = file_name_;
     }
 
-    void Register(std::string const& group, std::string const& set, std::string const& name, std::string const& notation, std::string const& unit, double* const scalar)
+    void Register(std::string const& group,
+                  std::string const& set,
+                  std::string const& name,
+                  std::string const& notation,
+                  std::string const& unit,
+                  double* const scalar)
     {
-      scalars.push_back(std::make_tuple(group, set, name, notation, unit, scalar));
+      scalars.push_back(std::make_tuple(group,
+                                        set,
+                                        name,
+                                        notation,
+                                        unit,
+                                        scalar));
     }
   };
 
@@ -75,12 +80,17 @@ namespace Results
     size_t n_updates;
 
     ObserverData()
-        : observer(nullptr), update_frequency{1}, n_updates{0}
+        : observer(nullptr),
+          update_frequency{1},
+          n_updates{0}
     {
     }
 
-    ObserverData(Observer& observer_, size_t update_frequency_)
-        : observer(&observer_), update_frequency{update_frequency_}, n_updates{0}
+    ObserverData(Observer& observer_,
+                 size_t update_frequency_)
+        : observer(&observer_),
+          update_frequency{update_frequency_},
+          n_updates{0}
     {
     }
   };
@@ -105,7 +115,9 @@ namespace Results
 
     void DetachObserver(Observer& observer)
     {
-      observers.erase(std::remove(observers.begin(), observers.end(), &observer));
+      observers.erase(std::remove(observers.begin(),
+                                  observers.end(),
+                                  &observer));
     }
 
     void NotifyObserver()

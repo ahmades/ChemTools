@@ -63,7 +63,16 @@ TEST_CASE("Test reactors", "[reactors]")
   double const absolute_solver_tolerance = 1.0e-15;
   bool const write_results = true;
 
-  std::unique_ptr<Reactor::Base> reactor = Reactor::Create(Reactor::Type::Const_Vol, thermo, kinetics, temperature, pressure, mass_fractions, relative_solver_tolerance, absolute_solver_tolerance, total_simulation_time, write_results);
+  std::unique_ptr<Reactor::Base> reactor = Reactor::Create(Reactor::Type::Const_Vol,
+                                                           thermo,
+                                                           kinetics,
+                                                           temperature,
+                                                           pressure,
+                                                           mass_fractions,
+                                                           relative_solver_tolerance,
+                                                           absolute_solver_tolerance,
+                                                           total_simulation_time,
+                                                           write_results);
 
   // attach to result observer
   Results::HDF5Writer result_writer(*(reactor.get()), ".");
@@ -134,8 +143,7 @@ TEST_CASE("Test reactors", "[reactors]")
       {
         fmt::print("\nIgnition at t = {} ms.\n", time_ignition * 1.0e+3);
 
-        std::string const title = fmt::format(fmt::emphasis::underline
-                                                  | fmt::emphasis::bold,
+        std::string const title = fmt::format(fmt::emphasis::underline | fmt::emphasis::bold,
                                               "Final statistics:");
         fmt::print("{}\n{}\n", title, cvode.PrintSolverStatistics());
       }

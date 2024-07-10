@@ -14,7 +14,15 @@ namespace Apps
     class ConstPres : public EnergyEnabled
     {
     public:
-      ConstPres(Cantera::ThermoPhase& thermo, Cantera::Kinetics& kinetics, double const temperature, double const pressure, std::vector<double> const& mass_fractions, double const relative_solver_tolerance, double const absolute_solver_tolerance, double const total_simulation_time, bool const write_results);
+      ConstPres(Cantera::ThermoPhase& thermo,
+                Cantera::Kinetics& kinetics,
+                double const temperature,
+                double const pressure,
+                std::vector<double> const& mass_fractions,
+                double const relative_solver_tolerance,
+                double const absolute_solver_tolerance,
+                double const total_simulation_time,
+                bool const write_results);
       ~ConstPres() = default;
 
     private:
@@ -27,7 +35,15 @@ namespace Apps
     class ConstVol : public EnergyEnabled
     {
     public:
-      ConstVol(Cantera::ThermoPhase& thermo, Cantera::Kinetics& kinetics, double const temperature, double const pressure, std::vector<double> const& mass_fractions, double const relative_solver_tolerance, double const absolute_solver_tolerance, double const total_simulation_time, bool const write_results);
+      ConstVol(Cantera::ThermoPhase& thermo,
+               Cantera::Kinetics& kinetics,
+               double const temperature,
+               double const pressure,
+               std::vector<double> const& mass_fractions,
+               double const relative_solver_tolerance,
+               double const absolute_solver_tolerance,
+               double const total_simulation_time,
+               bool const write_results);
       ~ConstVol() = default;
 
     private:
@@ -40,7 +56,15 @@ namespace Apps
     class ConstTempPres : public Base
     {
     public:
-      ConstTempPres(Cantera::ThermoPhase& thermo, Cantera::Kinetics& kinetics, double const temperature, double const pressure, std::vector<double> const& mass_fractions, double const relative_solver_tolerance, double const absolute_solver_tolerance, double const total_simulation_time, bool const write_results);
+      ConstTempPres(Cantera::ThermoPhase& thermo,
+                    Cantera::Kinetics& kinetics,
+                    double const temperature,
+                    double const pressure,
+                    std::vector<double> const& mass_fractions,
+                    double const relative_solver_tolerance,
+                    double const absolute_solver_tolerance,
+                    double const total_simulation_time,
+                    bool const write_results);
       ~ConstTempPres() = default;
 
     private:
@@ -52,7 +76,15 @@ namespace Apps
     class ConstTempVol : public Base
     {
     public:
-      ConstTempVol(Cantera::ThermoPhase& thermo, Cantera::Kinetics& kinetics, double const temperature, double const pressure, std::vector<double> const& mass_fractions, double const relative_solver_tolerance, double const absolute_solver_tolerance, double const total_simulation_time, bool const write_results);
+      ConstTempVol(Cantera::ThermoPhase& thermo,
+                   Cantera::Kinetics& kinetics,
+                   double const temperature,
+                   double const pressure,
+                   std::vector<double> const& mass_fractions,
+                   double const relative_solver_tolerance,
+                   double const absolute_solver_tolerance,
+                   double const total_simulation_time,
+                   bool const write_results);
       ~ConstTempVol() = default;
 
     private:

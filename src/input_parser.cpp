@@ -295,8 +295,7 @@ namespace Input
     // check if the specified mass or mole fractions sum up to unity
     {
       CompositionInputType const type = composition_meta.Type();
-      if (CompositionInputType::MassFraction == type
-          || CompositionInputType::MoleFraction == type)
+      if (CompositionInputType::MassFraction == type || CompositionInputType::MoleFraction == type)
         {
           double const sum = std::accumulate(composition_pairs.begin(), composition_pairs.end(), 0.0, [](double const previous, std::pair<std::string, double> const& pair) { return previous + pair.second; });
           // TODO: tolerance?

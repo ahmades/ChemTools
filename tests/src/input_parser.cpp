@@ -234,10 +234,8 @@ TEST_CASE("Input can be parsed", "[input]")
       {
         Input::Composition const& composition = cas.composition;
         REQUIRE(Input::CompositionInputType::Concentration == composition.Type());
-        REQUIRE(units::precise_unit(units::milli * units::mol / units::L)
-                == composition.InputUnit());
-        REQUIRE(units::precise_unit(units::mol / units::m.pow(3))
-                == composition.Unit());
+        REQUIRE(units::precise_unit(units::milli * units::mol / units::L) == composition.InputUnit());
+        REQUIRE(units::precise_unit(units::mol / units::m.pow(3)) == composition.Unit());
         Input::CompositionPairs pairs = composition.Pairs();
         REQUIRE(4 == pairs.size());
         for (size_t i = 0; i < pairs.size(); ++i)
@@ -293,10 +291,8 @@ TEST_CASE("Input can be parsed", "[input]")
       {
         Input::Composition const& composition = cas.composition;
         REQUIRE(Input::CompositionInputType::Concentration == composition.Type());
-        REQUIRE(units::precise_unit(units::milli * units::mol / units::L)
-                == composition.InputUnit());
-        REQUIRE(units::precise_unit(units::mol / units::m.pow(3))
-                == composition.Unit());
+        REQUIRE(units::precise_unit(units::milli * units::mol / units::L) == composition.InputUnit());
+        REQUIRE(units::precise_unit(units::mol / units::m.pow(3)) == composition.Unit());
         Input::CompositionPairs pairs = composition.Pairs();
         REQUIRE(4 == pairs.size());
         for (size_t i = 0; i < pairs.size(); ++i)
@@ -392,8 +388,7 @@ TEST_CASE("Input can be parsed", "[input]")
           {
             Input::CaseSet const& case_set = case_sets[j];
 
-            fmt::print(fmt::emphasis::underline
-                           | fmt::emphasis::bold,
+            fmt::print(fmt::emphasis::underline | fmt::emphasis::bold,
                        "Set {}\n\n",
                        j + 1);
 
@@ -410,7 +405,9 @@ TEST_CASE("Input can be parsed", "[input]")
             for (auto cas : case_set.Cases())
               {
                 std::string species_str;
-                std::for_each(cas.composition.Pairs().begin(), cas.composition.Pairs().end(), [&species_str](const auto& pair) { species_str += fmt::format("{}:{} ", pair.first, pair.second); });
+                std::for_each(cas.composition.Pairs().begin(),
+                              cas.composition.Pairs().end(),
+                              [&species_str](const auto& pair) { species_str += fmt::format("{}:{} ", pair.first, pair.second); });
                 if (cas.DescriptionIsDefined())
                   {
                     fmt::print("Case:\n      Description: {}\n", cas.Description());
