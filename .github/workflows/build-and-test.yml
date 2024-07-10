@@ -48,6 +48,7 @@ jobs:
       # Step: Set paths
       - name: Set paths
         id: paths
+        shell: bash
         run: |
           build_dir="${{ github.workspace }}/build"
           dependencies_work_dir="${{ github.workspace }}/dependencies/work"
