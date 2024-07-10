@@ -64,7 +64,7 @@ jobs:
         id: restore-cached-dependencies
         uses: actions/cache/restore@v4
         with:
-          path: ~/.cache
+          path: ${{ steps.paths.outputs.dependencies_install_dir }}
           key: ${{ env.DEP_CACHE_KEY }}
           restore-keys: |
             dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-master
