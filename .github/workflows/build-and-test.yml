@@ -43,7 +43,8 @@ jobs:
 
       - name: Generate cache key
         id: cache-key
-        run: echo "DEP_CACHE_KEY=dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')" >> $GITHUB_ENV
+        #run: echo "DEP_CACHE_KEY=dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')" >> $GITHUB_ENV
+        run: echo "::set-output name=cache_key::dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
 
       # Step: Set paths
       - name: Set paths
@@ -67,7 +68,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ steps.paths.outputs.dependencies_install_dir }}
-          key: ${{ env.DEP_CACHE_KEY }}
+          #key: ${{ env.DEP_CACHE_KEY }}
+          key: ${{ steps.cache-key.outputs.cache_key }}
           restore-keys: |
             dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-master
             dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-
@@ -87,4 +89,5 @@ jobs:
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
         with:
           path: ${{ steps.paths.outputs.dependencies_install_dir }}
-          key: ${{ env.DEP_CACHE_KEY }}
+          #key: ${{ env.DEP_CACHE_KEY }}
+          key: ${{ steps.cache-key.outputs.cache_key }}
