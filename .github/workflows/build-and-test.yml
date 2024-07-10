@@ -43,6 +43,7 @@ jobs:
 
       - name: Generate cache key
         id: cache-key-gen
+        shell: bash
         #run: echo "DEP_CACHE_KEY=dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')" >> $GITHUB_ENV
         run: |
           cache_key="dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
