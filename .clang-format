@@ -7,7 +7,7 @@ ColumnLimit: 0
 IndentWidth: 2
 UseTab: Never
 BreakBeforeBraces: GNU
-InsertBraces : true
+#InsertBraces : true
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: true
 NamespaceIndentation: All
