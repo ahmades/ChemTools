@@ -76,8 +76,9 @@ jobs:
 
       - name: Build dependencies
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
+        shell: pwsh
         run: >
-          pwsh ./scripts/dependencies_installer/InstallDependencies.ps1 
+          ./scripts/dependencies_installer/InstallDependencies.ps1
             -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}"
             -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}"
             -BuildType "${{ matrix.build_type }}"
