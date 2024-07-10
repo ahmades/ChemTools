@@ -1,0 +1,88 @@
+name: Build and test
+
+on:
+  push:
+    branches:
+      - main
+      - "release/v[0-9].[0-9].[0-9]"
+  pull_request:
+    types:
+      - opened # triggers build when opened
+      - synchronize # triggers build when commits are pushed to HEAD
+    branches:
+      - main
+      - "release/v[0-9].[0-9].[0-9]"
+      - "feature/**"
+  # Manual trigger
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Build strategy
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          #- ubuntu-22.04
+          - windows-2022
+        build_type:
+          - "Release"
+          #- 'Debug'
+          #- 'DebugWithRelInfo '
+
+    # Build platform
+    runs-on: ${{ matrix.platform }}
+
+    name: build and test (${{ matrix.platform }}-${{ matrix.build_type }})
+
+    steps:
+      # Step: Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate cache key
+        id: cache-key
+        run: echo "DEP_CACHE_KEY=dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')" >> $GITHUB_ENV
+
+      # Step: Set paths
+      - name: Set paths
+        id: paths
+        run: |
+          build_dir="${{ github.workspace }}/build"
+          dependencies_work_dir="${{ github.workspace }}/dependencies/work"
+          dependencies_install_dir="${{ github.workspace }}/dependencies/install"
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            build_dir=$(echo "$build_dir" | sed 's/\//\\/g')
+            dependencies_work_dir=$(echo "$dependencies_work_dir" | sed 's/\//\\/g')
+            dependencies_install_dir=$(echo "$dependencies_install_dir" | sed 's/\//\\/g')
+          fi
+          echo "build_dir=$build_dir" >> $GITHUB_OUTPUT
+          echo "dependencies_work_dir=$dependencies_work_dir" >> $GITHUB_OUTPUT
+          echo "dependencies_install_dir=$dependencies_install_dir" >> $GITHUB_OUTPUT
+
+      - name: Restore cached dependencies
+        id: restore-cached-dependencies
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache
+          key: ${{ env.DEP_CACHE_KEY }}
+          restore-keys: |
+            dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-master
+            dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-
+
+      - name: Build dependencies
+        if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
+        run: >
+          pwsh ./scripts/dependencies_installer/InstallDependencies.ps1 
+            -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}"
+            -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}"
+            -BuildType "${{ matrix.build_type }}"
+            -ParallelJobs 10 
+            -GitTags @{zlib = 'v1.2.13'; hdf5 = 'hdf5-1_14_0'; sundials = 'v5.8.0'; yamlcpp = '0.8.0'; catch2 = 'v3.5.2'; googletest = 'v1.14.0'; units = 'v0.9.1'; fmt='9.1.0'; eigen ='3.4.0'; boost ='1.84.0'; cantera = 'v2.6.0'}
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.paths.outputs.dependencies_install_dir }}
+          key: ${{ env.DEP_CACHE_KEY }}
