@@ -3,24 +3,23 @@
 
 #include "results/observer.hpp"
 
-namespace Results {
+namespace Results
+{
 
-  class ConsoleLogger: public Observer { 
+  class ConsoleLogger : public Observer
+  {
   public:
-    
-    ConsoleLogger( Subject& subject_ );
-  
+    ConsoleLogger(Subject& subject_);
+
     ~ConsoleLogger();
-    
+
     // updates values of registered variables
-    void Update( Subject& a_subject ) override;
-    
+    void Update(Subject& a_subject) override;
+
   private:
-    
     Subject& subject;
   };
-  
-} // namespace Results
 
+} // namespace Results
 
 #endif // RESULTS_CONSOLE_LOGGER_HPP
