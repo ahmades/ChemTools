@@ -1,40 +1,42 @@
 #ifndef SUNDIALS_CVODE_INTERFACE_HPP
 #define SUNDIALS_CVODE_INTERFACE_HPP
 
-#include <iostream>
 #include <algorithm>
+#include <functional>
+#include <iostream>
 #include <limits>
+#include <memory>
 #include <type_traits>
 #include <vector>
-#include <functional>
-#include <memory>
 
 #include <cassert>
 
-#include <cvode/cvode.h>                  // prototypes for CVODE fcts., consts.
-#include <nvector/nvector_serial.h>       // access to serial N_Vector  
-#include <sunmatrix/sunmatrix_dense.h>    // access to dense SUNMatrix 
-#include <sunlinsol/sunlinsol_dense.h>    // access to dense SUNLinearSolver
-#include <sunmatrix/sunmatrix_band.h>     // access to band SUNMatrix
-#include <sunlinsol/sunlinsol_band.h>     // access to band SUNLinearSolver
-#include <sunlinsol/sunlinsol_spgmr.h>    // access to SPGMR SUNLinearSolver
-#include <sunlinsol/sunlinsol_spfgmr.h>   // access to SPGMR SUNLinearSolver
-#include <sunlinsol/sunlinsol_spbcgs.h>   // access to SPBCGS SUNLinearSolver
-#include <sunlinsol/sunlinsol_sptfqmr.h>  // access to SPTFQMR SUNLinearSolver 
-#include <sundials/sundials_types.h>      // defs. of realtype, sunindextype
+#include <cvode/cvode.h>                 // prototypes for CVODE fcts., consts.
+#include <nvector/nvector_serial.h>      // access to serial N_Vector
+#include <sundials/sundials_types.h>     // defs. of realtype, sunindextype
+#include <sunlinsol/sunlinsol_band.h>    // access to band SUNLinearSolver
+#include <sunlinsol/sunlinsol_dense.h>   // access to dense SUNLinearSolver
+#include <sunlinsol/sunlinsol_spbcgs.h>  // access to SPBCGS SUNLinearSolver
+#include <sunlinsol/sunlinsol_spfgmr.h>  // access to SPGMR SUNLinearSolver
+#include <sunlinsol/sunlinsol_spgmr.h>   // access to SPGMR SUNLinearSolver
+#include <sunlinsol/sunlinsol_sptfqmr.h> // access to SPTFQMR SUNLinearSolver
+#include <sunmatrix/sunmatrix_band.h>    // access to band SUNMatrix
+#include <sunmatrix/sunmatrix_dense.h>   // access to dense SUNMatrix
 
 #include <fmt/format.h>
 
 #include <boost/optional.hpp>
 
-#include "sundials/cvode/types.hpp"
 #include "sundials/cvode/client.hpp"
+#include "sundials/cvode/types.hpp"
 
-namespace SUNDIALS {
+namespace SUNDIALS
+{
 
-  namespace CVODE {
-  
-    /* 
+  namespace CVODE
+  {
+
+    /*
        ---------------------------------------------------------------------------
        CVODE inetrafce
        Implementation: strategy pattern
@@ -46,108 +48,108 @@ namespace SUNDIALS {
        * SPGMR   = Scaled Preconditioned Generalized Minimal Residual
        * SPFGMR  = Scaled Preconditioned Flexible Generalized Minimal
        * SPBCGS  = Scaled Preconditioned Bi-Conjugate Gradient Stable
-       * SPTFQMR = Scaled Preconditioned Transpose-Free Quasi-Minimal Residual 
+       * SPTFQMR = Scaled Preconditioned Transpose-Free Quasi-Minimal Residual
        ---------------------------------------------------------------------------
     */
-  
+
     // ------------ CVODE strategy interface
-    class IStrategy {
+    class IStrategy
+    {
 
     protected:
-    
       void* memory;
       Client* client;
       SUNLinearSolver linear_solver;
-    
+
     private:
-    
       Types::LinearMultisptepMethod linear_multi_step_meth;
       Types::TimeStepcontrol time_step_ctrl;
       Types::SolverControl solver_ctrl;
       bool is_initialised;
       bool must_be_reinitialised;
-    
+
       virtual int SetLinearSolver() = 0;
       virtual int BindUserFunctions() = 0;
-    
-    public:
 
+    public:
       IStrategy();
       virtual ~IStrategy();
-      void SetLinearMultiStepMethod( Types::LinearMultisptepMethod const linear_multi_step_meth_ );
-      void SetClientData( void* const user_data_ );
-      boost::optional<int> SetInitStepSize( realtype const init_step );
-      boost::optional<int> SetMinStepSize( realtype const min_step );
-      boost::optional<int> SetMaxStepSize( realtype const max_step );
-      boost::optional<int> SetMaxNumSteps( long int const n_steps );
-      void SetMaxOrder( int const max_order );
-      boost::optional<int> SetMaxWarnMessages( int const max_warn_msgs );
-      boost::optional<int> SetStabilityLimitDetection( bool const stab_lib_det_active );
-      boost::optional<int> SetMaxErrorTestFailures( int const max_err_test_fails );
-      boost::optional<int> SetMaxNonlinearIterations( int const max_nonlin_iters );
-      boost::optional<int> SetMaxConvergenceFailures( int const max_conv_fails );
-      boost::optional<int> SetNonlinConvergenceCoefficient( realtype const nonlin_conv_coef );  
+      void SetLinearMultiStepMethod(Types::LinearMultisptepMethod const linear_multi_step_meth_);
+      void SetClientData(void* const user_data_);
+      boost::optional<int> SetInitStepSize(realtype const init_step);
+      boost::optional<int> SetMinStepSize(realtype const min_step);
+      boost::optional<int> SetMaxStepSize(realtype const max_step);
+      boost::optional<int> SetMaxNumSteps(long int const n_steps);
+      void SetMaxOrder(int const max_order);
+      boost::optional<int> SetMaxWarnMessages(int const max_warn_msgs);
+      boost::optional<int> SetStabilityLimitDetection(bool const stab_lib_det_active);
+      boost::optional<int> SetMaxErrorTestFailures(int const max_err_test_fails);
+      boost::optional<int> SetMaxNonlinearIterations(int const max_nonlin_iters);
+      boost::optional<int> SetMaxConvergenceFailures(int const max_conv_fails);
+      boost::optional<int> SetNonlinConvergenceCoefficient(realtype const nonlin_conv_coef);
       int Initialise();
-      int ReInitialise( realtype const time_init,
-                        std::vector<realtype> const& state );
-      int ReInitialise( realtype const time_init,
-                        realtype const * const state );  
-      int Integrate( realtype const time_target );
+      int ReInitialise(realtype const time_init,
+                       std::vector<realtype> const& state);
+      int ReInitialise(realtype const time_init,
+                       realtype const* const state);
+      int Integrate(realtype const time_target);
       realtype* Solution() const;
-      realtype Solution( sunindextype const i ) const;
-      int MainSolverStatistics( Types::MainSolverStatistics& stats ) const;
-      int LinearSolverStatistics( Types::LinearSolverStatistics& stats ) const;
+      realtype Solution(sunindextype const i) const;
+      int MainSolverStatistics(Types::MainSolverStatistics& stats) const;
+      int LinearSolverStatistics(Types::LinearSolverStatistics& stats) const;
       std::string PrintSolverStatistics() const;
     };
 
     // ------------ Direct solvers interface
-    class Direct: public IStrategy {
+    class Direct : public IStrategy
+    {
     public:
       Direct();
-      ~Direct();        
-    
+      ~Direct();
+
     protected:
       SUNMatrix matrix;
 
     private:
       int BindUserFunctions() override;
-    
     };
 
     // ------------ Dense matrix direct strategy
-    class Dense : public Direct {
+    class Dense : public Direct
+    {
     public:
-      Dense();    
+      Dense();
       ~Dense();
-    
+
     private:
       int SetLinearSolver() override;
     };
 
     // ------------ Band matrix direct strategy
-    class Band : public Direct {
+    class Band : public Direct
+    {
     public:
       Band();
       ~Band();
-      void SetMatrixBandwidth( Types::Bandwidth const bandwidth_ );
-      void SetMatrixBandwidth( sunindextype const upper
-                               , sunindextype const lower );
+      void SetMatrixBandwidth(Types::Bandwidth const bandwidth_);
+      void SetMatrixBandwidth(sunindextype const upper, sunindextype const lower);
 
     private:
       Types::Bandwidth bandwidth;
-      int SetLinearSolver() override;    
+      int SetLinearSolver() override;
     };
- 
+
     // ------------ Iterative solvers interface
-    class Iterative: public IStrategy {
+    class Iterative : public IStrategy
+    {
     public:
-      Iterative();    
+      Iterative();
       ~Iterative();
-      void SetLinearSolverOptions( Types::Preconditioner const preconditioner
-                                   , Types::GramSchmidt const gram_schmidt
-                                   , int const n_krylov_basis_vectors
-                                   , int const max_restarts );
-  
+      void SetLinearSolverOptions(Types::Preconditioner const preconditioner,
+                                  Types::GramSchmidt const gram_schmidt,
+                                  int const n_krylov_basis_vectors,
+                                  int const max_restarts);
+
     private:
       int BindUserFunctions() override;
 
@@ -156,142 +158,164 @@ namespace SUNDIALS {
     };
 
     // ------------ SPGMR iterative strategy
-    class SPGMR : public Iterative {
+    class SPGMR : public Iterative
+    {
     public:
       SPGMR();
       ~SPGMR();
-    
+
     private:
       int SetLinearSolver() override;
     };
 
     // ------------ SPFGMR iterative strategy
-    class SPFGMR : public Iterative {
+    class SPFGMR : public Iterative
+    {
     public:
       SPFGMR();
       ~SPFGMR();
-    
+
     private:
       int SetLinearSolver() override;
     };
 
     // ------------ SPBCGS iterative strategy
-    class SPBCGS : public Iterative {
+    class SPBCGS : public Iterative
+    {
     public:
       SPBCGS();
       ~SPBCGS();
-    
+
     private:
       int SetLinearSolver() override;
     };
-  
+
     // ------------ SPTFQMR iterative strategy
-    class SPTFQMR : public Iterative {
+    class SPTFQMR : public Iterative
+    {
     public:
-      SPTFQMR();    
+      SPTFQMR();
       ~SPTFQMR();
-    
+
     private:
       int SetLinearSolver() override;
     };
-  
 
     // CVODE client - context
-    class Solver {
-    
+    class Solver
+    {
+
     private:
-    
       IStrategy* strategy;
 
     public:
-
       explicit Solver()
-        : strategy( nullptr )
-      {}
-    
-      explicit Solver( IStrategy* strategy_ )
-        : strategy( strategy_ )
-      {}
-    
-      void SetStrategy( IStrategy* strategy_ ) {
+          : strategy(nullptr)
+      {
+      }
+
+      explicit Solver(IStrategy* strategy_)
+          : strategy(strategy_)
+      {
+      }
+
+      void SetStrategy(IStrategy* strategy_)
+      {
         strategy = strategy_;
       }
 
-      void SetLinearMultiStepMethod( Types::LinearMultisptepMethod
-                                     const linear_multi_step_meth ) {
-        strategy->SetLinearMultiStepMethod( linear_multi_step_meth );
-      }
-    
-      void SetClientData( void* const user_data ) {
-        strategy->SetClientData( user_data );
+      void SetLinearMultiStepMethod(Types::LinearMultisptepMethod const linear_multi_step_meth)
+      {
+        strategy->SetLinearMultiStepMethod(linear_multi_step_meth);
       }
 
-      boost::optional<int> SetInitStepSize( realtype const init_step ) const {
-        return strategy->SetInitStepSize( init_step );
-      }
-    
-      boost::optional<int> SetMinStepSize( realtype const min_step ) const {
-        return strategy->SetMinStepSize( min_step );
-      }
-    
-      boost::optional<int> SetMaxStepSize( realtype const max_step ) const {
-        return strategy->SetMaxStepSize( max_step );
-      }
-    
-      boost::optional<int> SetMaxNumSteps( long int const n_steps ) const {
-        return strategy->SetMaxNumSteps( n_steps );
+      void SetClientData(void* const user_data)
+      {
+        strategy->SetClientData(user_data);
       }
 
-      void SetMaxOrder( int const max_order ) const {
-        return strategy->SetMaxOrder( max_order );
+      boost::optional<int> SetInitStepSize(realtype const init_step) const
+      {
+        return strategy->SetInitStepSize(init_step);
       }
-    
-      boost::optional<int> SetMaxWarnMessages( int const max_warn_msgs ) const {
-        return strategy->SetMaxWarnMessages( max_warn_msgs );
+
+      boost::optional<int> SetMinStepSize(realtype const min_step) const
+      {
+        return strategy->SetMinStepSize(min_step);
       }
-    
-      boost::optional<int> SetStabilityLimitDetection( bool const stab_lib_det_active ) const {
-        return strategy->SetStabilityLimitDetection( stab_lib_det_active );
+
+      boost::optional<int> SetMaxStepSize(realtype const max_step) const
+      {
+        return strategy->SetMaxStepSize(max_step);
       }
-    
-      boost::optional<int> SetMaxErrorTestFailures( int const max_err_test_fails ) const {
-        return strategy->SetMaxErrorTestFailures( max_err_test_fails );
+
+      boost::optional<int> SetMaxNumSteps(long int const n_steps) const
+      {
+        return strategy->SetMaxNumSteps(n_steps);
       }
-    
-      boost::optional<int> SetMaxNonlinearIterations( int const max_nonlin_iters ) const {
-        return strategy->SetMaxNonlinearIterations( max_nonlin_iters );
+
+      void SetMaxOrder(int const max_order) const
+      {
+        return strategy->SetMaxOrder(max_order);
       }
-    
-      boost::optional<int> SetMaxConvergenceFailures( int const max_conv_fails ) const {
-        return strategy->SetMaxConvergenceFailures( max_conv_fails );
+
+      boost::optional<int> SetMaxWarnMessages(int const max_warn_msgs) const
+      {
+        return strategy->SetMaxWarnMessages(max_warn_msgs);
       }
-    
-      boost::optional<int> SetNonlinConvergenceCoefficient( realtype const
-                                                            nonlin_conv_coef ) const {
-        return strategy->SetNonlinConvergenceCoefficient( nonlin_conv_coef );
+
+      boost::optional<int> SetStabilityLimitDetection(bool const stab_lib_det_active) const
+      {
+        return strategy->SetStabilityLimitDetection(stab_lib_det_active);
       }
-    
-      int Initialise() const {
+
+      boost::optional<int> SetMaxErrorTestFailures(int const max_err_test_fails) const
+      {
+        return strategy->SetMaxErrorTestFailures(max_err_test_fails);
+      }
+
+      boost::optional<int> SetMaxNonlinearIterations(int const max_nonlin_iters) const
+      {
+        return strategy->SetMaxNonlinearIterations(max_nonlin_iters);
+      }
+
+      boost::optional<int> SetMaxConvergenceFailures(int const max_conv_fails) const
+      {
+        return strategy->SetMaxConvergenceFailures(max_conv_fails);
+      }
+
+      boost::optional<int> SetNonlinConvergenceCoefficient(realtype const nonlin_conv_coef) const
+      {
+        return strategy->SetNonlinConvergenceCoefficient(nonlin_conv_coef);
+      }
+
+      int Initialise() const
+      {
         return strategy->Initialise();
       }
-    
-      int Integrate( realtype const time_target ) const {
-        return strategy->Integrate( time_target );
+
+      int Integrate(realtype const time_target) const
+      {
+        return strategy->Integrate(time_target);
       }
 
-      realtype* Solution() const {
-        return strategy->Solution( );
-      }
-    
-      int MainSolverStatistics( Types::MainSolverStatistics& stats ) const {
-        return strategy->MainSolverStatistics( stats );
+      realtype* Solution() const
+      {
+        return strategy->Solution();
       }
 
-      int LinearSolverStatistics( Types::LinearSolverStatistics& stats ) const {
-        return strategy->LinearSolverStatistics( stats );
+      int MainSolverStatistics(Types::MainSolverStatistics& stats) const
+      {
+        return strategy->MainSolverStatistics(stats);
       }
-    
-      std::string PrintSolverStatistics() const {
+
+      int LinearSolverStatistics(Types::LinearSolverStatistics& stats) const
+      {
+        return strategy->LinearSolverStatistics(stats);
+      }
+
+      std::string PrintSolverStatistics() const
+      {
         return strategy->PrintSolverStatistics();
       }
     };
@@ -299,6 +323,5 @@ namespace SUNDIALS {
   } // namespace CVODE
 
 } // namespace SUNDIALS
-
 
 #endif // SUNDIALS_CVODE_INTERFACE_HPP

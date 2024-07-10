@@ -1,7 +1,8 @@
 #ifndef TEST_CONFIG_HPP
 #define TEST_CONFIG_HPP
 
-namespace TestConfig {
+namespace TestConfig
+{
 
   // verbosity switch
 #ifdef TEST_VERBOSE
@@ -12,7 +13,7 @@ namespace TestConfig {
 
   // tolerance
   static double const tolerance = 100.0 * std::numeric_limits<float>::epsilon();
-  
-} // TestConfig
+
+} // namespace TestConfig
 
 #endif // TEST_CONFIG_HPP
