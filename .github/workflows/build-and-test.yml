@@ -79,7 +79,7 @@ jobs:
             dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-
 
       - name: Build dependencies
-        if: steps.restore-cached-dependencies.outputs.cache-hit == 'false'
+        if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
         shell: pwsh
         run: >
           ./scripts/dependencies_installer/InstallDependencies.ps1 `
@@ -91,7 +91,7 @@ jobs:
 
       - name: Cache dependencies
         uses: actions/cache@v4
-        if: steps.restore-cached-dependencies.outputs.cache-hit == 'false'
+        if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
         with:
           path: ${{ steps.paths.outputs.dependencies_install_dir }}
           #key: ${{ env.DEP_CACHE_KEY }}
