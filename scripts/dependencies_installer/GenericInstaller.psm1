@@ -3,7 +3,7 @@ using module ./CMake.psm1
 using module ./Git.psm1
 using module ./Utilities.psm1
 
-class Installer {
+class GenericInstaller {
     hidden [string] $Name
     hidden [string] $Repository
     hidden [string] $Tag
@@ -20,8 +20,8 @@ class Installer {
     hidden [Git] $Git
     hidden [CMake] $CMake
     
-    Installer([hashtable] $Properties) {
-        [Installer]::ValidateProperties($Properties)
+    GenericInstaller([hashtable] $Properties) {
+        [GenericInstaller]::ValidateProperties($Properties)
 
         foreach ($Property in $Properties.Keys) {
             $this.$Property = $Properties.$Property

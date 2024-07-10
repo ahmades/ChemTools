@@ -99,11 +99,11 @@ New-Item -Force $Global:ExtractDir -Type Directory
 $Global:BuildDir = (Join-Path $WorkDir 'build')
 New-Item -Force $Global:BuildDir -Type Directory
 
-Write-Host 'Work directory              : ' $WorkDir
-Write-Host 'Installation directory      : ' $InstallDir
-Write-Host 'Build type                  : ' $BuildType
-Write-Host 'Parallel jobs per build     : ' $ParallelJobs
-Write-Host 'Tagged of branches to checkout : ' ($GitTags | Out-String)
+Write-Host 'Work directory               : ' $WorkDir
+Write-Host 'Installation directory       : ' $InstallDir
+Write-Host 'Build type                   : ' $BuildType
+Write-Host 'Parallel jobs per build      : ' $ParallelJobs
+Write-Host 'Tags of branches to checkout : ' ($GitTags | Out-String)
 
 # =========================================================== zlib
 
