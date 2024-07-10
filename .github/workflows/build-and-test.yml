@@ -44,7 +44,7 @@ jobs:
       - name: Generate cache key
         id: cache-key
         #run: echo "DEP_CACHE_KEY=dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')" >> $GITHUB_ENV
-        run: echo "::set-output name=cache_key::dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
+        run: echo "cache_key=dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')" >> $GITHUB_OUTPUT
 
       # Step: Set paths
       - name: Set paths
