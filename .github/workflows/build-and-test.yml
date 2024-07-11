@@ -58,7 +58,7 @@ jobs:
         shell: bash
         run: |
           if [ "${{ runner.os }}" == "Windows" ]; then
-            echo "PATH_SEP=\\" >> $GITHUB_ENV
+            echo "PATH_SEP=\\" >> $env:$GITHUB_ENV
           else
             echo "PATH_SEP=/" >> $GITHUB_ENV
           fi
@@ -107,7 +107,7 @@ jobs:
             boost ='1.84.0'; `
             cantera = 'v3.0.0' `
            }
-           . ${{ github.workspace }}${PATH_SEP}scripts${PATH_SEP}dependencies_installer${PATH_SEP}InstallDependencies.ps1 `
+           . ${{ github.workspace }}${$env:PATH_SEP}scripts${$env:PATH_SEP}dependencies_installer${$env:PATH_SEP}InstallDependencies.ps1 `
           -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
           -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
           -BuildType "${{ matrix.build_type }}" `
