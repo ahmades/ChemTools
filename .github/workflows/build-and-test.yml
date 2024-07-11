@@ -61,7 +61,7 @@ jobs:
         run: |
 
           if [ "${{ runner.os }}" == "Windows" ]; then
-          path_sep="\\"
+            path_sep="\\\\"
           else
             path_sep="/"
           fi
