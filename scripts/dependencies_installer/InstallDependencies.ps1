@@ -67,7 +67,7 @@ Start-Transcript -Path $TransriptPath
 
 Function Invoke-Terminate {
     Stop-Transcript
-    Exit
+    Exit 1
 }
 
 # Check version, powershell 7+ is supported
