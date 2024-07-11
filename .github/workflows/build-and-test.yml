@@ -52,7 +52,6 @@ jobs:
         shell: bash
         run: |
           cache_key="dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
-          echo "::debug::Set generated $cache_key"
           echo "cache_key=$cache_key" >> $GITHUB_OUTPUT
 
       - name: Set path separator
@@ -69,9 +68,12 @@ jobs:
         id: paths
         shell: bash
         run: |
-          build_dir="${{ github.workspace }}${PATH_SEP}build"
-          dependencies_work_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}work"
-          dependencies_install_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}install"
+          build_dir="${{ github.workspace }}${PATH_SEP}build
+          echo "build_dir=$build_dir" >> $GITHUB_OUTPUT
+          echo "dependencies_work_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}work"
+          echo "dependencies_work_dir=$dependencies_work_dir" >> $GITHUB_OUTPUT
+          echo "dependencies_install_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}install"
+          echo "dependencies_install_dir=$dependencies_install_dir" >> $GITHUB_OUTPUT
 
       - name: Restore cached dependencies
         id: restore-cached-dependencies
