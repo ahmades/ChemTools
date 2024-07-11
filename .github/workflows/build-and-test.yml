@@ -19,6 +19,10 @@ on:
 
 jobs:
   build:
+    defaults:
+      run:
+        shell: bash
+
     # Build strategy
     strategy:
       fail-fast: false
@@ -49,27 +53,24 @@ jobs:
 
       - name: Generate cache key
         id: cache-key-gen
-        shell: bash
         run: |
           cache_key="dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
-          echo "::debug::Set generated $cache_key"
           echo "cache_key=$cache_key" >> $GITHUB_OUTPUT
 
       # Step: Set paths
       - name: Set paths
         id: paths
-        shell: bash
         run: |
-          build_dir="${{ github.workspace }}/build"
-          dependencies_work_dir="${{ github.workspace }}/dependencies/work"
-          dependencies_install_dir="${{ github.workspace }}/dependencies/install"
-          if [ "${{ runner.os }}" == "Windows" ]; then
-            build_dir=$(echo "$build_dir" | sed 's/\//\\/g')
-            dependencies_work_dir=$(echo "$dependencies_work_dir" | sed 's/\//\\/g')
-            dependencies_install_dir=$(echo "$dependencies_install_dir" | sed 's/\//\\/g')
-          fi
+          workspace_dir="${{ github.workspace }}"
+          echo "workspace_dir=$workspace_dir" >> $GITHUB_OUTPUT
+
+          build_dir="${workspace_dir}/build"
           echo "build_dir=$build_dir" >> $GITHUB_OUTPUT
+
+          dependencies_work_dir="${workspace_dir}/dependencies/work"
           echo "dependencies_work_dir=$dependencies_work_dir" >> $GITHUB_OUTPUT
+
+          dependencies_install_dir="${workspace_dir}/dependencies/install"
           echo "dependencies_install_dir=$dependencies_install_dir" >> $GITHUB_OUTPUT
 
       - name: Restore cached dependencies
@@ -88,29 +89,30 @@ jobs:
 
       - name: Build dependencies
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
-        shell: pwsh
+        #shell: pwsh
         run: |
-          $tags=@{`
-            zlib = 'v1.2.13'; `
-            hdf5 = 'hdf5-1_14_0'; `
-            sundials = 'v5.8.0'; `
-            yamlcpp = '0.8.0'; `
-            catch2 = 'v3.5.2'; `
-            googletest = 'v1.14.0'; `
-            units = 'v0.9.1'; `
-            fmt = '9.1.0'; `
-            eigen ='3.4.0'; `
-            boost ='1.84.0'; `
-            cantera = 'v3.0.0' `
-           }
-           . ${{ github.workspace }}\scripts\dependencies_installer\InstallDependencies.ps1 `
-          -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
-          -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
-          -BuildType "${{ matrix.build_type }}" `
-          -ParallelJobs 10 `
-          -GitTags $tags
-          -Clean
-
+          pwsh -command '`
+          $tag=@{`
+            zlib="v1.2.13"; `
+            hdf5="hdf5-1_14_0"; `
+            sundials="v5.8.0"; `
+            yamlcpp="0.8.0"; `
+            catch2="v3.5.2"; `
+            googletest="v1.14.0"; `
+            units="v0.9.1"; `
+            fmt="9.1.0"; `
+            eigen="3.4.0"; `
+            boost="1.84.0"; `
+            cantera="v3.0.0" `
+          };`
+          . ${{ github.workspace }}\scripts\dependencies_installer/InstallDependencies.ps1 `
+            -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
+            -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
+            -BuildType "${{ matrix.build_type }}" `
+            -ParallelJobs 10 `
+            -GitTags $tags `
+            -Clean `
+          '
       - name: Cache dependencies
         uses: actions/cache@v4
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
