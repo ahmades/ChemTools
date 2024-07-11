@@ -155,12 +155,12 @@ class CanteraInstaller {
 
     [void] Run() {
         if ($this.DoInstall) {
-            Utilities\PrintDecoratedMessage($this.Name, "Start")
+            Utilities\PrintDecoratedMessage $this.Name "Start"
             $this.GetSource()
             $this.InstallPythonDependnecies()
             $this.Build()
             $this.Install()
-            Utilities\PrintDecoratedMessage($this.Name, "End")
+            Utilities\PrintDecoratedMessage $this.Name "End"
         }
         else {
             Write-Host $this.Name is already installed.

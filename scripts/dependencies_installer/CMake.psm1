@@ -54,9 +54,6 @@ class CMake {
 
     hidden [void] Configure() {
         $ConfigureScriptBlock = {
-            # param ($RepositoryDir, $BuildDir, $InstallDir, $Options)
-            # $output = cmake -S $RepositoryDir -B $BuildDir --install-prefix $InstallDir $Options | Out-String
-            # Write-Host $output
             param ($RepositoryDir, $BuildDir, $InstallDir, $Options)
             cmake -S $RepositoryDir -B $BuildDir --install-prefix $InstallDir $Options | Out-Host
         }
@@ -72,8 +69,6 @@ class CMake {
     hidden [void] Build() {
         $BuildScriptBlock = {
             param ($BuildDir, $BuildType, $ParallelJobs)
-            # $output = cmake --build $BuildDir --config $BuildType --parallel $ParallelJobs | Out-String
-            # Write-Host $output
             cmake --build $BuildDir --config $BuildType --parallel $ParallelJobs | Out-Host
         }
         Invoke-Command -ScriptBlock $BuildScriptBlock `
@@ -88,8 +83,6 @@ class CMake {
     hidden [void] Install() {
         $InstallScriptBlock = {
             param ($BuildDir)
-            # $output = cmake --install $BuildDir | Out-String
-            # Write-Host $output
             cmake --install $BuildDir | Out-Host
         }
         Invoke-Command -ScriptBlock $InstallScriptBlock -ArgumentList $this.BuildDir

@@ -96,10 +96,10 @@ class GenericInstaller {
 
     [void] Run() {
         if ($this.DoInstall) {
-            Utilities\PrintDecoratedMessage($this.Name, "Start")
+            Utilities\PrintDecoratedMessage $this.Name "Start"
             $this.Git.Run()
             $this.CMake.Run()
-            Utilities\PrintDecoratedMessage($this.Name, "End")
+            Utilities\PrintDecoratedMessage $this.Name, "End"
         }
         else {
             Write-Host $this.Name is already installed.

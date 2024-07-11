@@ -136,17 +136,17 @@ class BoostInstaller {
         $VersionUnderScore = $this.Tag.Replace('.', '_')
         $IndexOfLastUnderscore = $VersionUnderScore.LastIndexOf("_")
         $VersionUnderScoreMajorMinor = $VersionUnderScore.Substring(0, $IndexOfLastUnderscore)
-        return (Join-Path  $this.InstallDir 'include' ($this.Nsme + '-' + $VersionUnderScoreMajorMinor)) 
+        return (Join-Path  $this.InstallDir 'include' ($this.Name + '-' + $VersionUnderScoreMajorMinor)) 
     }
 
     [void] Run() {
         if ($this.DoInstall) {
-            Utilities\PrintDecoratedMessage($this.Name, "Start")
+            Utilities\PrintDecoratedMessage $this.Name "Start"
             $this.Downlaod()
             $this.Extract()
             $this.Bootstrap()
             $this.Install()
-            Utilities\PrintDecoratedMessage($this.Name, "End")
+            Utilities\PrintDecoratedMessage $this.Name "End"
         }
         else {
             Write-Host $this.Name is already installed.
