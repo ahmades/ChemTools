@@ -68,7 +68,7 @@ jobs:
         id: paths
         shell: bash
         run: |
-          build_dir="${{ github.workspace }}${PATH_SEP}build
+          build_dir="${{ github.workspace }}${PATH_SEP}build"
           echo "build_dir=$build_dir" >> $GITHUB_OUTPUT
           dependencies_work_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}work"
           echo "dependencies_work_dir=$dependencies_work_dir" >> $GITHUB_OUTPUT
