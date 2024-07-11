@@ -44,7 +44,6 @@ jobs:
       - name: Generate cache key
         id: cache-key-gen
         shell: bash
-        #run: echo "DEP_CACHE_KEY=dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')" >> $GITHUB_ENV
         run: |
           cache_key="dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
           echo "::debug::Set generated $cache_key"
@@ -72,7 +71,6 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ steps.paths.outputs.dependencies_install_dir }}
-          #key: ${{ env.DEP_CACHE_KEY }}
           key: ${{ steps.cache-key-gen.outputs.cache_key }}
           restore-keys: |
             dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-master
@@ -95,7 +93,7 @@ jobs:
             boost ='1.84.0'; `
             cantera = 'v3.0.0' `
            }
-           .${{ github.workspace }}\scripts\dependencies_installer\InstallDependencies.ps1 `
+           . ${{ github.workspace }}\scripts\dependencies_installer\InstallDependencies.ps1 `
           -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
           -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
           -BuildType "${{ matrix.build_type }}" `
@@ -107,5 +105,4 @@ jobs:
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
         with:
           path: ${{ steps.paths.outputs.dependencies_install_dir }}
-          #key: ${{ env.DEP_CACHE_KEY }}
           key: ${{ steps.cache-key-gen.outputs.cache_key }}
