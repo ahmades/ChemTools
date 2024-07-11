@@ -89,7 +89,7 @@ jobs:
         shell: bash
         run: |
           path_sep=${{ steps.paths.outputs.path_sep }}
-          python -m pip install -r "${{ github.workspace }}${path_sep}scripts${path_sep}dependencies_installer${path_sep}requirements.txt"
+          pip install -r "${{ github.workspace }}${path_sep}scripts${path_sep}dependencies_installer${path_sep}requirements.txt"
 
       - name: Build dependencies
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
