@@ -95,7 +95,7 @@ jobs:
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          pwsh -commnand '`
+          pwsh -command '`
             $tags=@{`
               zlib = "v1.2.13"; `
               hdf5 = "hdf5-1_14_0"; `
@@ -108,8 +108,8 @@ jobs:
               eigen ="3.4.0"; `
               boost ="1.84.0"; `
               cantera = "v3.0.0" `
-            }
-            $path_sep=${{ steps.paths.outputs.path_sep }}
+            }; `
+            $path_sep=${{ steps.paths.outputs.path_sep }}; `
             . ${{ github.workspace }}${path_sep}scripts${path_sep}dependencies_installer${path_sepInstallDependencies.ps1 `
             -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
             -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
