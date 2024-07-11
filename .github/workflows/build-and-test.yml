@@ -93,29 +93,31 @@ jobs:
 
       - name: Build dependencies
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
-        shell: pwsh
+        shell: bash
         run: |
-          $tags=@{`
-            zlib = 'v1.2.13'; `
-            hdf5 = 'hdf5-1_14_0'; `
-            sundials = 'v5.8.0'; `
-            yamlcpp = '0.8.0'; `
-            catch2 = 'v3.5.2'; `
-            googletest = 'v1.14.0'; `
-            units = 'v0.9.1'; `
-            fmt = '9.1.0'; `
-            eigen ='3.4.0'; `
-            boost ='1.84.0'; `
-            cantera = 'v3.0.0' `
-           }
-           $path_sep=${{ steps.paths.outputs.path_sep }}
-           . ${{ github.workspace }}${path_sep}scripts${path_sep}dependencies_installer${path_sepInstallDependencies.ps1 `
-          -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
-          -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
-          -BuildType "${{ matrix.build_type }}" `
-          -ParallelJobs 10 `
-          -GitTags $tags
-          -Clean
+          pwsh -commnand '`
+            $tags=@{`
+              zlib = "v1.2.13"; `
+              hdf5 = "hdf5-1_14_0"; `
+              sundials = "v5.8.0"; `
+              yamlcpp = "0.8.0"; `
+              catch2 = "v3.5.2"; `
+              googletest = "v1.14.0"; `
+              units = "v0.9.1"; `
+              fmt = "9.1.0"; `
+              eigen ="3.4.0"; `
+              boost ="1.84.0"; `
+              cantera = "v3.0.0" `
+            }
+            $path_sep=${{ steps.paths.outputs.path_sep }}
+            . ${{ github.workspace }}${path_sep}scripts${path_sep}dependencies_installer${path_sepInstallDependencies.ps1 `
+            -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
+            -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
+            -BuildType "${{ matrix.build_type }}" `
+            -ParallelJobs 10 `
+            -GitTags $tags
+            -Clean `
+          '
 
       - name: Cache dependencies
         uses: actions/cache@v4
