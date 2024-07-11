@@ -70,9 +70,9 @@ jobs:
         run: |
           build_dir="${{ github.workspace }}${PATH_SEP}build
           echo "build_dir=$build_dir" >> $GITHUB_OUTPUT
-          echo "dependencies_work_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}work"
+          dependencies_work_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}work"
           echo "dependencies_work_dir=$dependencies_work_dir" >> $GITHUB_OUTPUT
-          echo "dependencies_install_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}install"
+          dependencies_install_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}install"
           echo "dependencies_install_dir=$dependencies_install_dir" >> $GITHUB_OUTPUT
 
       - name: Restore cached dependencies
