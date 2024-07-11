@@ -87,7 +87,8 @@ jobs:
 
       - name: Install python requirements
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
-        run: pip install -r ${{ github.workspace }}${PATH_SEP}scripts${PATH_SEP}dependencies_installer${PATH_SEP}requirements.txt
+        shell: bash
+        run: python -m pip install -r "${{ github.workspace }}${PATH_SEP}scripts${PATH_SEP}dependencies_installer${PATH_SEP}requirements.txt"
 
       - name: Build dependencies
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
