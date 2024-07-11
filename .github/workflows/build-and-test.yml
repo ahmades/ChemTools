@@ -60,6 +60,7 @@ jobs:
       # Step: Set paths
       - name: Set paths
         id: paths
+        shell: bash
         run: |
           workspace_dir="${{ github.workspace }}"
           echo "workspace_dir=$workspace_dir" >> $GITHUB_OUTPUT
