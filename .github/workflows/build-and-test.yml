@@ -99,6 +99,7 @@ jobs:
           -BuildType "${{ matrix.build_type }}" `
           -ParallelJobs 10 `
           -GitTags $tags
+          -Clean
 
       - name: Cache dependencies
         uses: actions/cache@v4
