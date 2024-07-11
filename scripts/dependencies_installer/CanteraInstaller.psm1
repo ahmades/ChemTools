@@ -102,7 +102,7 @@ class CanteraInstaller {
         )
         $ExtraLibDirs = ($ExtraLibDirsArray -Join [System.IO.Path]::PathSeparator)        
         
-        $BoostIncDir = $this.DepenendenciesPaths["boost"]
+        $BoostIncDir = (Join-Path  $this.DepenendenciesPaths["boost"] 'include')
         
         $SundialsInclude = (Join-Path $this.DepenendenciesPaths["sundials"] 'include')
         $SundialsLibdir = (Join-Path $this.DepenendenciesPaths["sundials"] 'lib')

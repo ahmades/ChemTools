@@ -274,7 +274,7 @@ try {
         "eigen"      = $eigenInstaller.Directory()
         "googletest" = $googletestInstaller.Directory()
         "sundials"   = $sundialsInstaller.Directory()
-        "boost"      = $boost.IncludeDirectory()
+        "boost"      = $boost.Directory()
     }
 
     $cantera = [CanteraInstaller]::new(@{

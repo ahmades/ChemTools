@@ -119,7 +119,12 @@ class BoostInstaller {
             ' -j' + $this.ParallelJobs `
             + ' --build-dir=' + $this.BuildDir `
             + ' --prefix=' + $this.InstallDir `
-            + ' variant=release runtime-link=static link=static address-model=64 install'
+            + ' --layout=system' `
+            + ' variant=release' `
+            + ' runtime-link=static' `
+            + ' link=static' `
+            + ' address-model=64' `
+            + ' install'
         Start-Process -FilePath './b2' -ArgumentList $BOOSTBuildArgumentList -Wait -NoNewWindow
         $ExitCode = $LASTEXITCODE
         if ( $ExitCode -ne 0 ) {
