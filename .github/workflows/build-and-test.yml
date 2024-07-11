@@ -58,7 +58,7 @@ jobs:
       - name: Set path separator
         shell: bash
         run: |
-          if [ "${{ runner.os }}" == "Windows" ];
+          if [ "${{ runner.os }}" == "Windows" ]; then
             echo "PATH_SEP=\\" >> $GITHUB_ENV
           else
             echo "PATH_SEP=/" >> $GITHUB_ENV
