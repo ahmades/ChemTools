@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          #- ubuntu-22.04
+          - ubuntu-22.04
           - windows-2022
         build_type:
           - "Release"
@@ -55,22 +55,23 @@ jobs:
           echo "::debug::Set generated $cache_key"
           echo "cache_key=$cache_key" >> $GITHUB_OUTPUT
 
+      - name: Set path separator
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" == "Windows" ];
+            echo "PATH_SEP=\\" >> $GITHUB_ENV
+          else
+            echo "PATH_SEP=/" >> $GITHUB_ENV
+          fi
+
       # Step: Set paths
       - name: Set paths
         id: paths
         shell: bash
         run: |
-          build_dir="${{ github.workspace }}/build"
-          dependencies_work_dir="${{ github.workspace }}/dependencies/work"
-          dependencies_install_dir="${{ github.workspace }}/dependencies/install"
-          if [ "${{ runner.os }}" == "Windows" ]; then
-            build_dir=$(echo "$build_dir" | sed 's/\//\\/g')
-            dependencies_work_dir=$(echo "$dependencies_work_dir" | sed 's/\//\\/g')
-            dependencies_install_dir=$(echo "$dependencies_install_dir" | sed 's/\//\\/g')
-          fi
-          echo "build_dir=$build_dir" >> $GITHUB_OUTPUT
-          echo "dependencies_work_dir=$dependencies_work_dir" >> $GITHUB_OUTPUT
-          echo "dependencies_install_dir=$dependencies_install_dir" >> $GITHUB_OUTPUT
+          build_dir="${{ github.workspace }}${PATH_SEP}build"
+          dependencies_work_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}work"
+          dependencies_install_dir="${{ github.workspace }}${PATH_SEP}dependencies${PATH_SEP}install"
 
       - name: Restore cached dependencies
         id: restore-cached-dependencies
@@ -84,7 +85,7 @@ jobs:
 
       - name: Install python requirements
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
-        run: pip install -r ${{ github.workspace }}/scripts/dependencies_installer/requirements.txt
+        run: pip install -r ${{ github.workspace }}${PATH_SEP}scripts${PATH_SEP}dependencies_installer${PATH_SEP}requirements.txt
 
       - name: Build dependencies
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
@@ -103,7 +104,7 @@ jobs:
             boost ='1.84.0'; `
             cantera = 'v3.0.0' `
            }
-           . ${{ github.workspace }}\scripts\dependencies_installer\InstallDependencies.ps1 `
+           . ${{ github.workspace }}${PATH_SEP}scripts${PATH_SEP}dependencies_installer${PATH_SEP}InstallDependencies.ps1 `
           -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
           -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
           -BuildType "${{ matrix.build_type }}" `
