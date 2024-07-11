@@ -75,7 +75,6 @@ $MajorPSVers = $PSVersionTable.PSVersion.Major
 if ([int]$MajorPSVers -lt 7) {
     Write-Error ('Found PowerShell version $MajorPSVers. Version 7+ is required.')
     Invoke-Terminate
-    
 }
 
 # Check if OS is supported
@@ -294,7 +293,7 @@ catch {
 }
 
 Write-Host ( `
-        "`nCongratulations! You did it!`n" `
+        "`nAll dependncies are now installed!`n" `
         + "`nYou must now either:`n" `
         + (" - add {0} to your path before building, or`n" -f $Global:InstallDir) `
         + (" - configure the build with -DCMAKE_PREFIX_PATH={0}." -f $Global:InstallDir) `

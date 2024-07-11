@@ -41,6 +41,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12-dev"
+          cache: "pip"
+
       - name: Generate cache key
         id: cache-key-gen
         shell: bash
@@ -75,6 +81,10 @@ jobs:
           restore-keys: |
             dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-master
             dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-
+
+      - name: Install python requirements
+        if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
+        run: pip install -r ${{ github.workspace }}/scripts/dependencies_installer/requirements.txt
 
       - name: Build dependencies
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'

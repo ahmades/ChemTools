@@ -82,9 +82,9 @@ class CanteraInstaller {
         $canteraGit.Run()
     }
 
-    hidden [void] InstallPythonDependnecies() {
-        python -m pip install scons setuptools wheel ruamel.yaml pytest
-    }
+    # hidden [void] InstallPythonRequirements() {
+    #     python -m pip install scons setuptools wheel ruamel.yaml pytest
+    # }
 
     hidden [void] Build() {
         $ExtraIncDirsArray = @(
@@ -157,7 +157,7 @@ class CanteraInstaller {
         if ($this.DoInstall) {
             Utilities\PrintDecoratedMessage $this.Name "Start"
             $this.GetSource()
-            $this.InstallPythonDependnecies()
+            #$this.InstallPythonRequirements()
             $this.Build()
             $this.Install()
             Utilities\PrintDecoratedMessage $this.Name "End"

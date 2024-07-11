@@ -1,0 +1,6 @@
+scons
+setuptools
+wheel
+ruamel.yaml
+pytest
+
