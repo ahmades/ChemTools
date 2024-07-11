@@ -109,7 +109,7 @@ jobs:
               boost ="1.84.0"; `
               cantera = "v3.0.0" `
             }; `
-            $path_sep=${{ steps.paths.outputs.path_sep }}; `
+            $path_sep="${{ steps.paths.outputs.path_sep }}"; `
             . ${{ github.workspace }}${path_sep}scripts${path_sep}dependencies_installer${path_sep}InstallDependencies.ps1 `
             -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
             -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
