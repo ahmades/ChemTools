@@ -117,7 +117,7 @@ class BoostInstaller {
         Push-Location $this.ExtractDir
         $BOOSTBuildArgumentList = `
             ' -j' + $this.ParallelJobs `
-            + '-d0' `
+            + ' -d0' `
             + ' --build-dir=' + $this.BuildDir `
             + ' --prefix=' + $this.InstallDir `
             + ' --layout=system' `
