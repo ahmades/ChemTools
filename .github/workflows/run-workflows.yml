@@ -39,7 +39,7 @@ jobs:
                 ]
               }
             ]
-        run: echo "matrix=$(jq -c . <<< \"$CONFIG\")" >> $GITHUB_OUTPUT
+        run: echo "matrix=$(jq -r -c . <<< "$CONFIG")" >> $GITHUB_OUTPUT
 
       - name: Display build config
         run: jq . <<< ${{ steps.strategy.outputs.matrix }}
