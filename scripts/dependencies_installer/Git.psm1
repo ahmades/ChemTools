@@ -80,6 +80,7 @@ class Git {
         $CheckOutTaggedBranchScriptBlock = {
             param($RepositoryDir, $Tag)
             git -C $RepositoryDir checkout tags/$Tag -b $Tag | Out-Host
+            git -C $RepositoryDir submodule update  | Out-Host
             git -C $RepositoryDir status | Out-Host
         }
         Invoke-Command -ScriptBlock $CheckOutTaggedBranchScriptBlock -ArgumentList $this.RepositoryDir, $this.Tag
