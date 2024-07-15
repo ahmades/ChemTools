@@ -26,20 +26,20 @@ jobs:
     steps:
       - name: Define build strategy
         id: strategy
-        run: |
-          cat << EOF >> matrix.json
-          {
-              "platform": [
-                "ubuntu-22.04",
-                "windows-2022"
-              ],
-              "build_type": [
-                "Release"
-              ]
-          }
-          EOF
-          matrix=$(cat matrix.json)
-          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+        env:
+          MATRIX: >-
+            [
+              {
+                "platform": [
+                  "ubuntu-22.04",
+                  "windows-2022"
+                ],
+                "build_type": [
+                  "Release"
+                ]
+              }
+            ]
+        run: echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
 
       - name: Display build config
         run: jq . <<< '${{ steps.strategy.outputs.matrix }}'
