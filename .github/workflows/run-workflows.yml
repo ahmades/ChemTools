@@ -42,7 +42,7 @@ jobs:
         run: echo "matrix=$(jq -r -c . <<< "$CONFIG")" >> $GITHUB_OUTPUT
 
       - name: Display build config
-        run: jq . <<< ${{ steps.strategy.outputs.matrix }}
+        run: jq . <<< "${{ steps.strategy.outputs.matrix }}"
 
   build_dependencies:
     needs: define_build_strategy
