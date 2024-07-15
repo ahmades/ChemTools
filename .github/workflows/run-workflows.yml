@@ -26,8 +26,8 @@ jobs:
     steps:
       - name: Define build strategy
         id: strategy
-        env:
-          CONFIG: >-
+        run: >-
+          $config=
             [
               {
                 "platform": [
@@ -39,7 +39,7 @@ jobs:
                 ]
               }
             ]
-        run: echo "matrix=$(jq -r -c . <<< "$CONFIG")" >> $GITHUB_OUTPUT
+          echo "matrix=$(jq -r -c . <<< "$config")" >> $GITHUB_OUTPUT
 
       - name: Display build config
         run: jq . <<< '${{ steps.strategy.outputs.matrix }}'
