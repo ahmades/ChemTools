@@ -29,9 +29,23 @@ jobs:
     steps:
       - name: Define build startegy
         id: strategy
-        run: |
-          matrix=$(echo $(cat ./.github/workflows/build-strategy.json) | sed 's/ //g' )
-          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+        env:
+          CONFIG: >-
+            [
+              {
+                "platform": [
+                  "ubuntu-22.04",
+                  "windows-2022"
+                  ],
+                "build_type": [
+                  "Release"
+                  ]
+              }
+            ]
+        run: echo "matrix=$(jq -r -c . <<< "$CONFIG")" >> $GITHUB_OUTPUT
+
+      - name: Display build config
+        run: jq . <<< '${{ steps.strategy.outputs.matrix }}'
 
   build_dependencies:
     needs: define_build_strategy
