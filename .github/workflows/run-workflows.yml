@@ -17,17 +17,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  # YAML anchors are not supported
-  # Write the martix of the build strategy to the output and reuse in subsequent jobs.concurrency
   define_build_strategy:
     name: Define build strategy
-
     runs-on: ubuntu-22.04
     outputs:
       matrix: ${{ steps.strategy.outputs.matrix }}
 
     steps:
-      - name: Define build startegy
+      - name: Define build strategy
         id: strategy
         env:
           CONFIG: >-
@@ -36,21 +33,22 @@ jobs:
                 "platform": [
                   "ubuntu-22.04",
                   "windows-2022"
-                  ],
+                ],
                 "build_type": [
                   "Release"
-                  ]
+                ]
               }
             ]
-        run: echo "matrix=$(jq -r -c . <<< "$CONFIG")" >> $GITHUB_OUTPUT
+        run: echo "matrix=$(jq -c . <<< \"$CONFIG\")" >> $GITHUB_OUTPUT
 
       - name: Display build config
-        run: jq . <<< '${{ steps.strategy.outputs.matrix }}'
+        run: jq . <<< ${{ steps.strategy.outputs.matrix }}
 
   build_dependencies:
     needs: define_build_strategy
+
     strategy:
-      matrix: ${{ fromJSON(needs.define_build_strategy.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.define_build_strategy.outputs.matrix) }}
 
     uses: ./.github/workflows/build-dependencies.yml
     with:
