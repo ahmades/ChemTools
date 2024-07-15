@@ -27,7 +27,7 @@ jobs:
       - name: Define build strategy
         id: strategy
         run: |
-          cat << EOF > matrix.json
+          cat << EOF >> matrix.json
           {
               "platform": [
                 "ubuntu-22.04",
