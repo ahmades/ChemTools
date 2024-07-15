@@ -1,40 +1,22 @@
-name: Build and test
+name: Build Dependencies
 
 on:
-  push:
-    branches:
-      - master
-      - "release/v[0-9].[0-9].[0-9]"
-      - "feature/**"
-  # pull_request:
-  #   types:
-  #     - opened # triggers build when opened
-  #     - synchronize # triggers build when commits are pushed to HEAD
-  #   branches:
-  #     - master
-  #     - "release/v[0-9].[0-9].[0-9]"
-  #     - "feature/**"
-  # Manual trigger
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      platform:
+        description: "Platform"
+        required: true
+        type: string
+      build_type:
+        description: "Build type"
+        required: true
+        type: string
 
 jobs:
   build:
-    # Build strategy
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - ubuntu-22.04
-          - windows-2022
-        build_type:
-          - "Release"
-          #- 'Debug'
-          #- 'DebugWithRelInfo '
+    name: Build dependencies (${{ inputs.platform }}-${{ inputs.build_type }})
 
-    # Build platform
-    runs-on: ${{ matrix.platform }}
-
-    name: build and test (${{ matrix.platform }}-${{ matrix.build_type }})
+    runs-on: ${{ inputs.platform }}
 
     steps:
       # Step: Checkout
@@ -51,7 +33,7 @@ jobs:
         id: cache-key-gen
         shell: bash
         run: |
-          cache_key="dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
+          cache_key="dependencies-cache-key-${{ inputs.platform }}-${{ inputs.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
           echo "cache_key=$cache_key" >> $GITHUB_OUTPUT
 
       # Step: Set paths
@@ -81,8 +63,8 @@ jobs:
           path: ${{ steps.paths.outputs.dependencies_install_dir }}
           key: ${{ steps.cache-key-gen.outputs.cache_key }}
           restore-keys: |
-            dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-master
-            dependencies-cache-key-${{ matrix.platform }}-${{ matrix.build_type }}-
+            dependencies-cache-key-${{ inputs.platform }}-${{ inputs.build_type }}-master
+            dependencies-cache-key-${{ inputs.platform }}-${{ inputs.build_type }}-
 
       - name: Install python requirements
         if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
@@ -113,7 +95,7 @@ jobs:
             . ${{ github.workspace }}${path_sep}scripts${path_sep}dependencies_installer${path_sep}InstallDependencies.ps1 `
             -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
             -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
-            -BuildType "${{ matrix.build_type }}" `
+            -BuildType "${{ inputs.build_type }}" `
             -ParallelJobs 10 `
             -GitTags $tags `
             -Clean `
