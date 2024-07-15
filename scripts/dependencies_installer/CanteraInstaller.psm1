@@ -112,24 +112,31 @@ class CanteraInstaller {
         #hdf_support='n' `
 
         $SConsBuildScriptBlock = {
-            scons build `
-                --jobs="$($this.ParallelJobs)" ` `
-                --directory="$($this.RepositoryDir)" `
-                prefix="$($this.InstallDir)" `
-                python_package='minimal' `
-                system_fmt='y' `
-                system_eigen='y' `
-                system_yamlcpp='y' `
-                system_sundials='y' `
-                googletest='system' `
-                f90_interface='n' `
-                boost_inc_dir="$($BoostIncDir)" `
-                sundials_include="$($SundialsInclude)" `
-                sundials_libdir="$($SundialsLibdir)" `
-                extra_inc_dirs="$($ExtraIncDirs)" `
-                extra_lib_dirs="$($ExtraLibDirs)" `
-            | Out-Host
+            $SconsBuildOptions = @(
+                "--jobs=$($this.ParallelJobs)",
+                "--directory=$($this.RepositoryDir)",
+                "prefix=$($this.InstallDir)",
+                "python_package='minimal'",
+                "system_fmt='y'",
+                "system_eigen='y'",
+                "system_yamlcpp='y'",
+                "system_sundials='y'",
+                "googletest='system'",
+                "f90_interface='n'",
+                "boost_inc_dir=$($BoostIncDir)",
+                "sundials_include=$($SundialsInclude)",
+                "sundials_libdir=$($SundialsLibdir)",
+                "extra_inc_dirs=$($ExtraIncDirs)",
+                "extra_lib_dirs=$($ExtraLibDirs)"
+            )
+
+            if ($Global:IsWindows) {
+                $SconsBuildOptions += "toolchain='mingw'" # default is "msvc"
+            }
+            
+            scons build @SconsBuildOptions | Out-Host
         }
+
         Invoke-Command -ScriptBlock $SConsBuildScriptBlock
         $ExitCode = $LASTEXITCODE
         if ( $ExitCode -ne 0 ) {
