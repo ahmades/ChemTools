@@ -23,15 +23,6 @@ jobs:
     name: Define build strategy
 
     runs-on: ubuntu-22.04
-
-    strategy:
-      matrix:
-        platform:
-          - ubuntu-22.04
-          - windows-2022
-        build_type:
-          - "Release"
-
     outputs:
       matrix: ${{ steps.strategy.outputs.matrix }}
 
@@ -39,12 +30,8 @@ jobs:
       - name: Define build startegy
         id: strategy
         run: |
-          echo "matrix=$(
-            echo '{
-              "platform": "'"${{ matrix.platform }}"'",
-              "build_type": "'"${{ matrix.build_type }}"'"
-            }' | jq -c -r .
-          )" >> "$GITHUB_OUTPUT"
+          matrix=$(echo $(cat ./.github/workflows/build-strategy.json) | sed 's/ //g' )
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
   build_dependencies:
     needs: define_build_strategy
