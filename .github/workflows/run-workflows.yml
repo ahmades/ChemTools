@@ -1,0 +1,55 @@
+name: Run Workflows
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/v[0-9]+\.[0-9]+\.[0-9]+'
+      - "feature/**"
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - 'release/v[0-9]+\.[0-9]+\.[0-9]+'
+      - "feature/**"
+  # Manual trigger
+  workflow_dispatch:
+
+jobs:
+  define_build_strategy:
+    name: Define build strategy
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.strategy.outputs.matrix }}
+
+    steps:
+      - name: Define build strategy
+        id: strategy
+        env:
+          MATRIX: >-
+            {
+              "include": [
+                {
+                  "platform": "ubuntu-22.04",
+                  "build_type": "Release"
+                }
+              ]
+            }
+        run: echo "matrix=$(jq -r -c . <<< "$MATRIX")" >> $GITHUB_OUTPUT
+
+      - name: Display build config
+        run: jq . <<< '${{ steps.strategy.outputs.matrix }}'
+
+  build_dependencies:
+    name: Build dependencies
+
+    needs: define_build_strategy
+
+    strategy:
+      matrix: ${{ fromJson(needs.define_build_strategy.outputs.matrix) }}
+
+    uses: ./.github/workflows/build-dependencies.yml
+    with:
+      platform: ${{ matrix.platform }}
+      build_type: ${{ matrix.build_type }}

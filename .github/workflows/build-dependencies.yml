@@ -1,0 +1,107 @@
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: "Platform"
+        required: true
+        type: string
+      build_type:
+        description: "Build type"
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: ${{ inputs.platform }}-${{ inputs.build_type }}
+
+    runs-on: ${{ inputs.platform }}
+
+    steps:
+      # Step: Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12-dev"
+          cache: "pip"
+
+      - name: Generate cache key
+        id: cache-key-gen
+        shell: bash
+        run: |
+          cache_key="dependencies-cache-key-${{ inputs.platform }}-${{ inputs.build_type }}-$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
+          echo "cache_key=$cache_key" >> $GITHUB_OUTPUT
+
+      # Step: Set paths
+      - name: Set paths
+        id: paths
+        shell: bash
+        run: |
+
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            path_sep="\\\\"
+          else
+            path_sep="/"
+          fi
+          echo "path_sep=$path_sep" >> $GITHUB_OUTPUT
+
+          build_dir="${{ github.workspace }}${path_sep}build"
+          echo "build_dir=$build_dir" >> $GITHUB_OUTPUT
+          dependencies_work_dir="${{ github.workspace }}${path_sep}dependencies${path_sep}work"
+          echo "dependencies_work_dir=$dependencies_work_dir" >> $GITHUB_OUTPUT
+          dependencies_install_dir="${{ github.workspace }}${path_sep}dependencies${path_sep}install"
+          echo "dependencies_install_dir=$dependencies_install_dir" >> $GITHUB_OUTPUT
+
+      - name: Restore cached dependencies
+        id: restore-cached-dependencies
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ steps.paths.outputs.dependencies_install_dir }}
+          key: ${{ steps.cache-key-gen.outputs.cache_key }}
+          restore-keys: |
+            dependencies-cache-key-${{ inputs.platform }}-${{ inputs.build_type }}-master
+            dependencies-cache-key-${{ inputs.platform }}-${{ inputs.build_type }}-
+
+      - name: Install python requirements
+        if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          path_sep="${{ steps.paths.outputs.path_sep }}"
+          python -m pip install -r "${{ github.workspace }}${path_sep}scripts${path_sep}dependencies_installer${path_sep}requirements.txt"
+
+      - name: Build dependencies
+        if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          pwsh -command '`
+            $tags=@{`
+              zlib = "v1.2.13"; `
+              hdf5 = "hdf5-1_14_0"; `
+              sundials = "v5.8.0"; `
+              yamlcpp = "0.8.0"; `
+              catch2 = "v3.5.2"; `
+              googletest = "v1.14.0"; `
+              units = "v0.9.1"; `
+              fmt = "9.1.0"; `
+              eigen ="3.4.0"; `
+              boost ="1.84.0"; `
+              cantera = "v3.0.0" `
+            }; `
+            $path_sep="${{ steps.paths.outputs.path_sep }}"; `
+            . ${{ github.workspace }}${path_sep}scripts${path_sep}dependencies_installer${path_sep}InstallDependencies.ps1 `
+            -WorkDir "${{ steps.paths.outputs.dependencies_work_dir }}" `
+            -InstallDir "${{ steps.paths.outputs.dependencies_install_dir }}" `
+            -BuildType "${{ inputs.build_type }}" `
+            -ParallelJobs 10 `
+            -GitTags $tags `
+            -Clean `
+          '
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        if: steps.restore-cached-dependencies.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.paths.outputs.dependencies_install_dir }}
+          key: ${{ steps.cache-key-gen.outputs.cache_key }}
