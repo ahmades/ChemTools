@@ -1,5 +1,3 @@
-name: Build Dependencies
-
 on:
   workflow_call:
     inputs:
