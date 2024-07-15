@@ -30,18 +30,10 @@ jobs:
           MATRIX: >-
             {
               "include": [
-                  {
-                      "platform": "ubuntu-22.04",
-                      "build_type": "Release"
-                  },
-                  {
-                      "platform": "ubuntu-22.04",
-                      "build_type": "Debug"
-                  },
-                  {
-                      "platform": "ubuntu-20.04",
-                      "build_type": "RelWithDebInfo"
-                  }
+                {
+                  "platform": "ubuntu-22.04",
+                  "build_type": "Release"
+                }
               ]
             }
         run: echo "matrix=$(jq -r -c . <<< "$MATRIX")" >> $GITHUB_OUTPUT
@@ -50,6 +42,8 @@ jobs:
         run: jq . <<< '${{ steps.strategy.outputs.matrix }}'
 
   build_dependencies:
+    name: Build dependencies
+
     needs: define_build_strategy
 
     strategy:

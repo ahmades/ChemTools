@@ -130,9 +130,9 @@ class CanteraInstaller {
                 "extra_lib_dirs=$($ExtraLibDirs)"
             )
 
-            if ($Global:IsWindows) {
-                $SconsBuildOptions += "toolchain=mingw" # default is "msvc"
-            }
+            # if ($Global:IsWindows) {
+            #     $SconsBuildOptions += "toolchain=mingw" # default is "msvc"
+            # }
             
             scons build @SconsBuildOptions | Out-Host
         }

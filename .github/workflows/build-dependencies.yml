@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: Build dependencies (${{ inputs.platform }}-${{ inputs.build_type }})
+    name: ${{ inputs.platform }}-${{ inputs.build_type }}
 
     runs-on: ${{ inputs.platform }}
 
