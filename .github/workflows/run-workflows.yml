@@ -28,19 +28,31 @@ jobs:
         id: strategy
         env:
           MATRIX: >-
-            [
-              {
-                "include": {
-                    "platform": [
-                        "ubuntu-22.04",
-                        "windows-2022"
-                    ],
-                    "build_type": [
-                        "Release"
-                    ]
-                }
-              }
-            ]
+            {
+              "include": [
+                  {
+                      "platform": "ubuntu-22.04",
+                      "build_type": "Release"
+                  },
+                  {
+                      "platform": "windows-2022",
+                      "build_type": "Release"
+                  }
+              ]
+            }
+            # [
+            #   {
+            #     "include": {
+            #         "platform": [
+            #             "ubuntu-22.04",
+            #             "windows-2022"
+            #         ],
+            #         "build_type": [
+            #             "Release"
+            #         ]
+            #     }
+            #   }
+            # ]
         run: echo "matrix=$(jq -r -c . <<< "$MATRIX")" >> $GITHUB_OUTPUT
 
       - name: Display build config
