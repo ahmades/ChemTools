@@ -41,7 +41,7 @@ Param(
     [Parameter(Mandatory = $false)] [hashtable]$GitTags = @{ `
             zlib       = 'v1.2.13'; `
             hdf5       = 'hdf5-1_14_0'; `
-            sundials   = 'v5.8.0'; `
+            sundials   = 'v5.7.0'; `
             yamlcpp    = '0.8.0'; `
             units      = 'v0.9.1'; `
             catch2     = 'v3.5.2'; `
