@@ -32,11 +32,15 @@ jobs:
               "include": [
                   {
                       "platform": "ubuntu-22.04",
-                      "build_type": ["Release", "Debug"]
+                      "build_type": "Release"
+                  },
+                  {
+                      "platform": "ubuntu-22.04",
+                      "build_type": "Debug"
                   },
                   {
                       "platform": "ubuntu-20.04",
-                      "build_type": ["RelWithDebInfo"]
+                      "build_type": "RelWithDebInfo"
                   }
               ]
             }
