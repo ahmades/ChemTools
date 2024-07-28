@@ -12,8 +12,9 @@ function catch_error() {
 }
 
 function parse_arguments() {
+    key="$1"
     while [[ $# -gt 0 ]]; do
-        case $1 in
+        case ${key} in
         --clang_format_file)
             declare -g clang_format_file
             clang_format_file=$(realpath "$2")
@@ -24,13 +25,13 @@ function parse_arguments() {
             # Read all arguments following --directories into the array
             #declare -A directories
             directories=()
-            while [[ $# -gt 0 && ! "$1" =~ ^-- ]]; do
-                directories+=("$(realpath "$1")")
+            while [[ $# -gt 0 && ! "${key}" =~ ^-- ]]; do
+                directories+=("$(realpath "${key}")")
                 shift
             done
             ;;
         -* | *)
-            echo "Unknown parameter: $1"
+            echo "Unknown argument: ${key}"
             exit 1
             ;;
         esac
