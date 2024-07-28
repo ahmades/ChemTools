@@ -1,0 +1,27 @@
+name: Spell check
+
+on:
+  push:
+    branches:
+      - master
+      - 'release/v[0-9]+\.[0-9]+\.[0-9]+'
+      - "feature/**"
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - 'release/v[0-9]+\.[0-9]+\.[0-9]+'
+      - "feature/**"
+  # Manual trigger
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Codespell
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: codespell-project/actions-codespell@v2
+        with:
+          check_filenames: true
