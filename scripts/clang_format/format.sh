@@ -13,7 +13,7 @@ function catch_error() {
 
 function parse_arguments() {
     while [[ $# -gt 0 ]]; do
-        key="$1"
+        key=$1
         case ${key} in
         --clang_format_file)
             declare -g clang_format_file
