@@ -67,7 +67,7 @@ class BoostInstaller {
         }
     }
 
-    hidden [void] Downlaod() {
+    hidden [void] Download() {
         $VersionUnderScore = $this.Tag.Replace('.', '_')
         $this.Stem = $this.Name + '_' + $VersionUnderScore
         $FileName = $this.Stem + ($Global:IsLinux ? '.tar.gz' : '.zip')
@@ -108,7 +108,7 @@ class BoostInstaller {
         Start-Process -FilePath ('./bootstrap' + ($Global:IsLinux ? '.sh' : '.bat')) -Wait -NoNewWindow
         $ExitCode = $LASTEXITCODE
         if ( $ExitCode -ne 0 ) {
-            throw ('Failed to boostrap boost.')
+            throw ('Failed to bootstrap boost.')
         }
         Pop-Location
     }
@@ -148,7 +148,7 @@ class BoostInstaller {
     [void] Run() {
         if ($this.DoInstall) {
             Utilities\PrintDecoratedMessage $this.Name "Start"
-            $this.Downlaod()
+            $this.Download()
             $this.Extract()
             $this.Bootstrap()
             $this.Install()

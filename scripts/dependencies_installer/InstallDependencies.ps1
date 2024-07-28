@@ -293,7 +293,7 @@ catch {
 }
 
 Write-Host ( `
-        "`nAll dependncies are now installed!`n" `
+        "`nAll dependencies are now installed!`n" `
         + "`nYou must now either:`n" `
         + (" - add {0} to your path before building, or`n" -f $Global:InstallDir) `
         + (" - configure the build with -DCMAKE_PREFIX_PATH={0}." -f $Global:InstallDir) `

@@ -15,7 +15,7 @@ namespace Input
     // YAML parser
     void Parse();
 
-    // vaildation of parsed input
+    // validation of parsed input
     void Validate() const;
 
   public:

@@ -60,7 +60,7 @@ if(NOT DEFINED LIB_PATH)
   message(FATAL_ERROR
     "Path to dependencies must be specified."
     " All dependencies must be available in the same directory."
-    " Use -DLIB_PATH=/path/to/dependenices to set this path."
+    " Use -DLIB_PATH=/path/to/dependencies to set this path."
     )
 else()
   list(APPEND CMAKE_PREFIX_PATH ${LIB_PATH})
