@@ -25,7 +25,7 @@ function parse_arguments() {
             # Read all arguments following --directories into the array
             #declare -A directories
             directories=()
-            while [[ $# -gt 0 && ! "${key}" =~ ^-- ]]; do
+            while [[ $# -gt 0 && ! "$key" =~ ^-- ]]; do
                 directories+=("$(realpath "${key}")")
                 shift
             done
