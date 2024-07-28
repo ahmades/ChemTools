@@ -4,7 +4,14 @@ on:
   push:
     branches:
       - master
-      - "release/v[0-9].[0-9].[0-9]"
+      - 'release/v[0-9]+\.[0-9]+\.[0-9]+'
+      - "feature/**"
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - 'release/v[0-9]+\.[0-9]+\.[0-9]+'
       - "feature/**"
   # Manual trigger
   workflow_dispatch:
