@@ -12,8 +12,8 @@ function catch_error() {
 }
 
 function parse_arguments() {
-    key="$1"
     while [[ $# -gt 0 ]]; do
+        key="$1"
         case ${key} in
         --clang_format_file)
             declare -g clang_format_file
@@ -25,7 +25,7 @@ function parse_arguments() {
             # Read all arguments following --directories into the array
             #declare -A directories
             directories=()
-            while [[ $# -gt 0 && ! "$key" =~ ^-- ]]; do
+            while [[ $# -gt 0 && ! "${key}" =~ ^-- ]]; do
                 directories+=("$(realpath "${key}")")
                 shift
             done
