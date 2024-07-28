@@ -36,7 +36,7 @@ namespace Results
     // opens the results file
     void OpenFile();
 
-    // creates gropus of registered variables
+    // creates groups of registered variables
     void CreateGroups();
 
     // creates scalar datasets in groups

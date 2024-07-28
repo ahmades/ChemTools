@@ -10,7 +10,7 @@ namespace CppPy
 {
 
   /*
-     Initialises and finalises the Python interprete
+     Initialises and finalises the Python interpreter
      When needed, a single instance should be created during initialisation
   */
 

@@ -272,7 +272,7 @@ namespace Input
         {
           throw std::runtime_error(fmt::format("Input error: found invalid species: [{}].\n", invalid_species));
         }
-    } // existance scope
+    } // existence scope
 
     // check if species are positive
     {

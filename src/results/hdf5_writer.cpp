@@ -139,7 +139,7 @@ namespace Results
   void HDF5Writer::CreateGroups()
   {
     std::vector<Meta::Scalar> const& scalars = subject.results_meta.scalars;
-    // extract unique group names and and cerate groups
+    // extract unique group names and and create groups
     std::unordered_set<std::string> unique_groups;
     // scalar
     for (auto it_scalars = scalars.begin(); it_scalars != scalars.end(); ++it_scalars)

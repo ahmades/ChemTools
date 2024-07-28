@@ -246,7 +246,7 @@ namespace SUNDIALS
         }
 
       // initialize the integrator memory and specify the user's
-      // right hand side function in u'= f(t,u), the inital time,
+      // right hand side function in u'= f(t,u), the initial time,
       // and the initial dependent variable vector u
       ret_code = CVodeInit(memory,
                            Client::RightHandSideCallback,
@@ -399,7 +399,7 @@ namespace SUNDIALS
           return ret_code;
         }
 
-      // set the maximum number of nonlinear iteartions
+      // set the maximum number of nonlinear iterations
       ret_code = CVodeSetMaxNonlinIters(memory, solver_ctrl.max_nonlin_iters);
       if (ret_code != CV_SUCCESS)
         {
@@ -449,7 +449,7 @@ namespace SUNDIALS
        This method returns a success, warning or failure code to the client code.
        The client code must:
        - decide what to do in case of failure
-       - assess the impact of warnings when they occurr
+       - assess the impact of warnings when they occur
     */
     int IStrategy::Integrate(realtype const time_target)
     {

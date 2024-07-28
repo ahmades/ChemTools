@@ -21,7 +21,7 @@ namespace Results
     virtual void Update(class Subject&) = 0;
   };
 
-  // Meta of registerd variables
+  // Meta of registered variables
   class Meta
   {
   public:
